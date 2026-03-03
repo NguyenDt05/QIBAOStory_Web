@@ -6,7 +6,7 @@ let _db = CATEGORIES_LIST.map((c, i) => ({
   categoryname: c.categoryname,
   slug: c.slug,
   storyCount: [45, 28, 62, 37, 19, 53, 14, 31, 22, 16][i] ?? 0,
-  status: 1,
+  visible: true,
 }));
 
 export async function getAllCategories() {
@@ -14,28 +14,28 @@ export async function getAllCategories() {
   return _db.map(c => ({ ...c }));
 }
 
-export async function addCategory({ categoryname, status }) {
+export async function addCategory({ categoryname, visible }) {
   await delay();
   const newCategory = {
     categoryID: Date.now(),
     categoryname,
     slug: categoryname.toLowerCase().replace(/\s+/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
     storyCount: 0,
-    status: status ? 1 : 0,
+    visible: visible !== false,
   };
   _db = [..._db, newCategory];
-  return _db.map(c => ({ ...c }));
+  return newCategory;
 }
 
-export async function updateCategory(categoryID, { categoryname, status }) {
+export async function updateCategory(categoryID, { categoryname, visible }) {
   await delay();
-  _db = _db.map(c => c.categoryID === categoryID ? { ...c, categoryname, status: status ? 1 : 0 } : c);
-  return _db.map(c => ({ ...c }));
+  _db = _db.map(c => c.categoryID === categoryID ? { ...c, categoryname, visible: visible !== false } : c);
+  return _db.find(c => c.categoryID === categoryID);
 }
 
 export async function toggleCategoryStatus(categoryID) {
   await delay();
-  _db = _db.map(c => c.categoryID === categoryID ? { ...c, status: c.status ? 0 : 1 } : c);
+  _db = _db.map(c => c.categoryID === categoryID ? { ...c, visible: !c.visible } : c);
   return _db.map(c => ({ ...c }));
 }
 
