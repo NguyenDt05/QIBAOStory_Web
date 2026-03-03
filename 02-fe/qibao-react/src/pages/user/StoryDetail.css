@@ -1,0 +1,430 @@
+/* pages/user/StoryDetail.css — prefix: cdt- */
+
+.cdt-page {
+  background-color: #0a0d14;
+  min-height: 100vh;
+  color: #e2e8f0;
+}
+
+/* ── Hero Banner ── */
+.cdt-hero {
+  position: relative;
+  overflow: hidden;
+  background: #1a0a05;
+  padding: 40px 0 36px;
+}
+
+.cdt-hero__bg-card {
+  position: absolute;
+  border-radius: 10px;
+  opacity: 0.18;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.cdt-hero__cover {
+  width: 140px;
+  min-width: 140px;
+  height: 196px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.cdt-hero__cover-icon {
+  font-size: 2.8rem;
+  opacity: 0.55;
+}
+
+.cdt-hero__cover-label {
+  font-size: 0.6rem;
+  opacity: 0.4;
+  margin-top: 8px;
+}
+
+.cdt-hero__breadcrumb-link {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.cdt-hero__breadcrumb-active {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cdt-hero__title {
+  line-height: 1.25;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.cdt-hero__meta {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cdt-hero__meta-icon {
+  opacity: 0.7;
+}
+
+.cdt-hero__status-badge {
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 14px;
+}
+
+.cdt-btn-bookmark {
+  border-radius: 50px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+  padding: 9px 22px;
+}
+
+.cdt-btn-bookmark:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.cdt-btn-bookmark--saved {
+  background-color: rgba(76, 175, 80, 0.18);
+  border-color: rgba(76, 175, 80, 0.5);
+  color: #81c784;
+}
+
+.cdt-btn-bookmark--saved:hover {
+  background-color: rgba(224, 82, 82, 0.15);
+  border-color: rgba(224, 82, 82, 0.45);
+  color: var(--accent);
+}
+
+.cdt-btn-read {
+  border-radius: 50px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 0.875rem;
+  padding: 9px 22px;
+  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.45);
+}
+
+.cdt-btn-read:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+/* ── Tabs ── */
+.cdt-tabs {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.cdt-tab-btn {
+  font-size: 0.9rem;
+  border-radius: 0;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+  padding: 8px 20px;
+}
+
+.cdt-tab-btn--active {
+  color: var(--primary-color) !important;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.cdt-tab-btn--inactive {
+  color: #6b7280 !important;
+  border-bottom: 3px solid transparent;
+}
+
+.cdt-tab-card {
+  background-color: #141820;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+  padding: 28px 32px;
+}
+
+.cdt-tab-card p,
+.cdt-tab-card p.cdt-desc-para {
+  color: #c9d1d9;
+}
+
+/* Intro tab 2-column layout */
+.cdt-gt-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .cdt-gt-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cdt-gt-recent {
+  min-width: 0;
+}
+
+.cdt-gt-desc {
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+  padding-left: 28px;
+}
+
+@media (max-width: 768px) {
+  .cdt-gt-desc {
+    border-left: none;
+    padding-left: 0;
+    border-top: 2px solid rgba(255, 255, 255, 0.08);
+    padding-top: 20px;
+  }
+}
+
+/* Recent chapters block */
+.cdt-chuong-moi__header {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.cdt-chuong-moi__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background-color: rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s;
+}
+
+.cdt-chuong-moi__row:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.cdt-chuong-moi__index {
+  width: 22px;
+  min-width: 22px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.cdt-chuong-moi__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.cdt-chuong-moi__date {
+  font-size: 0.75rem;
+  color: #aaa;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Description expand/collapse */
+.cdt-desc-wrapper {
+  position: relative;
+  max-height: 260px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.cdt-desc-wrapper--expanded {
+  max-height: 2000px;
+}
+
+.cdt-desc-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(transparent, #141820);
+  pointer-events: none;
+}
+
+.cdt-xem-them-btn {
+  display: block;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.cdt-xem-them-btn:hover {
+  opacity: 0.75;
+}
+
+/* Chapter list tab */
+.cdt-chuong-card {
+  background-color: #141820;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.cdt-chuong-card__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px 24px;
+}
+
+.cdt-chuong-card__section-title {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 12px;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.cdt-cl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 6px 0;
+}
+
+.cdt-cl-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cdt-cl-col:last-child {
+  border-right: none;
+}
+
+@media (max-width: 576px) {
+  .cdt-cl-grid {
+    grid-template-columns: 1fr;
+  }
+  .cdt-cl-col {
+    border-right: none;
+  }
+}
+
+.cdt-cl-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.15s;
+  min-width: 0;
+}
+
+.cdt-cl-item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.cdt-cl-item--locked {
+  opacity: 0.5;
+}
+
+.cdt-cl-item__so {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cdt-cl-item__ten {
+  font-size: 0.82rem;
+  color: #8892a4;
+  flex: 1;
+  min-width: 0;
+}
+
+.cdt-cl-item:hover .cdt-cl-item__ten {
+  color: var(--primary-color);
+}
+
+.cdt-cl-item__lock {
+  font-size: 0.72rem;
+  color: #4a5568;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 6px;
+}
+
+.cdt-chuong-card__pagination {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px 24px;
+}
+
+.cdt-page-btn {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #8892a4 !important;
+  font-size: 0.82rem;
+  font-weight: 600;
+  min-width: 34px;
+  padding: 5px 10px;
+  margin: 0 2px;
+  transition: all 0.15s;
+}
+
+.cdt-page-btn:hover {
+  background-color: rgba(224, 82, 82, 0.12) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.cdt-page-btn--active {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.page-item.disabled .cdt-page-btn,
+button.cdt-page-btn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.cdt-page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  color: #4a5568;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+/* Related works section */
+.cdt-section-title {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 14px;
+  color: #e2e8f0;
+}
+
+/* Loading state */
+.cdt-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: #8892a4;
+  font-size: 0.9rem;
+  gap: 10px;
+}

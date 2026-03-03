@@ -1,0 +1,154 @@
+/*
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║                 QIBAO — THEME CONFIGURATION                 ║
+ * ║                                                              ║
+ * ║  Muốn đổi màu sắc toàn bộ app → chỉnh sửa file này thôi.   ║
+ * ║  Các file khác KHÔNG nên chứa giá trị màu hardcode.         ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ *
+ *  Cách dùng biến trong JSX:  style={{ color: 'var(--text-1)' }}
+ *  Cách dùng trong CSS:       color: var(--text-1);
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME HIỆN TẠI: Dark (Nền đen)
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+
+    /* ── 1. Màu chủ đạo ── */
+    --accent:           #e05252;          /* đỏ accent chính */
+    --accent-hover:     #ff7070;          /* hover / link hover */
+    --accent-glow:      rgba(224, 82, 82, 0.35);   /* shadow glow */
+    --accent-soft:      rgba(224, 82, 82, 0.10);   /* nền mềm (tag, badge) */
+    --accent-border:    rgba(224, 82, 82, 0.30);   /* viền tag accent */
+
+    /* ── Alias cũ (giữ để code cũ không cần sửa) ── */
+    --primary-color:    var(--accent);
+    --primary-glow:     var(--accent-glow);
+
+    /* ── 2. Nền & bề mặt ── */
+    --bg:               #0a0d14;          /* nền toàn trang */
+    --surface-1:        #141820;          /* card, panel, modal */
+    --surface-2:        #1c2232;          /* input, thead, elevated */
+    --surface-hover:    rgba(255, 255, 255, 0.05); /* hover row/item */
+
+    /* ── Alias cũ ── */
+    --bg-color:         var(--bg);
+
+    /* ── 3. Viền ── */
+    --border:           rgba(255, 255, 255, 0.07);
+    --border-strong:    rgba(255, 255, 255, 0.12);
+
+    /* ── 4. Chữ ── */
+    --text-1:           #e2e8f0;          /* chữ chính */
+    --text-2:           #8892a4;          /* chữ phụ / icon */
+    --text-muted:       #4a5568;          /* placeholder, disabled */
+    --text-on-accent:   #ffffff;          /* chữ trên nền accent */
+
+    /* ── 5. Layout cố định (không liên quan màu) ── */
+    --sidebar-width:    260px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOTSTRAP 5 OVERRIDES  ← tự động theo biến phía trên
+   (không cần chỉnh — chúng đọc giá trị từ section trên)
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+    /* Body */
+    --bs-body-bg:                   var(--bg);
+    --bs-body-bg-rgb:               10, 13, 20;
+    --bs-body-color:                var(--text-1);
+    --bs-body-color-rgb:            226, 232, 240;
+    --bs-emphasis-color:            #f0f4f8;
+    --bs-emphasis-color-rgb:        240, 244, 248;
+    --bs-secondary-color:           var(--text-2);
+    --bs-secondary-color-rgb:       136, 146, 164;
+    --bs-secondary-bg:              var(--surface-2);
+    --bs-secondary-bg-rgb:          28, 34, 50;
+    --bs-tertiary-bg:               var(--surface-1);
+    --bs-tertiary-bg-rgb:           20, 24, 32;
+    --bs-tertiary-color:            var(--text-2);
+    --bs-border-color:              var(--border-strong);
+    --bs-border-color-translucent:  var(--border);
+    --bs-heading-color:             var(--text-1);
+    --bs-link-color:                var(--accent);
+    --bs-link-hover-color:          var(--accent-hover);
+    --bs-code-color:                var(--text-1);
+
+    /* Form */
+    --bs-form-control-bg:           var(--surface-2);
+    --bs-form-select-bg:            var(--surface-2);
+    --bs-input-bg:                  var(--surface-2);
+    --bs-input-border-color:        var(--border-strong);
+    --bs-input-color:               var(--text-1);
+    --bs-input-placeholder-color:   var(--text-muted);
+    --bs-input-focus-border-color:  var(--accent);
+    --bs-input-focus-box-shadow:    0 0 0 3px var(--accent-glow);
+
+    /* Table */
+    --bs-table-bg:                  transparent;
+    --bs-table-color:               var(--text-1);
+    --bs-table-border-color:        var(--border);
+    --bs-table-striped-bg:          rgba(255, 255, 255, 0.025);
+    --bs-table-hover-bg:            var(--surface-hover);
+    --bs-table-hover-color:         var(--text-1);
+
+    /* Modal */
+    --bs-modal-bg:                  var(--surface-1);
+    --bs-modal-border-color:        var(--border-strong);
+    --bs-modal-color:               var(--text-1);
+    --bs-modal-header-border-color: var(--border);
+    --bs-modal-footer-border-color: var(--border);
+
+    /* Dropdown */
+    --bs-dropdown-bg:               var(--surface-1);
+    --bs-dropdown-border-color:     var(--border-strong);
+    --bs-dropdown-color:            var(--text-1);
+    --bs-dropdown-link-color:       var(--text-1);
+    --bs-dropdown-link-hover-bg:    var(--surface-hover);
+    --bs-dropdown-link-hover-color: #fff;
+    --bs-dropdown-link-active-bg:   var(--accent);
+    --bs-dropdown-divider-bg:       var(--border);
+    --bs-dropdown-header-color:     var(--text-2);
+
+    /* Card */
+    --bs-card-bg:                   var(--surface-1);
+    --bs-card-border-color:         var(--border);
+    --bs-card-color:                var(--text-1);
+    --bs-card-cap-bg:               var(--surface-2);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   VÍ DỤ: LIGHT THEME  (bỏ comment để dùng)
+   ═══════════════════════════════════════════════════════════════
+
+:root {
+    --accent:           #D32F2F;
+    --accent-hover:     #b71c1c;
+    --accent-glow:      rgba(211, 47, 47, 0.25);
+    --accent-soft:      #ffebee;
+    --accent-border:    #ffcdd2;
+
+    --primary-color:    var(--accent);
+    --primary-glow:     var(--accent-glow);
+
+    --bg:               #fff8e1;
+    --surface-1:        #ffffff;
+    --surface-2:        #fff3e0;
+    --surface-hover:    #fff8f0;
+
+    --bg-color:         var(--bg);
+
+    --border:           #ffe0b2;
+    --border-strong:    #ffcdd2;
+
+    --text-1:           #212121;
+    --text-2:           #555555;
+    --text-muted:       #aaaaaa;
+    --text-on-accent:   #ffffff;
+
+    --sidebar-width:    260px;
+}
+
+*/

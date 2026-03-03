@@ -1,0 +1,280 @@
+/* ═══════════════════════════════════════════════════════════════
+   Màu sắc & theme: xem / chỉnh tại  src/styles/theme.css
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Ép toàn bộ khung trình duyệt không có kẽ hở */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* KHÔNG dùng overflow:hidden ở đây — để TrangChu cuộn bình thường.
+       AdminLayout tự quản lý scroll bằng vh-100 + main-content overflow-y:auto */
+}
+
+/* Sidebar: Cố định bên trái, tự cuộn nếu quá dài */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background-color: var(--surface-1);
+    border-right: 1px solid var(--border);
+    box-shadow: 2px 0 20px rgba(0,0,0,0.4);
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* Main Content: Đây là nơi bạn muốn "bung lụa" */
+.main-content {
+    flex: 1;
+    background-color: var(--bg-color);
+    overflow-y: auto;
+    width: 100%;
+    min-width: 0;
+    color: var(--text-1);
+}
+
+/* Ép Container-fluid của Bootstrap phải tràn 100% */
+.main-content .container-fluid {
+    width: 100% !important;
+    max-width: none !important; 
+    padding: 30px !important;
+}
+
+/* Sidebar Buttons */
+.sidebar-btn {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    margin-bottom: 6px;
+    border-radius: 50px;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.sidebar-btn:hover {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+}
+
+.sidebar-btn.active {
+    background-color: var(--primary-color);
+    color: #fff !important;
+    box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.sidebar-btn i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+/* Stat Card: Chỉnh lại để header thò ra chuyên nghiệp */
+.stat-card {
+    background: var(--surface-1);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    position: relative;
+    padding: 20px;
+    margin-top: 20px;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+}
+
+.stat-header {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 6px 20px;
+    border-radius: 12px;
+    width: fit-content;
+    font-weight: bold;
+    position: absolute;
+    top: -15px;
+    left: 25px;
+    box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.stat-body {
+    padding-top: 20px;
+    text-align: left;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-1);
+}
+
+/* ═══════════════════════════════════════════
+   Bootstrap overrides (đọc biến từ theme.css)
+   ═══════════════════════════════════════════ */
+
+body {
+    background-color: var(--bg) !important;
+    color: var(--text-1) !important;
+}
+
+/* Text utilities */
+.text-dark      { color: var(--text-1) !important; }
+.text-body      { color: var(--text-1) !important; }
+.text-muted     { color: var(--text-2) !important; }
+.text-secondary { color: var(--text-2) !important; }
+.text-black     { color: var(--text-1) !important; }
+
+/* Tables */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-1);
+    --bs-table-border-color: var(--border);
+    --bs-table-hover-bg: var(--surface-hover);
+    --bs-table-hover-color: var(--text-1);
+    --bs-table-striped-bg: rgba(255,255,255,0.025);
+    color: var(--text-1);
+}
+
+.table thead th {
+    color: var(--text-2) !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-strong) !important;
+    background-color: transparent;
+}
+
+.table tbody td,
+.table tbody tr {
+    color: var(--text-1) !important;
+    border-color: var(--border) !important;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover td { color: #fff !important; }
+
+/* Form controls */
+.form-control,
+.form-select {
+    background-color: var(--surface-2) !important;
+    border-color: var(--border-strong) !important;
+    color: var(--text-1) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--surface-2) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow) !important;
+    color: var(--text-1) !important;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: var(--surface-1) !important;
+    color: var(--text-muted) !important;
+}
+
+.form-control::placeholder { color: var(--text-muted) !important; }
+
+.form-select option {
+    background-color: var(--surface-2);
+    color: var(--text-1) !important;
+}
+
+.form-label { color: var(--text-1); }
+
+/* Input group addons */
+.input-group-text {
+    background-color: var(--surface-2) !important;
+    border-color: var(--border-strong) !important;
+    color: var(--text-2) !important;
+}
+
+/* Modals */
+.modal-content {
+    background-color: var(--surface-1) !important;
+    border: 1px solid var(--border-strong) !important;
+    color: var(--text-1) !important;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--border) !important;
+    color: var(--text-1);
+}
+
+.modal-title { color: var(--text-1) !important; }
+
+.btn-close { filter: invert(1) grayscale(1) brightness(1.5); }
+
+/* Dropdowns */
+.dropdown-menu {
+    background-color: var(--surface-1) !important;
+    border: 1px solid var(--border-strong) !important;
+    --bs-dropdown-divider-bg: var(--border);
+}
+
+.dropdown-item        { color: var(--text-1) !important; }
+.dropdown-item:hover  { background-color: var(--surface-hover) !important; color: #fff !important; }
+.dropdown-item:active { background-color: var(--accent) !important; }
+.dropdown-header      { color: var(--text-2) !important; }
+.dropdown-divider     { border-color: var(--border) !important; }
+
+/* Badges */
+.badge.bg-secondary { background-color: var(--surface-2) !important; color: var(--text-2) !important; }
+.badge.bg-light     { background-color: var(--surface-2) !important; color: var(--text-1) !important; }
+
+/* List groups */
+.list-group-item {
+    background-color: var(--surface-1) !important;
+    border-color: var(--border) !important;
+    color: var(--text-1) !important;
+}
+
+/* Pagination */
+.page-link {
+    background-color: var(--surface-2) !important;
+    border-color: var(--border-strong) !important;
+    color: var(--text-2) !important;
+}
+.page-link:hover          { background-color: var(--accent-soft) !important; color: var(--accent) !important; }
+.page-item.active .page-link  { background-color: var(--accent) !important; border-color: var(--accent) !important; color: var(--text-on-accent) !important; }
+.page-item.disabled .page-link { opacity: 0.35; }
+
+/* Alerts */
+.alert-danger  { background-color: var(--accent-soft) !important; color: var(--accent-hover) !important; border-color: var(--accent-border) !important; }
+.alert-success { background-color: rgba(56,161,105,0.12) !important; color: #68d391 !important; border-color: rgba(56,161,105,0.3) !important; }
+.alert-warning { background-color: rgba(236,153,75,0.12) !important; color: #f6ad55 !important; border-color: rgba(236,153,75,0.3) !important; }
+.alert-info    { background-color: rgba(66,153,225,0.12) !important; color: #90cdf4 !important; border-color: rgba(66,153,225,0.3) !important; }
+
+/* Sidebar brand */
+.sidebar-brand { color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+
+/* ── Form Switch (toggle) ── */
+/* Trạng thái TẮT: hiện rõ viền + nền xám để không bị chìm vào dark bg */
+.form-check-input[type="checkbox"][role="switch"] {
+    background-color: var(--surface-hover) !important;
+    border: 2px solid var(--border-strong) !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+/* Nút tròn khi TẮT: trắng mờ để nhìn thấy */
+.form-check-input[type="checkbox"][role="switch"]::before,
+.form-check-input[type="checkbox"][role="switch"]:not(:checked) {
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255,255,255,0.55)'/%3e%3c/svg%3e") !important;
+}
+/* Trạng thái BẬT: xanh lá */
+.form-check-input[type="checkbox"][role="switch"]:checked {
+    background-color: #38a169 !important;
+    border-color: #38a169 !important;
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+}

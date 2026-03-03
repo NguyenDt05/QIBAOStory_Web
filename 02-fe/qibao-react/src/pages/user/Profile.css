@@ -1,0 +1,476 @@
+/* pages/user/Profile.css — reused TrangHoSo.css classes */
+
+.trang-ho-so {
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+
+.ho-so-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.ho-so-panel {
+  background: var(--surface-1);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.ho-so-panel:last-child { margin-bottom: 0; }
+
+.ho-so-panel__tieu-de {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+  padding: 14px 20px;
+}
+
+/* ── Sidebar ── */
+.ho-so-sidebar {
+  background: var(--surface-1);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 24px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.sidebar-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.sidebar-avatar__circle {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar-avatar__ten {
+  color: var(--text-1);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  word-break: break-word;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.sidebar-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  text-align: left;
+}
+.sidebar-nav__item:hover { background: var(--surface-hover); color: var(--text-1); }
+.sidebar-nav__item.active { background: var(--accent); color: #fff; font-weight: 600; }
+.sidebar-nav__item i { font-size: 1rem; flex-shrink: 0; }
+
+.sidebar-dang-xuat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 14px 11px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.18s, background 0.18s;
+  text-align: left;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.sidebar-dang-xuat:hover { color: var(--accent); background: var(--accent-soft); }
+.sidebar-dang-xuat i { font-size: 1rem; flex-shrink: 0; }
+
+/* ── Personal Info ── */
+.thong-tin-ca-nhan {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 28px 24px;
+}
+
+.ttcn-avatar {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2.4rem;
+  color: #fff;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.ttcn-avatar__camera {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 28px;
+  height: 28px;
+  background: var(--surface-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  font-size: 0.75rem;
+  border: 2px solid var(--surface-1);
+  pointer-events: none;
+}
+
+.ttcn-info { flex: 1; min-width: 0; }
+
+.ttcn-info__ten-hang {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.ttcn-info__ten {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin: 0;
+  line-height: 1.2;
+}
+.ttcn-edit-icon {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 7px;
+  transition: color 0.15s, background 0.15s;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.ttcn-edit-icon:hover { color: var(--accent); background: var(--accent-soft); }
+
+.ttcn-edit-hang {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.ttcn-edit-input {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 9px;
+  color: var(--text-1);
+  padding: 7px 13px;
+  font-size: 1rem;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  transition: border-color 0.15s;
+}
+.ttcn-edit-input:focus { border-color: var(--accent); }
+
+.ttcn-btn-luu, .ttcn-btn-huy {
+  padding: 7px 16px;
+  border-radius: 9px;
+  border: none;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.ttcn-btn-luu { background: var(--accent); color: #fff; }
+.ttcn-btn-luu:hover { opacity: 0.85; }
+.ttcn-btn-huy { background: var(--surface-2); color: var(--text-2); }
+.ttcn-btn-huy:hover { opacity: 0.85; }
+
+.ttcn-info__username,
+.ttcn-info__role {
+  color: var(--text-2);
+  font-size: 0.875rem;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ttcn-info__username span,
+.ttcn-info__role span { color: var(--text-1); font-weight: 500; }
+
+/* ── Reading History ── */
+.lich-su-list { padding: 6px 0; }
+
+.lich-su-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 20px;
+  transition: background 0.15s;
+  border-bottom: 1px solid var(--border);
+}
+.lich-su-item:last-child { border-bottom: none; }
+.lich-su-item:hover { background: var(--surface-hover); }
+
+.lich-su-item__bia {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+}
+.lich-su-item__bia-ten {
+  color: rgba(255,255,255,0.75);
+  font-weight: 700;
+  font-size: 1.1rem;
+  user-select: none;
+}
+
+.lich-su-item__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-decoration: none !important;
+}
+.lich-su-item__ten {
+  color: var(--text-1);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lich-su-item__meta { color: var(--text-2); font-size: 0.76rem; }
+
+.lich-su-item__xoa {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.lich-su-item__xoa:hover { color: var(--accent); background: var(--accent-soft); }
+
+.ho-so-empty {
+  color: var(--text-muted);
+  padding: 40px 20px;
+}
+
+/* ── Library ── */
+.tt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+
+.tt-card {
+  background: var(--surface-2);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.tt-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+.tt-card__bia {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  flex-shrink: 0;
+}
+.tt-card__bia-ten {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  user-select: none;
+}
+
+.tt-card__body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.tt-card__tieu-de {
+  color: var(--text-1);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-decoration: none !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tt-card__tieu-de:hover { color: var(--accent-hover); }
+.tt-card__tac-gia {
+  color: var(--text-2);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tt-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.tt-card__status {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 50px;
+}
+.tt-card__xoa {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.tt-card__xoa:hover { color: var(--accent); background: var(--accent-soft); }
+
+.tt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ── Change Password ── */
+.doi-mat-khau-form {
+  padding: 28px 32px;
+  max-width: 440px;
+}
+.dmk-success {
+  background: rgba(76,175,80,0.12);
+  border: 1px solid rgba(76,175,80,0.3);
+  color: #81c784;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+.dmk-group { margin-bottom: 18px; }
+.dmk-label {
+  display: block;
+  color: var(--text-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+.dmk-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 9px;
+  color: var(--text-1);
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.dmk-input:focus { border-color: var(--accent); }
+.dmk-input--error { border-color: var(--accent) !important; }
+.dmk-error {
+  color: var(--accent);
+  font-size: 0.76rem;
+  margin-top: 5px;
+  display: block;
+}
+.dmk-btn-submit {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 24px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dmk-btn-submit:hover:not(:disabled) { opacity: 0.85; }
+.dmk-btn-submit:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ho-so-grid { grid-template-columns: 1fr; }
+  .ho-so-sidebar { position: static; }
+  .thong-tin-ca-nhan { flex-direction: column; text-align: center; align-items: center; }
+  .ttcn-info__ten-hang { justify-content: center; }
+  .ttcn-info__username,
+  .ttcn-info__role { justify-content: center; }
+}

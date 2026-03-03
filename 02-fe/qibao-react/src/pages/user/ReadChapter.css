@@ -1,0 +1,322 @@
+/* pages/user/ReadChapter.css — prefix: tdc- */
+
+.tdc-page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding: 2rem 1rem 4rem;
+}
+
+.tdc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  color: var(--text-2);
+  font-size: 0.95rem;
+}
+
+.tdc-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+}
+
+@media (max-width: 600px) {
+  .tdc-wrapper {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* ── Breadcrumb ── */
+.tdc-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  margin-bottom: 1.25rem;
+}
+
+.tdc-breadcrumb__link {
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.tdc-breadcrumb__link:hover {
+  color: var(--accent-hover);
+}
+
+.tdc-breadcrumb__link--truncate {
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tdc-breadcrumb__sep {
+  color: var(--text-muted);
+  user-select: none;
+}
+
+/* ── Chapter header ── */
+.tdc-header {
+  margin-bottom: 0.75rem;
+}
+
+.tdc-header__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+}
+
+.tdc-header__title-name {
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.tdc-header__meta-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tdc-header__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tdc-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.tdc-meta-icon {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.tdc-meta-link {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.tdc-meta-link:hover {
+  color: var(--accent-hover);
+}
+
+/* ── Chapter list menu button + dropdown ── */
+.tdc-menu-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tdc-btn-menu {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text-1);
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tdc-btn-menu:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.tdc-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.tdc-dropdown__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-1);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.tdc-dropdown__count {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.tdc-dropdown__list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.tdc-dropdown__list::-webkit-scrollbar { width: 5px; }
+.tdc-dropdown__list::-webkit-scrollbar-track { background: transparent; }
+.tdc-dropdown__list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+.tdc-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0.55rem 1rem;
+  text-decoration: none;
+  color: var(--text-2);
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s, color 0.12s;
+}
+
+.tdc-dropdown__item:last-child {
+  border-bottom: none;
+}
+
+.tdc-dropdown__item:hover {
+  background: var(--surface-hover);
+  color: var(--text-1);
+}
+
+.tdc-dropdown__item--active {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  font-weight: 600;
+}
+
+.tdc-dropdown__item-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.tdc-dropdown__item-date {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Divider ── */
+.tdc-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+/* ── Chapter content ── */
+.tdc-content {
+  line-height: 1.9;
+}
+
+.tdc-content__para {
+  color: var(--text-1);
+  font-size: 1rem;
+  margin-bottom: 1.1rem;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* ── Chapter navigation bar ── */
+.tdc-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tdc-nav__btn {
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.tdc-nav__btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
+}
+
+.tdc-nav__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.tdc-nav__btn--prev {
+  justify-content: flex-start;
+}
+
+.tdc-nav__btn--next {
+  justify-content: flex-end;
+}
+
+.tdc-nav__label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.tdc-nav__label--muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.tdc-nav__btn-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.tdc-nav__btn-center:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
+}

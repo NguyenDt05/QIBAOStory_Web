@@ -1,0 +1,196 @@
+/* pages/user/story-detail/CommentTab.css
+   Styles for the Comment tab — prefix: bl-
+   Uses theme.css variables for dark/light support.
+*/
+
+/* ── Wrapper ── */
+.bl-wrap {
+  max-width: 760px;
+}
+
+/* ── Input area ── */
+.bl-input-area {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.bl-textarea,
+.bl-input-disabled {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  background-color: var(--surface-2);
+  color: var(--text-1);
+  resize: vertical;
+  transition: border-color 0.2s;
+  outline: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.bl-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.bl-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.bl-input-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  resize: none;
+}
+
+.bl-input-disabled::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Send / Login buttons ── */
+.bl-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.bl-btn-send,
+.bl-btn-login {
+  border-radius: 20px;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.18s, opacity 0.18s;
+}
+
+.bl-btn-send:hover:not(:disabled),
+.bl-btn-login:hover {
+  background-color: var(--accent-soft);
+}
+
+.bl-btn-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Empty state ── */
+.bl-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.bl-empty i {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+/* ── Each comment ── */
+.bl-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bl-item__body {
+  flex: 1;
+}
+
+.bl-item__name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.bl-item__content {
+  font-size: 0.875rem;
+  color: var(--text-1);
+  white-space: pre-line;
+  line-height: 1.65;
+  margin-bottom: 5px;
+  opacity: 0.88;
+}
+
+.bl-item__time {
+  font-size: 0.76rem;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Pagination ── */
+.bl-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 24px;
+}
+
+.bl-page-btn {
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  padding: 5px 11px;
+  min-width: 36px;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.bl-page-btn:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  color: var(--text-1);
+}
+
+.bl-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.bl-page-btn--active {
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  font-weight: 700;
+}
+
+/* ── Avatar ── */
+.bl-avatar {
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.bl-avatar--anon {
+  background-color: var(--surface-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-2);
+}
