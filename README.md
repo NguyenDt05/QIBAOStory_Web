@@ -1,7 +1,7 @@
 # QIBAO — Web Đọc Truyện Trực Tuyến
 
 Bài tập lớn môn Lập Trình Web — PTIT  
-Frontend được xây dựng bằng **React + Vite**, dùng **React Router v6**, **Bootstrap 5** và dữ liệu mock (chưa kết nối backend).
+Frontend được xây dựng bằng **React 19 + Vite 7**, dùng **React Router v7**, **Bootstrap 5** và dữ liệu mock (chưa kết nối backend).
 
 ---
 
@@ -43,9 +43,9 @@ Frontend được xây dựng bằng **React + Vite**, dùng **React Router v6**
 
 | Thành phần | Công nghệ |
 |---|---|
-| Framework | React 18 |
-| Build tool | Vite |
-| Routing | React Router v6 |
+| Framework | React 19 |
+| Build tool | Vite 7 |
+| Routing | React Router v7 |
 | UI | Bootstrap 5 + Bootstrap Icons |
 | State | React Context API |
 | Dữ liệu | Mock data (constants/mockData.js) |
@@ -56,7 +56,7 @@ Frontend được xây dựng bằng **React + Vite**, dùng **React Router v6**
 ## Cài đặt & chạy
 
 ```bash
-cd 02-fe/qibao-react
+cd 02-fe
 npm install
 npm run dev
 ```
@@ -68,9 +68,12 @@ Mở trình duyệt tại `http://localhost:5173`
 ## Cấu trúc thư mục
 
 ```
-02-fe/qibao-react/
+02-fe/
 ├── public/
 │   └── covers/               # Ảnh bìa truyện (serve tĩnh)
+├── package.json
+├── vite.config.js
+├── index.html
 │
 └── src/
     ├── main.jsx               # Entry point, bọc BrowserRouter + Providers
@@ -88,9 +91,9 @@ Mở trình duyệt tại `http://localhost:5173`
     │   └── statsService.js    # Thống kê dashboard
     │
     ├── constants/
-    │   ├── mockData.js        # Toàn bộ dữ liệu mẫu (truyện, chương, bình luận...)
+    │   ├── mockData.js        # Nguồn dữ liệu duy nhất (STORIES_MOCK, USERS_MOCK...)
     │   ├── categories.js      # Danh sách thể loại + màu sắc
-    │   ├── storyStatus.js     # Mapping trạng thái truyện (dangra/hoanthanh/tamngung)
+    │   ├── storyStatus.js     # Mapping trạng thái truyện
     │   └── roles.js           # Định nghĩa quyền (user/admin)
     │
     ├── context/
@@ -99,76 +102,60 @@ Mở trình duyệt tại `http://localhost:5173`
     │
     ├── layout/
     │   ├── UserLayout.jsx     # Layout người dùng: Navbar + Outlet + Footer
-    │   └── AdminLayout.jsx    # Layout admin: Navbar + Sidebar + Outlet
+    │   └── AdminLayout.jsx    # Layout admin: Navbar + AdminSidebar + Outlet
     │
     ├── components/
-    │   ├── common/            # Components dùng chung cho cả user và admin
-    │   │   ├── Navbar.jsx/css         # Thanh điều hướng trên (sticky)
-    │   │   ├── StoryCard.jsx/css      # Card truyện ngang, skeleton, related card, pagination
+    │   ├── common/
+    │   │   ├── Navbar.jsx/css         # Thanh điều hướng (sticky, dùng chung admin+user)
+    │   │   ├── Avatar.jsx             # Component avatar dùng chung toàn app
+    │   │   ├── StoryCover.jsx         # Component ảnh bìa truyện dùng chung toàn app
+    │   │   ├── StoryCard.jsx/css      # Card truyện ngang, skeleton, related card
     │   │   ├── StoryTag.jsx/css       # Badge thể loại
     │   │   ├── GenreSelect.jsx        # Dropdown chọn thể loại có tìm kiếm
     │   │   └── ConfirmDeleteModal.jsx # Modal xác nhận xoá
     │   │
-    │   ├── admin/             # Components riêng cho trang admin
-    │   │   ├── AdminSidebar.jsx  # Sidebar điều hướng admin
-    │   │   ├── Header.jsx/css    # Header admin
-    │   │   ├── Sidebar.jsx       # Sidebar phụ
-    │   │   └── Content.jsx       # Wrapper nội dung admin
-    │   │
-    │   └── nguoi-dung/        # Components riêng cho trang người dùng
-    │       ├── ThanhNavNguoiDung.jsx/css  # Thanh nav phụ người dùng
-    │       └── Footer.jsx                # Footer
+    │   └── admin/
+    │       └── AdminSidebar.jsx       # Sidebar điều hướng admin
     │
     ├── pages/
     │   ├── auth/
-    │   │   ├── Login.jsx      # Trang đăng nhập
-    │   │   └── Register.jsx   # Trang đăng ký
+    │   │   ├── Login.jsx
+    │   │   └── Register.jsx
     │   │
-    │   ├── user/              # Các trang dành cho người đọc
-    │   │   ├── Home.jsx                   # Trang chủ
-    │   │   ├── StoryList.jsx/css          # Danh sách truyện + phân trang + lọc tab
-    │   │   ├── StoryDetail.jsx/css        # Chi tiết truyện (hero ảnh bìa, tab)
-    │   │   ├── ReadChapter.jsx/css        # Trang đọc chương
-    │   │   ├── SearchPage.jsx             # Tìm kiếm
-    │   │   ├── CategoryPage.jsx           # Danh sách thể loại
-    │   │   ├── Profile.jsx/css            # Trang hồ sơ (bọc ProfileSidebar + outlet)
-    │   │   │
-    │   │   ├── story-detail/              # Sub-components của trang chi tiết truyện
-    │   │   │   ├── IntroTab.jsx           # Tab giới thiệu & truyện liên quan
-    │   │   │   ├── ChapterListTab.jsx     # Tab danh sách chương
-    │   │   │   └── CommentTab.jsx/css     # Tab bình luận
-    │   │   │
-    │   │   └── profile/                   # Sub-pages của hồ sơ cá nhân
-    │   │       ├── ProfileSidebar.jsx     # Sidebar menu hồ sơ
-    │   │       ├── PersonalInfo.jsx       # Thông tin cá nhân
-    │   │       ├── ChangePassword.jsx     # Đổi mật khẩu
-    │   │       ├── Library.jsx            # Tủ truyện
-    │   │       └── ReadingHistory.jsx     # Lịch sử đọc
+    │   ├── user/
+    │   │   ├── Home.jsx
+    │   │   ├── StoryList.jsx/css
+    │   │   ├── StoryDetail.jsx/css
+    │   │   ├── ReadChapter.jsx/css
+    │   │   ├── SearchPage.jsx
+    │   │   ├── CategoryPage.jsx
+    │   │   ├── Profile.jsx/css
+    │   │   ├── story-detail/
+    │   │   │   ├── IntroTab.jsx
+    │   │   │   ├── ChapterListTab.jsx
+    │   │   │   └── CommentTab.jsx/css
+    │   │   └── profile/
+    │   │       ├── ProfileSidebar.jsx
+    │   │       ├── PersonalInfo.jsx
+    │   │       ├── ChangePassword.jsx
+    │   │       ├── Library.jsx
+    │   │       └── ReadingHistory.jsx
     │   │
-    │   └── admin/             # Các trang quản trị
-    │       ├── Dashboard.jsx              # Thống kê tổng quan
-    │       ├── story/
-    │       │   ├── ManageStories.jsx      # Danh sách + tìm kiếm + lọc truyện
-    │       │   ├── AddStory.jsx           # Thêm truyện mới
-    │       │   ├── EditStory.jsx          # Sửa thông tin truyện
-    │       │   └── StoryDetailAdmin.jsx   # Xem chi tiết truyện (admin view)
-    │       ├── chapter/
-    │       │   ├── AddChapter.jsx         # Thêm chương
-    │       │   └── EditChapter.jsx        # Sửa chương
-    │       ├── category/
-    │       │   └── ManageCategories.jsx   # Quản lý thể loại
-    │       ├── user/
-    │       │   └── ManageUsers.jsx        # Quản lý người dùng
-    │       └── comment/
-    │           └── ManageComments.jsx     # Quản lý bình luận
+    │   └── admin/
+    │       ├── Dashboard.jsx
+    │       ├── story/  (ManageStories, AddStory, EditStory, StoryDetailAdmin)
+    │       ├── chapter/ (AddChapter, EditChapter)
+    │       ├── category/ (ManageCategories)
+    │       ├── user/ (ManageUsers)
+    │       └── comment/ (ManageComments)
     │
     ├── styles/
     │   ├── index.css          # Reset CSS, base styles
     │   ├── App.css            # Global styles, override Bootstrap
-    │   └── theme.css          # CSS variables: màu sắc, spacing (dark theme)
+    │   └── theme.css          # CSS variables: màu sắc, dark theme
     │
     └── utils/
-        └── helpers.js         # Hàm tiện ích (getCoverGradientIndex...)
+        └── helpers.js         # Hàm tiện ích (getAvatarColor, getCoverGradientIndex)
 ```
 
 ---
