@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useReader } from '../../../context/ReaderContext';
-import { COVER_GRADIENTS } from '../../../constants/mockData';
-import { getCoverGradientIndex } from '../../../utils/helpers';
+import StoryCover from '../../../components/common/StoryCover';
 
 export default function ReadingHistory() {
   const { readingHistory, removeFromHistory } = useReader();
@@ -18,15 +17,11 @@ export default function ReadingHistory() {
       ) : (
         <div className="lich-su-list">
           {readingHistory.map(item => {
-            const gradient = COVER_GRADIENTS[getCoverGradientIndex(item.storyid)];
             const href = `/stories/${item.storyid}/chapters/${item.chapterid}`;
             return (
               <div className="lich-su-item" key={item.id}>
-                <Link to={href} className="lich-su-item__bia" style={{ background: gradient, overflow: 'hidden', position: 'relative' }}>
-                  {item.storyCover
-                    ? <img src={item.storyCover} alt={item.storyTitle} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : <span className="lich-su-item__bia-ten">{item.storyTitle.charAt(0)}</span>
-                  }
+                <Link to={href} className="lich-su-item__bia">
+                  <StoryCover cover={item.storyCover} title={item.storyTitle} storyid={item.storyid} style={{ position: 'absolute', inset: 0 }} />
                 </Link>
 
                 <Link to={href} className="lich-su-item__info">

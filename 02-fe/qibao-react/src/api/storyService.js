@@ -45,8 +45,15 @@ export async function getStoryById(storyid) {
   return _db.find(s => String(s.storyid) === String(storyid)) ?? null;
 }
 
-export async function getRelatedStories(_storyid) {
+export async function getRelatedStories(storyid) {
   await delay();
-  const { RELATED_STORIES_MOCK } = await import('../constants/mockData');
-  return RELATED_STORIES_MOCK;
+  // Lấy từ _db (STORIES_MOCK đã normalize), loại trừ truyện đang xem, lấy 6 cái
+  const others = _db.filter(s => String(s.storyid) !== String(storyid));
+  return others.slice(0, 6).map(s => ({
+    ...s,
+    categoryname: s.categories?.[0]?.categoryname ?? s.genres?.[0]?.categoryname ?? '',
+    chapters: (typeof s.chapters === 'string' && !s.chapters.includes('chương'))
+      ? s.chapters + ' chương'
+      : s.chapters,
+  }));
 }

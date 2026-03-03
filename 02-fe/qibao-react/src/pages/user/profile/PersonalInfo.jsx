@@ -1,13 +1,24 @@
-import { useState } from 'react';
-import { getAvatarColor } from '../../../utils/helpers';
+import { useState, useRef } from 'react';
+import Avatar from '../../../components/common/Avatar';
 import { getRoleLabel } from '../../../constants/roles';
 
-export default function PersonalInfo({ currentUser, onSaveName }) {
+export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) {
   const name  = currentUser?.tenhienthi || '';
-  const color = getAvatarColor(name || currentUser?.username || '?');
 
   const [isEditing, setIsEditing] = useState(false);
   const [nameBuffer, setNameBuffer] = useState(name);
+  const fileInputRef = useRef(null);
+
+  const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onSaveAvatar?.(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   const startEdit = () => {
     setNameBuffer(name);
@@ -35,11 +46,17 @@ export default function PersonalInfo({ currentUser, onSaveName }) {
       <div className="ho-so-panel__tieu-de">CÁ NHÂN</div>
 
       <div className="thong-tin-ca-nhan">
-        <div className="ttcn-avatar" style={{ backgroundColor: color }}>
-          {(name || currentUser?.username || '?').charAt(0).toUpperCase()}
+        <div className="ttcn-avatar" onClick={handleAvatarClick} title="Đổi ảnh đại diện" style={{ position: 'relative' }}>
+          <Avatar
+            tenhienthi={name || currentUser?.username || '?'}
+            avatar={currentUser?.avatar}
+            size={100}
+            style={{ cursor: 'pointer' }}
+          />
           <div className="ttcn-avatar__camera">
             <i className="bi bi-camera-fill"></i>
           </div>
+          <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
         </div>
 
         <div className="ttcn-info">

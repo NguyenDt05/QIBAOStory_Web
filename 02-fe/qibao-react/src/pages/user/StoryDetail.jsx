@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useReader } from '../../context/ReaderContext';
 import { STORY_STATUS } from '../../constants/storyStatus';
 import StoryTag from '../../components/common/StoryTag';
+import StoryCover from '../../components/common/StoryCover';
 import IntroTab from './story-detail/IntroTab';
 import ChapterListTab from './story-detail/ChapterListTab';
 import CommentTab from './story-detail/CommentTab';
@@ -123,13 +124,13 @@ export default function StoryDetail() {
 
           <div className="d-flex gap-4 align-items-start flex-wrap">
             <div className="cdt-hero__cover" style={{ overflow: 'hidden', padding: 0, justifyContent: 'unset', alignItems: 'unset' }}>
-              {story.cover
-                ? <img src={story.cover} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} />
-                : (<>
-                    <i className="bi bi-book-half text-white cdt-hero__cover-icon"></i>
-                    <small className="text-white cdt-hero__cover-label">Ảnh bìa</small>
-                  </>)
-              }
+              <StoryCover
+                cover={story.cover}
+                title={story.title}
+                storyid={story.storyid}
+                iconFallback
+                style={{ position: 'absolute', inset: 0, borderRadius: '12px' }}
+              />
             </div>
 
             <div className="flex-grow-1 pt-1">

@@ -16,6 +16,7 @@ export default function Profile() {
 
   const [activeTab, setActiveTab]   = useState(TABS.PERSONAL);
   const [tenhienthi, setTenhienthi] = useState(currentUser?.tenhienthi ?? '');
+  const [avatar, setAvatar]         = useState(currentUser?.avatar ?? null);
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
@@ -26,12 +27,17 @@ export default function Profile() {
     login({ ...currentUser, tenhienthi: newName });
   };
 
+  const handleSaveAvatar = (dataUrl) => {
+    setAvatar(dataUrl);
+    login({ ...currentUser, tenhienthi, avatar: dataUrl });
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/home', { replace: true });
   };
 
-  const user = { ...currentUser, tenhienthi };
+  const user = { ...currentUser, tenhienthi, avatar };
 
   return (
     <div className="trang-ho-so">
@@ -48,7 +54,7 @@ export default function Profile() {
           <div className="ho-so-main">
             {activeTab === TABS.PERSONAL && (
               <>
-                <PersonalInfo currentUser={user} onSaveName={handleSaveName} />
+                <PersonalInfo currentUser={user} onSaveName={handleSaveName} onSaveAvatar={handleSaveAvatar} />
                 <ReadingHistory />
               </>
             )}

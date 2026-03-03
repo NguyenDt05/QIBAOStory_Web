@@ -31,7 +31,7 @@ export async function getChapterDetail(storyid, chapterid) {
     chapter,
     prevChapter: idx > 0 ? list[idx - 1] : null,
     nextChapter: idx < list.length - 1 ? list[idx + 1] : null,
-    storyTitle: 'Đánh Dấu Thành Thành: Phát Hiện Lão Bà Càng Là Ma Đạo Nữ Đế',
+    storyTitle: STORIES_MOCK.find(s => String(s.storyid) === String(storyid))?.title ?? 'Truyện chưa có tên',
     storyCover: STORIES_MOCK.find(s => String(s.storyid) === String(storyid))?.cover ?? null,
     storyid,
     totalChapters: list.length,

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import StoryTag from './StoryTag';
-import { COVER_GRADIENTS } from '../../constants/mockData';
+import StoryCover from './StoryCover';
 import './StoryCard.css';
 
 const STATUS_MAP = {
@@ -31,17 +31,16 @@ function highlightText(text = '', keyword = '') {
 }
 
 export function StoryCardHorizontal({ story, index, keyword = '' }) {
-  const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
   const genres = story.genres ?? story.categories ?? [];
 
   return (
     <Link to={`/stories/${story.storyid}`} className="story-card">
-      <div className="story-card__cover" style={{ background: gradient, overflow: 'hidden', position: 'relative' }}>
-        {story.cover
-          ? <img src={story.cover} alt={story.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <span className="story-card__cover-title">{story.title}</span>
-        }
-      </div>
+      <StoryCover
+        cover={story.cover}
+        title={story.title}
+        storyid={story.storyid}
+        className="story-card__cover"
+      />
 
       <div className="story-card__body p-3 d-flex flex-column justify-content-between flex-grow-1">
         <div className="story-card__header">
@@ -139,12 +138,13 @@ export function SkeletonCard() {
 export function RelatedStoryCard({ story }) {
   return (
     <Link to={`/stories/${story.storyid}`} className="related-card text-decoration-none d-flex gap-3 p-3">
-      <div className="related-card__thumb" style={{ overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
-        {story.cover
-          ? <img src={story.cover} alt={story.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <i className="bi bi-book-half text-white related-card__thumb-icon" />
-        }
-      </div>
+      <StoryCover
+        cover={story.cover}
+        title={story.title}
+        storyid={story.storyid}
+        className="related-card__thumb"
+        iconFallback
+      />
       <div className="overflow-hidden">
         <div className="fw-semibold text-dark mb-1 text-truncate related-card__title">
           {story.title}

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getChaptersByStory, toggleChapterVisibility, deleteChapter } from '../../../api/chapterService';
 import { GenreBadge } from '../../../components/common/GenreSelect';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
+import StoryCover from '../../../components/common/StoryCover';
 import { STORY_STATUS, getStatusStyle } from '../../../constants/storyStatus';
 
 export default function StoryDetailAdmin() {
@@ -85,13 +86,13 @@ export default function StoryDetailAdmin() {
       <div className="mb-4" style={{ backgroundColor: 'var(--surface-1)', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', padding: '24px' }}>
         <div className="row g-3 align-items-start">
           <div className="col-md-2 col-4">
-            <div style={{ width: '100%', aspectRatio: '2/3', borderRadius: '12px', background: 'var(--surface-2)', overflow: 'hidden' }}>
-              {story.cover
-                ? <img src={story.cover} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <i className="bi bi-book-fill text-secondary fs-2"></i>
-                  </div>}
-            </div>
+            <StoryCover
+              cover={story.cover}
+              title={story.title}
+              storyid={story.storyid}
+              iconFallback
+              style={{ width: '100%', aspectRatio: '2/3', borderRadius: '12px' }}
+            />
           </div>
           <div className="col-md-10 col-8">
             <h5 className="fw-bold mb-1">{story.title}</h5>

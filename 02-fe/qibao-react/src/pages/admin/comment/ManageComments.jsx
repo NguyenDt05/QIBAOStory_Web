@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllComments, toggleCommentVisibility, deleteComment } from '../../../api/commentService';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
-import { getAvatarColor } from '../../../utils/helpers';
+import Avatar from '../../../components/common/Avatar';
 
 export default function ManageComments() {
   const [comments, setComments] = useState([]);
@@ -73,14 +73,11 @@ export default function ManageComments() {
               </thead>
               <tbody>
                 {filtered.map(c => {
-                  const avatarColor = getAvatarColor(c.tenhienthi);
                   return (
                     <tr key={c.cmtid} style={{ opacity: c.visible ? 1 : 0.4, transition: 'opacity 0.2s' }}>
                       <td className="ps-4 text-nowrap">
                         <div className="d-flex align-items-center gap-2">
-                          <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.8rem', flexShrink: 0 }}>
-                            {c.tenhienthi?.charAt(0)?.toUpperCase()}
-                          </div>
+                          <Avatar tenhienthi={c.tenhienthi} avatar={c.avatar} size={32} />
                           <div>
                             <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{c.tenhienthi}</div>
                             <div className="text-muted" style={{ fontSize: '0.75rem' }}>@{c.username}</div>

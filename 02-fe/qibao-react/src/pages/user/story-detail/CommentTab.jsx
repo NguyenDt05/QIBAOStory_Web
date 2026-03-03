@@ -2,20 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { getCommentsByStory, submitComment } from '../../../api/commentService';
-import { getAvatarColor, getRelativeTime } from '../../../utils/helpers';
+import { getRelativeTime } from '../../../utils/helpers';
+import AvatarBase from '../../../components/common/Avatar';
 import './CommentTab.css';
 
 const PAGE_SIZE = 5;
 
-function Avatar({ tenhienthi, size = 40 }) {
-  return (
-    <div
-      className="bl-avatar"
-      style={{ width: size, height: size, backgroundColor: getAvatarColor(tenhienthi), fontSize: size * 0.42 }}
-    >
-      {tenhienthi?.charAt(0)?.toUpperCase() ?? '?'}
-    </div>
-  );
+function Avatar({ tenhienthi, avatar, size = 40 }) {
+  return <AvatarBase tenhienthi={tenhienthi} avatar={avatar} size={size} className="bl-avatar" />;
 }
 
 function AvatarAnon({ size = 40 }) {
@@ -59,6 +53,7 @@ export default function CommentTab({ storyid }) {
         storyid,
         username:    currentUser.username,
         tenhienthi:  currentUser.tenhienthi,
+        avatar:      currentUser.avatar ?? null,
         content:     content.trim(),
       });
       setComments(updated);
@@ -72,7 +67,7 @@ export default function CommentTab({ storyid }) {
   return (
     <div className="bl-wrap">
       <div className="bl-input-area">
-        {currentUser ? <Avatar tenhienthi={currentUser.tenhienthi} size={42} /> : <AvatarAnon size={42} />}
+        {currentUser ? <Avatar tenhienthi={currentUser.tenhienthi} avatar={currentUser.avatar} size={42} /> : <AvatarAnon size={42} />}
         {currentUser ? (
           <textarea
             className="bl-textarea"
@@ -119,7 +114,7 @@ export default function CommentTab({ storyid }) {
           <div>
             {pageItems.map(cmt => (
               <div key={cmt.cmtid} className="bl-item">
-                <Avatar tenhienthi={cmt.tenhienthi} size={40} />
+                <Avatar tenhienthi={cmt.tenhienthi} avatar={cmt.avatar} size={40} />
                 <div className="bl-item__body">
                   <div className="bl-item__name">{cmt.tenhienthi}</div>
                   <p className="bl-item__content">{cmt.content}</p>

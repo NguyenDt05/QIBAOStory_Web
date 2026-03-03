@@ -15,13 +15,14 @@ export async function getCommentsByStory(storyid) {
     .map(c => ({ ...c }));
 }
 
-export async function submitComment({ storyid, username, tenhienthi, content }) {
+export async function submitComment({ storyid, username, tenhienthi, avatar, content }) {
   await delay(300);
   const newComment = {
     cmtid: 'CM' + Date.now(),
     content,
     username,
     tenhienthi,
+    avatar: avatar ?? null,
     storyTitle: '',
     storyid,
     createdat: new Date().toLocaleString('vi-VN'),

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getAllUsers, toggleUserStatus, deleteUser } from '../../../api/userService';
 import { USER_ROLES, getRoleLabel } from '../../../constants/roles';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
-import { getAvatarColor } from '../../../utils/helpers';
+import Avatar from '../../../components/common/Avatar';
 
 export default function ManageUsers() {
   const [users, setUsers]         = useState([]);
@@ -90,14 +90,11 @@ export default function ManageUsers() {
               <tbody>
                 {filtered.map(u => {
                   const isAdmin = u.role === 'admin';
-                  const avatarColor = getAvatarColor(u.tenhienthi);
                   return (
                     <tr key={u.userid} style={{ opacity: isAdmin || u.status === 1 ? 1 : 0.4, transition: 'opacity 0.2s' }}>
                       <td className="ps-4">
                         <div className="d-flex align-items-center gap-2">
-                          <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.9rem', flexShrink: 0 }}>
-                            {u.tenhienthi?.charAt(0)?.toUpperCase()}
-                          </div>
+                          <Avatar tenhienthi={u.tenhienthi} avatar={u.avatar} size={36} />
                           <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>{u.tenhienthi}</span>
                         </div>
                       </td>

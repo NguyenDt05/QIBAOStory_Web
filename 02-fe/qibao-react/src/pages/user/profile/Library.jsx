@@ -1,20 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useReader } from '../../../context/ReaderContext';
-import { COVER_GRADIENTS } from '../../../constants/mockData';
-import { getCoverGradientIndex } from '../../../utils/helpers';
 import { STORY_STATUS } from '../../../constants/storyStatus';
+import StoryCover from '../../../components/common/StoryCover';
 
 function LibraryCard({ story, onRemove }) {
-  const gradient = COVER_GRADIENTS[getCoverGradientIndex(story.storyid)];
   const statusInfo = STORY_STATUS[story.trangthai_rachuong] ?? STORY_STATUS.dangra;
 
   return (
     <div className="tt-card">
-      <Link to={`/stories/${story.storyid}`} className="tt-card__bia" style={{ background: gradient, overflow: 'hidden', position: 'relative' }}>
-        {story.cover
-          ? <img src={story.cover} alt={story.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <span className="tt-card__bia-ten">{story.title.charAt(0)}</span>
-        }
+      <Link to={`/stories/${story.storyid}`} className="tt-card__bia">
+        <StoryCover cover={story.cover} title={story.title} storyid={story.storyid} style={{ position: 'absolute', inset: 0 }} />
       </Link>
 
       <div className="tt-card__body">

@@ -217,66 +217,26 @@ export const STORIES_MOCK = [
   },
 ];
 
-export const RELATED_STORIES_MOCK = [
-  {
-    storyid: 'r1',
-    title: 'Đấu La Đại Lục',
-    author: 'Đường Gia Tam Thiếu',
-    categoryname: 'Tiên Hiệp',
-    chapters: '3.296 chương',
-    description: 'Đường Tam, thiên tài đường môn bị đẩy xuống vách núi, chuyển sinh sang thế giới Đấu La, bắt đầu hành trình chấn động vạn giới.',
-  },
-  {
-    storyid: 'r2',
-    title: 'Ngã Có Một Sơn Trang',
-    author: 'Hắc Sắc Yêu Tinh',
-    categoryname: 'Huyền Ảo',
-    chapters: '2.148 chương',
-    description: 'Lâm Phong tình cờ nhận được một hệ thống quản lý sơn trang thần kỳ, từ đó bắt đầu xây dựng đế nghiệp từ nơi hoang vu hẻo lánh.',
-  },
-  {
-    storyid: 'r3',
-    title: 'Tầm Tiên Vấn Đạo',
-    author: 'Vong Ngữ',
-    categoryname: 'Tiên Hiệp',
-    chapters: '1.872 chương',
-    description: 'Hàn Lập xuất thân bình dân, bước vào con đường tu tiên đầy gian khổ với một tâm thái bình thường nhất nhưng không kém phần kiên định.',
-  },
-  {
-    storyid: 'r4',
-    title: 'Mỹ Nữ Tổng Tài Yêu Ta',
-    author: 'Tiêu Dao Tử',
-    categoryname: 'Đô Thị',
-    chapters: '986 chương',
-    description: 'Trần Hạo sau một đêm ngủ dậy phát hiện mình đã trở thành hôn phu của nữ tổng tài xinh đẹp và quyền lực nhất thành phố.',
-  },
-  {
-    storyid: 'r5',
-    title: 'Vô Cực Kiếm Thần',
-    author: 'Phong Lưu Thư Đãi',
-    categoryname: 'Kiếm Hiệp',
-    chapters: '4.520 chương',
-    description: 'Một kiếm sĩ trẻ tuổi với căn cốt bình thường, dựa vào ý chí kiên cường và cơ duyên kỳ ngộ, từng bước trở thành kiếm thần vô tiền khoáng hậu.',
-  },
-  {
-    storyid: 'r6',
-    title: 'Hoàng Kim Đồng Tử',
-    author: 'Khởi Điểm Cư Sĩ',
-    categoryname: 'Huyền Huyễn',
-    chapters: '3.011 chương',
-    description: 'Lý Tiểu Long vì một lần tai nạn mà thức tỉnh được năng lực đặc dị, từ đó tung hoành thiên hạ và bảo vệ những người thân yêu.',
-  },
-];
+export const RELATED_STORIES_MOCK = STORIES_MOCK.slice(2, 8).map(s => ({
+  ...s,
+  categoryname: s.genres?.[0]?.categoryname ?? '',
+  chapters: (typeof s.chapters === 'string' && !s.chapters.includes('chương'))
+    ? s.chapters + ' chương'
+    : s.chapters,
+}));
 
 export const USERS_MOCK = [
-  { userid: 'U001', username: 'admin_qibao',  tenhienthi: 'QIBAO Admin',   role: 'admin',  status: 1, createdat: '01/01/2024' },
-  { userid: 'U002', username: 'nguyen_van_a', tenhienthi: 'Nguyễn Văn A',  role: 'member', status: 1, createdat: '15/03/2024' },
-  { userid: 'U003', username: 'tran_thi_b',   tenhienthi: 'Trần Thị B',    role: 'member', status: 0, createdat: '22/04/2024' },
-  { userid: 'U004', username: 'le_van_c',     tenhienthi: 'Lê Văn C',      role: 'member', status: 1, createdat: '10/06/2024' },
-  { userid: 'U005', username: 'pham_thu_d',   tenhienthi: 'Phạm Thu D',    role: 'member', status: 1, createdat: '05/08/2024' },
-  { userid: 'U006', username: 'xxbqy',        tenhienthi: 'xxbqy',          role: 'member', status: 1, createdat: '10/09/2024' },
-  { userid: 'U007', username: 'junzlx',       tenhienthi: 'Junz LX',        role: 'member', status: 1, createdat: '20/10/2024' },
+  { userid: 'U001', username: 'admin_qibao',  tenhienthi: 'QIBAO Admin',   role: 'admin',  status: 1, createdat: '01/01/2024', avatar: null },
+  { userid: 'U002', username: 'nguyen_van_a', tenhienthi: 'Nguyễn Văn A',  role: 'member', status: 1, createdat: '15/03/2024', avatar: null },
+  { userid: 'U003', username: 'tran_thi_b',   tenhienthi: 'Trần Thị B',    role: 'member', status: 0, createdat: '22/04/2024', avatar: null },
+  { userid: 'U004', username: 'le_van_c',     tenhienthi: 'Lê Văn C',      role: 'member', status: 1, createdat: '10/06/2024', avatar: null },
+  { userid: 'U005', username: 'pham_thu_d',   tenhienthi: 'Phạm Thu D',    role: 'member', status: 1, createdat: '05/08/2024', avatar: null },
+  { userid: 'U006', username: 'xxbqy',        tenhienthi: 'xxbqy',          role: 'member', status: 1, createdat: '10/09/2024', avatar: null },
+  { userid: 'U007', username: 'junzlx',       tenhienthi: 'Junz LX',        role: 'member', status: 1, createdat: '20/10/2024', avatar: null },
 ];
+
+// index: username  avatar (tự động đồng bộ khi user thay đổi avatar)
+const _userAvatarMap = Object.fromEntries(USERS_MOCK.map(u => [u.username, u.avatar]));
 
 export const COMMENTS_MOCK = [
   { cmtid: 'CM001', content: 'Truyện hay quá, đọc mãi không chán! Tác giả viết rất chi tiết và cuốn hút.', username: 'nguyen_van_a', tenhienthi: 'Nguyễn Văn A', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '28/02/2026 08:12', visible: true },
@@ -284,12 +244,12 @@ export const COMMENTS_MOCK = [
   { cmtid: 'CM003', content: 'Nội dung vi phạm, xúc phạm tác giả', username: 'le_van_c', tenhienthi: 'Lê Văn C', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '27/02/2026 15:30', visible: false },
   { cmtid: 'CM004', content: 'Cảm ơn tác giả đã dịch nhanh, mình chờ mãi mới có chap mới!', username: 'pham_thu_d', tenhienthi: 'Phạm Thu D', storyTitle: 'Phàm Nhân Tu Tiên', storyid: 'TR002', createdat: '26/02/2026 10:00', visible: true },
   { cmtid: 'CM005', content: 'Hay thật sự, recommend mọi người đọc thử đi!', username: 'nguyen_van_a', tenhienthi: 'Nguyễn Văn A', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '25/02/2026 18:22', visible: true },
-  { cmtid: 'CM006', content: 'Kinh nghiệm 8 năm đọc truyện,: Đừng bao giờ đọc đánh giá truyện, cứ tự đọc 100 chương thấy phù hợp đạo tâm thì đọc tiếp không phù hợp thì dừng lại.\nNgười có thiên kiến xác nhận truyện kém sẽ chỉ đi tìm lý do truyện kém\nNgười có thiên kiến xác nhận truyện hay sẽ chỉ đi tìm lý do truyện hay', username: 'xxbqy', tenhienthi: 'xxbqy', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '01/03/2026 14:05', visible: true },
-  { cmtid: 'CM007', content: 'Main con ông cháu cha có hẳn 1 tổng chống đỡ, thân phận gốc là ma chủ có dân dệ cực khủng. Dành cho ai thích đập các thể loại thiên kiêu – thiên mệnh – hào quang nvc giờ đó.', username: 'junzlx', tenhienthi: 'Junz LX', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '02/03/2026 09:30', visible: true },
+  { cmtid: 'CM006', content: 'Kinh nghiệm 8 năm đọc truyện: Đừng bao giờ đọc đánh giá truyện, cứ tự đọc 100 chương thấy phù hợp đạo tâm thì đọc tiếp không phù hợp thì dừng lại.', username: 'xxbqy', tenhienthi: 'xxbqy', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '01/03/2026 14:05', visible: true },
+  { cmtid: 'CM007', content: 'Main con ông cháu cha có hẳn 1 tổng chống đỡ, thân phận gốc là ma chủ có dân dệ cực khủng. Dành cho ai thích đập các thể loại thiên kiêu  thiên mệnh  hào quang nvc giờ đó.', username: 'junzlx', tenhienthi: 'Junz LX', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '02/03/2026 09:30', visible: true },
   { cmtid: 'CM008', content: 'Bộ này đọc từ hồi cấp 2 đến giờ vẫn không có bộ nào hay hơn theo kiểu mình. Đỉnh thật sự!', username: 'pham_thu_d', tenhienthi: 'Phạm Thu D', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '01/03/2026 22:10', visible: true },
   { cmtid: 'CM009', content: 'Hệ thống nạp đạn quá hay, mỗi lần đọc đến phần chính cương hạ độc thú là adrenaline dâng lên khủng khiếu.', username: 'le_van_c', tenhienthi: 'Lê Văn C', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '28/02/2026 17:00', visible: true },
   { cmtid: 'CM010', content: 'Tác giả xây dựng nhân vật rất tả thực, đáng có rating đỉnh như vậy đấy!', username: 'xxbqy', tenhienthi: 'xxbqy', storyTitle: 'Đấu Phá Thương Khung', storyid: 'TR001', createdat: '27/02/2026 11:45', visible: true },
-];
+].map(c => ({ ...c, avatar: _userAvatarMap[c.username] ?? null }));
 
 export function CHAPTERS_MOCK() {
   return [

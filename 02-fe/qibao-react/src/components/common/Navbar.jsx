@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getAvatarColor } from '../../utils/helpers';
+import Avatar from './Avatar';
 import './Navbar.css';
 
 function Navbar() {
@@ -34,12 +34,7 @@ function Navbar() {
       onMouseLeave={() => setShowDropdown(false)}
     >
       <div className="tn-user__trigger">
-        <div
-          className="tn-avatar"
-          style={{ backgroundColor: getAvatarColor(currentUser.tenhienthi) }}
-        >
-          {currentUser.tenhienthi?.charAt(0)?.toUpperCase()}
-        </div>
+        <Avatar tenhienthi={currentUser.tenhienthi} avatar={currentUser.avatar} size={34} className="tn-avatar" />
         <span className="tn-user__name">{currentUser.tenhienthi}</span>
         <i className="bi bi-chevron-down tn-chevron" />
       </div>
@@ -154,12 +149,7 @@ function Navbar() {
             {!isAdmin && <SearchBox />}
             {currentUser ? (
               <div className="d-flex align-items-center gap-2">
-                <div
-                  className="tn-mobile-avatar"
-                  style={{ backgroundColor: getAvatarColor(currentUser.tenhienthi) }}
-                >
-                  {currentUser.tenhienthi?.charAt(0)?.toUpperCase()}
-                </div>
+                <Avatar tenhienthi={currentUser.tenhienthi} avatar={currentUser.avatar} size={32} className="tn-mobile-avatar" />
                 <span className="tn-user__name">{currentUser.tenhienthi}</span>
                 <button
                   className="tn-btn-logout-mobile"
