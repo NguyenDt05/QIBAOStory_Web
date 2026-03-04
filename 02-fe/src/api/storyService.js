@@ -16,9 +16,10 @@ const normalize = (s) => {
 
 let _db = STORIES_MOCK.map(normalize);
 
-export async function getAllStories() {
+export async function getAllStories({ visibleOnly = false } = {}) {
   await delay();
-  return _db.map(s => ({ ...s }));
+  const list = visibleOnly ? _db.filter(s => s.status === 1) : _db;
+  return list.map(s => ({ ...s }));
 }
 
 export async function toggleStoryVisibility(storyid) {

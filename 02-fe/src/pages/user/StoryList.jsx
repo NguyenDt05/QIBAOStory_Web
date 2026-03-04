@@ -25,7 +25,7 @@ function StoryList() {
 
   useEffect(() => {
     setIsLoading(true);
-    getAllStories()
+    getAllStories({ visibleOnly: true })
       .then(setAllStories)
       .finally(() => setIsLoading(false));
   }, []);

@@ -1,5 +1,6 @@
 import { delay } from './http';
 import { COMMENTS_MOCK } from '../constants/mockData';
+import { getAllUsers } from './userService';
 
 let _db = COMMENTS_MOCK.map(c => ({ ...c }));
 
@@ -10,8 +11,10 @@ export async function getAllComments() {
 
 export async function getCommentsByStory(storyid) {
   await delay(200);
+  const users = await getAllUsers();
+  const activeUsernames = new Set(users.filter(u => u.status === 1).map(u => u.username));
   return _db
-    .filter(c => c.storyid === storyid && c.visible)
+    .filter(c => c.storyid === storyid && c.visible && activeUsernames.has(c.username))
     .map(c => ({ ...c }));
 }
 

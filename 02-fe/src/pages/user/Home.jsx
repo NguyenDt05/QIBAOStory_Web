@@ -1,27 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { STORIES_MOCK } from '../../constants/mockData';
+import { getAllStories } from '../../api/storyService';
 import StoryTag from '../../components/common/StoryTag';
 
-const FEATURED_STORIES = STORIES_MOCK.slice(0, 4).map(s => ({
-  ...s,
-  gradient: [
-    'linear-gradient(145deg,#1a1a2e,#16213e)',
-    'linear-gradient(145deg,#0f3460,#533483)',
-    'linear-gradient(145deg,#8b0000,#c0392b)',
-    'linear-gradient(145deg,#0d3b2e,#1a6b4a)',
-  ][STORIES_MOCK.indexOf(s) % 4],
-}));
-
-const COMPLETED_STORIES = STORIES_MOCK.filter(s => s.trangthai_rachuong === 'hoanthanh').slice(0, 4);
-
-const RECENT_UPDATES = STORIES_MOCK.slice(0, 8).map((s, i) => ({
-  storyid: s.storyid,
-  categoryLabel: (s.genres ?? s.categories)?.[0]?.categoryname ?? 'Tiên Hiệp',
-  title: s.title,
-  latestChapter: `Chương ${100 + i}: Cập nhật mới nhất`,
-  author: s.author,
-  timeAgo: `${i + 1} phút trước`,
-}));
+const GRADIENTS = [
+  'linear-gradient(145deg,#1a1a2e,#16213e)',
+  'linear-gradient(145deg,#0f3460,#533483)',
+  'linear-gradient(145deg,#8b0000,#c0392b)',
+  'linear-gradient(145deg,#0d3b2e,#1a6b4a)',
+];
 
 function SectionHeader({ title, link }) {
   return (
@@ -81,12 +68,34 @@ function FeaturedCard({ story }) {
 }
 
 function Home() {
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    getAllStories({ visibleOnly: true }).then(setStories);
+  }, []);
+
+  const featuredStories = stories.slice(0, 4).map((s, i) => ({
+    ...s,
+    gradient: GRADIENTS[i % 4],
+  }));
+
+  const completedStories = stories.filter(s => s.trangthai_rachuong === 'hoanthanh').slice(0, 4);
+
+  const recentUpdates = stories.slice(0, 8).map((s, i) => ({
+    storyid: s.storyid,
+    categoryLabel: (s.genres ?? s.categories)?.[0]?.categoryname ?? 'Tiên Hiệp',
+    title: s.title,
+    latestChapter: `Chương ${100 + i}: Cập nhật mới nhất`,
+    author: s.author,
+    timeAgo: `${i + 1} phút trước`,
+  }));
+
   return (
     <div style={{ backgroundColor: '#0a0d14', minHeight: '100vh' }}>
       <div style={{ backgroundColor: '#3d2010', backgroundImage: 'linear-gradient(135deg, #4a1a0a 0%, #7b2d00 50%, #3d1a05 100%)', padding: '40px 0 0' }}>
         <div className="container-lg px-4 px-lg-5">
           <div className="row g-3 justify-content-center">
-            {FEATURED_STORIES.map((s, i) => (
+            {featuredStories.map((s, i) => (
               <div key={s.storyid} className="col-6 col-md-3">
                 <Link
                   to={`/stories/${s.storyid}`}
@@ -112,7 +121,7 @@ function Home() {
         <section className="mb-5">
           <SectionHeader title="Tác phẩm đề cử" link="/stories" />
           <div className="row g-4">
-            {FEATURED_STORIES.map(s => (
+            {featuredStories.map(s => (
               <div key={s.storyid} className="col-12 col-md-3">
                 <FeaturedCard story={s} />
               </div>
@@ -133,7 +142,7 @@ function Home() {
         <section className="mb-5">
           <SectionHeader title="Mới hoàn thành" link="/stories?status=hoanthanh" />
           <div className="row g-4">
-            {COMPLETED_STORIES.map(s => (
+            {completedStories.map(s => (
               <div key={s.storyid} className="col-12 col-md-3">
                 <FeaturedCard story={s} />
               </div>
@@ -147,7 +156,7 @@ function Home() {
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
                 <tbody>
-                  {RECENT_UPDATES.map(item => (
+                  {recentUpdates.map(item => (
                     <tr key={item.storyid} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                       <td className="ps-4 py-3" style={{ whiteSpace: 'nowrap', width: '110px' }}>
                         <span className="fw-semibold" style={{ fontSize: '0.7rem', padding: '1px 8px', borderRadius: '50px', backgroundColor: 'rgba(255,255,255,0.07)', color: 'var(--text-2)', border: '1px solid rgba(255,255,255,0.1)', display: 'inline-block', whiteSpace: 'nowrap' }}>
