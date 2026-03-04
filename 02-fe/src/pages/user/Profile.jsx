@@ -6,7 +6,7 @@ import PersonalInfo from './profile/PersonalInfo';
 import ReadingHistory from './profile/ReadingHistory';
 import Library from './profile/Library';
 import ChangePassword from './profile/ChangePassword';
-import './Profile.css';
+import '../../styles/Profile.css';
 
 const TABS = { PERSONAL: 'personal', LIBRARY: 'library', PASSWORD: 'password' };
 

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { getAllStories } from '../../api/storyService';
 import { CATEGORIES_LIST } from '../../constants/categories';
 import { StoryCardHorizontal, Pagination, SkeletonCard } from '../../components/common/StoryCard';
-import './StoryList.css';
+import '../../styles/StoryList.css';
 
 const PAGE_SIZE = 10;
 

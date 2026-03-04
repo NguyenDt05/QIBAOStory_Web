@@ -1,4 +1,4 @@
-import './AuthBanner.css';
+import '../../styles/AuthBanner.css';
 
 function AuthBanner() {
   return (

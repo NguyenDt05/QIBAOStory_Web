@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkUsernameExists } from '../../api/authService';
 import AuthBanner from './AuthBanner';
-import './Register.css';
+import '../../styles/Register.css';
 
 function Register() {
   const navigate = useNavigate();

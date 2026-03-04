@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getChapterDetail, getChaptersByStory } from '../../api/chapterService';
 import { useAuth } from '../../context/AuthContext';
 import { useReader } from '../../context/ReaderContext';
-import './ReadChapter.css';
+import '../../styles/ReadChapter.css';
 
 export default function ReadChapter() {
   const { storyid, chapterid: chapteridParam } = useParams();

@@ -9,7 +9,7 @@ import StoryCover from '../../components/common/StoryCover';
 import IntroTab from './story-detail/IntroTab';
 import ChapterListTab from './story-detail/ChapterListTab';
 import CommentTab from './story-detail/CommentTab';
-import './StoryDetail.css';
+import '../../styles/StoryDetail.css';
 
 const TABS = [
   { key: 'intro',       label: 'Giới thiệu' },

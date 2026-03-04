@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import StoryTag from './StoryTag';
 import StoryCover from './StoryCover';
-import './StoryCard.css';
+import '../../styles/StoryCard.css';
 
 const STATUS_MAP = {
   dangra:    { modifier: 'ongoing',   label: 'Đang ra'    },

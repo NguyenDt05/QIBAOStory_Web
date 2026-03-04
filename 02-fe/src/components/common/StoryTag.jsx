@@ -1,4 +1,4 @@
-import './StoryTag.css';
+import '../../styles/StoryTag.css';
 
 function StoryTag({ label, ghost = false }) {
   return (

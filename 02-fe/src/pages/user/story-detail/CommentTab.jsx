@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { getCommentsByStory, submitComment } from '../../../api/commentService';
 import { getRelativeTime } from '../../../utils/helpers';
 import AvatarBase from '../../../components/common/Avatar';
-import './CommentTab.css';
+import '../../../styles/CommentTab.css';
 
 const PAGE_SIZE = 5;
 
