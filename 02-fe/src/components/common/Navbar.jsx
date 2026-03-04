@@ -2,23 +2,43 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Avatar from './Avatar';
-import './Navbar.css';
+import '../../styles/Navbar.css';
+
+function SearchBox() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = () => {
+    const q = searchQuery.trim();
+    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
+  };
+
+  return (
+    <div className="tn-search">
+      <input
+        type="text"
+        className="tn-search__input"
+        placeholder="Tìm kiếm..."
+        value={searchQuery}
+        onChange={e => setSearchQuery(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && handleSearch()}
+      />
+      <button className="tn-search__btn" type="button" onClick={handleSearch}>
+        <i className="bi bi-search" />
+      </button>
+    </div>
+  );
+}
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
 
   const isAdmin = currentUser?.role === 'admin';
   const isActive = (path) => location.pathname === path;
-
-  const handleSearch = () => {
-    const q = searchQuery.trim();
-    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
-  };
 
   const NAV_LINKS = [
     { path: '/home',       label: 'Trang chủ' },
@@ -27,15 +47,15 @@ function Navbar() {
     ...(isAdmin ? [{ path: '/admin/dashboard', label: 'Quản trị' }] : []),
   ];
 
-  const UserDropdown = () => (
+  const userDropdown = (
     <div
       className="tn-user"
       onMouseEnter={() => setShowDropdown(true)}
       onMouseLeave={() => setShowDropdown(false)}
     >
       <div className="tn-user__trigger">
-        <Avatar tenhienthi={currentUser.tenhienthi} avatar={currentUser.avatar} size={34} className="tn-avatar" />
-        <span className="tn-user__name">{currentUser.tenhienthi}</span>
+        <Avatar tenhienthi={currentUser?.tenhienthi} avatar={currentUser?.avatar} size={34} className="tn-avatar" />
+        <span className="tn-user__name">{currentUser?.tenhienthi}</span>
         <i className="bi bi-chevron-down tn-chevron" />
       </div>
 
@@ -64,27 +84,11 @@ function Navbar() {
     </div>
   );
 
-  const AuthButtons = () => (
+  const authButtons = (
     <>
       <Link to="/login"    className="tn-btn-login">Đăng nhập</Link>
       <Link to="/register" className="tn-btn-register">Đăng ký</Link>
     </>
-  );
-
-  const SearchBox = () => (
-    <div className="tn-search">
-      <input
-        type="text"
-        className="tn-search__input"
-        placeholder="Tìm kiếm..."
-        value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && handleSearch()}
-      />
-      <button className="tn-search__btn" type="button" onClick={handleSearch}>
-        <i className="bi bi-search" />
-      </button>
-    </div>
   );
 
   return (
@@ -110,7 +114,7 @@ function Navbar() {
 
         <div className="tn-right">
           {!isAdmin && <SearchBox />}
-          {currentUser ? <UserDropdown /> : <AuthButtons />}
+          {currentUser ? userDropdown : authButtons}
         </div>
       </div>
 
