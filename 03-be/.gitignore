@@ -1,0 +1,4 @@
+node_modules/
+.env
+public/covers/*
+!public/covers/.gitkeep
