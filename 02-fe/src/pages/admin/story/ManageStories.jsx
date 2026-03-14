@@ -14,24 +14,24 @@ export default function ManageStories() {
 
   useEffect(() => { getAllStories().then(setStories); }, []);
 
-  const [search,        setSearch]        = useState('');
-  const [filterGenre,   setFilterGenre]   = useState([]);
-  const [filterStatus,  setFilterStatus]  = useState('');
-  const [deleteId,      setDeleteId]      = useState(null);
-  const [currentPage,   setCurrentPage]   = useState(1);
+  const [search, setSearch] = useState('');
+  const [filterGenre, setFilterGenre] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('');
+  const [deleteId, setDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleToggle = (storyid) => toggleStoryVisibility(storyid).then(setStories);
   const handleDelete = (storyid) => { deleteStory(storyid).then(setStories); setDeleteId(null); };
 
   const filtered = stories.filter(t => {
     const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) || t.author.toLowerCase().includes(search.toLowerCase());
-    const matchGenre  = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID));
+    const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID));
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
   });
 
   useEffect(() => { setCurrentPage(1); }, [search, filterGenre, filterStatus]);
-  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
@@ -94,10 +94,13 @@ export default function ManageStories() {
               <tr>
                 <th className="ps-4 py-3 text-secondary fw-semibold small border-bottom-0">Tên truyện</th>
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0">Tác giả</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0">Thể loại</th>
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center">Số chương</th>
+                
+                {/* THAY ĐỔI: Thêm text-center vào tiêu đề */}
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '25%' }}>Thể loại</th>
+                
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0">Trạng thái</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0">Cập nhật</th>
-                <th className="py-3 px-3 text-secondary fw-semibold small border-bottom-0">Hành động</th>
+                <th className="py-3 px-3 text-secondary fw-semibold small border-bottom-0 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -128,16 +131,29 @@ export default function ManageStories() {
                       </div>
                     </td>
                     <td className="text-secondary">{t.author}</td>
-                    <td>{(t.categories ?? []).map(c => <GenreBadge key={c.categoryID} value={c.categoryID} label={c.categoryname} />)}</td>
+                    
+                    <td className="text-center fw-bold" style={{ color: 'var(--primary-color)' }}>
+                      {t.storyCount ?? 0}
+                    </td>
+
+                    {/* THAY ĐỔI: Thêm text-center và justify-content-center để căn giữa Badges */}
+                    <td className="text-center">
+                      <div className="d-flex flex-wrap gap-1 justify-content-center">
+                        {(t.categories ?? []).map(c => (
+                          <GenreBadge key={c.categoryID} value={c.categoryID} label={c.categoryname} />
+                        ))}
+                      </div>
+                    </td>
+                    
                     <td>
                       <span className="fw-semibold small px-3 py-1"
                         style={{ borderRadius: '50px', backgroundColor: statusInfo.bg, color: statusInfo.color }}>
                         {statusInfo.label}
                       </span>
                     </td>
-                    <td className="text-muted small">{t.updatedat}</td>
+
                     <td className="px-3">
-                      <div className="d-flex align-items-center gap-2">
+                      <div className="d-flex align-items-center justify-content-center gap-2">
                         <div className="form-check form-switch mb-0" title={t.status ? 'Đang hiện' : 'Đang ẩn'}>
                           <input className="form-check-input" type="checkbox" role="switch"
                             checked={!!t.status} onChange={() => handleToggle(t.storyid)}

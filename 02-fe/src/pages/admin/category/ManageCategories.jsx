@@ -7,6 +7,10 @@ import {
   deleteCategory 
 } from '../../../api/categoryService';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
+// Import component phân trang giống code mẫu
+import { Pagination } from '../../../components/common/StoryCard';
+
+const PAGE_SIZE = 15;
 
 export default function ManageCategories() {
   const [categories, setCategories] = useState([]);
@@ -15,6 +19,9 @@ export default function ManageCategories() {
   const [showModal, setShowModal]   = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  
+  // Logic chia trang giống code mẫu
+  const [currentPage, setCurrentPage] = useState(1);
 
   // 1. Lấy dữ liệu danh sách thể loại
   useEffect(() => {
@@ -23,7 +30,6 @@ export default function ManageCategories() {
         setLoading(true);
         const response = await getAllCategories();
         
-        // Xử lý bóc tách dữ liệu linh hoạt từ API
         let finalData = [];
         if (Array.isArray(response)) {
           finalData = response;
@@ -49,13 +55,17 @@ export default function ManageCategories() {
     (tl.categoryname || '').toLowerCase().includes(search.toLowerCase())
   );
 
+  // Logic cập nhật trang khi tìm kiếm thay đổi giống code mẫu
+  useEffect(() => { setCurrentPage(1); }, [search]);
+  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   // 3. API: Bật/tắt trạng thái hiển thị
   const handleToggle = async (tl) => {
     try {
       const id = tl.categoryID || tl.categoryid;
       await toggleCategoryStatus(id);
       
-      // Cập nhật UI nhanh
       const newStatus = (tl.status === "1" || tl.status === 1) ? "0" : "1";
       setCategories(prev => prev.map(c => 
         (c.categoryID === id || c.categoryid === id) ? { ...c, status: newStatus } : c
@@ -72,7 +82,6 @@ export default function ManageCategories() {
         
         await updateCategory(id, payload);
         
-        // Cập nhật dòng vừa sửa trên UI
         setCategories(prev => prev.map(c => 
           (c.categoryID === id || c.categoryid === id) ? { ...c, ...data } : c
         ));
@@ -85,23 +94,18 @@ export default function ManageCategories() {
     } catch (err) { console.error("Lỗi lưu dữ liệu:", err); }
   };
 
-  // 5. API: XÓA THỂ LOẠI (Nối API Delete)
+  // 5. API: XÓA THỂ LOẠI
   const handleDelete = async () => {
     try {
-      // Lấy ID chuẩn từ mục đang chờ xóa
       const id = deleteTarget.categoryID || deleteTarget.categoryid;
-      
       if (!id) return;
 
-      // Gọi API DELETE: /api/categories/:categoryID
       await deleteCategory(id);
       
-      // Xóa dòng đó khỏi State để biến mất trên giao diện ngay lập tức
       setCategories(prev => prev.filter(c => 
         c.categoryID !== id && c.categoryid !== id
       ));
 
-      // Reset target xóa để đóng modal
       setDeleteTarget(null);
     } catch (err) { 
       console.error("Lỗi xóa:", err); 
@@ -110,7 +114,6 @@ export default function ManageCategories() {
     }
   };
 
-  // Quản lý trạng thái Modal
   const openAdd = () => { setEditTarget(null); setShowModal(true); };
   const openEdit = (tl) => { setEditTarget(tl); setShowModal(true); };
   const closeModal = () => { setShowModal(false); setEditTarget(null); };
@@ -159,9 +162,10 @@ export default function ManageCategories() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((tl, idx) => (
+                {/* Thay đổi từ filtered sang currentItems để hiển thị theo trang */}
+                {currentItems.map((tl, idx) => (
                   <tr key={tl.categoryID || tl.categoryid || idx} style={{ opacity: (tl.status === "1" || tl.status === 1) ? 1 : 0.4, transition: 'opacity 0.2s' }}>
-                    <td className="ps-4 text-secondary" style={{ fontSize: '0.85rem' }}>{idx + 1}</td>
+                    <td className="ps-4 text-secondary" style={{ fontSize: '0.85rem' }}>{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
                     <td className="fw-semibold" style={{ fontSize: '0.9rem' }}>{tl.categoryname}</td>                  
                     <td className="text-center text-secondary" style={{ fontSize: '0.85rem' }}>{tl.storyCount ?? 0}</td>
                     <td className="text-center">
@@ -192,6 +196,15 @@ export default function ManageCategories() {
           </div>
         )}
       </div>
+
+      {/* Thêm phần hiển thị Phân trang giống code mẫu */}
+      {filtered.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={p => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        />
+      )}
 
       {/* MODAL FORM THÊM/SỬA */}
       <CategoryModal show={showModal} editTarget={editTarget} onClose={closeModal} onSave={handleSave} />
@@ -238,7 +251,6 @@ function CategoryModal({ show, editTarget, onClose, onSave }) {
           
           <div className="modal-header" style={{ borderBottom: '1px solid var(--border)' }}>
             <h6 className="modal-title fw-bold">
-              {/* TRẢ LẠI GIAO DIỆN BAN ĐẦU: Icon pencil-fill màu text-danger */}
               <i className={`bi bi-${editTarget ? 'pencil-fill' : 'plus-circle-fill'} me-2 text-danger`}></i>
               {editTarget ? 'Sửa thể loại' : 'Thêm thể loại mới'}
             </h6>
