@@ -4,6 +4,9 @@ import GenreSelect, { GenreBadge } from '../../../components/common/GenreSelect'
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import { getAllStories, toggleStoryVisibility, deleteStory } from '../../../api/storyService';
 import { STORY_STATUS } from '../../../constants/storyStatus';
+import { Pagination } from '../../../components/common/StoryCard';
+
+const PAGE_SIZE = 15;
 
 export default function ManageStories() {
   const navigate = useNavigate();
@@ -15,6 +18,7 @@ export default function ManageStories() {
   const [filterGenre,   setFilterGenre]   = useState([]);
   const [filterStatus,  setFilterStatus]  = useState('');
   const [deleteId,      setDeleteId]      = useState(null);
+  const [currentPage,   setCurrentPage]   = useState(1);
 
   const handleToggle = (storyid) => toggleStoryVisibility(storyid).then(setStories);
   const handleDelete = (storyid) => { deleteStory(storyid).then(setStories); setDeleteId(null); };
@@ -25,6 +29,10 @@ export default function ManageStories() {
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
   });
+
+  useEffect(() => { setCurrentPage(1); }, [search, filterGenre, filterStatus]);
+  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div>
@@ -100,7 +108,7 @@ export default function ManageStories() {
                     Không tìm thấy truyện nào
                   </td>
                 </tr>
-              ) : filtered.map(t => {
+              ) : currentItems.map(t => {
                 const statusInfo = STORY_STATUS[t.trangthai_rachuong] ?? STORY_STATUS.dangra;
                 return (
                   <tr key={t.storyid} style={{ borderTop: '1px solid var(--border)', opacity: t.status ? 1 : 0.4 }}>
@@ -154,6 +162,14 @@ export default function ManageStories() {
           </table>
         </div>
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={p => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        />
+      )}
 
       <ConfirmDeleteModal
         show={deleteId !== null}

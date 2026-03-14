@@ -3,7 +3,7 @@ const db = require('../config/db');
 const Category = {
   async getAll() {
     const [rows] = await db.query(
-      `SELECT c.categoryid, c.categoryname, c.status as visible, count(s.storyid) as storyCount
+      `SELECT c.categoryid, c.categoryname, c.status, count(s.storyid) as storyCount
       FROM category c 
       left join story_category s on s.categoryid = c.categoryid
       group by c.categoryid
@@ -19,7 +19,10 @@ const Category = {
   },
 
   async update(categoryID, data) {
-    await db.query('UPDATE category SET categoryname = ? WHERE categoryid = ?', [data.categoryname, categoryID]);
+    await db.query(
+      'UPDATE category SET categoryname = ?, status = ? WHERE categoryid = ?', 
+      [data.categoryname, data.status, categoryID]
+    );
   },
 
   async remove(categoryID) {

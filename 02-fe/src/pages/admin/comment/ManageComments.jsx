@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { getAllComments, toggleCommentVisibility, deleteComment } from '../../../api/commentService';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import Avatar from '../../../components/common/Avatar';
+import { Pagination } from '../../../components/common/StoryCard';
+
+const PAGE_SIZE = 15;
 
 export default function ManageComments() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [currentPage,   setCurrentPage]  = useState(1);
 
   useEffect(() => {
     getAllComments().then(setComments).finally(() => setLoading(false));
@@ -22,6 +26,10 @@ export default function ManageComments() {
       c.storyTitle?.toLowerCase().includes(q)
     );
   });
+
+  useEffect(() => { setCurrentPage(1); }, [search]);
+  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handleToggle = async (c) => {
     const updated = await toggleCommentVisibility(c.cmtid);
@@ -72,7 +80,7 @@ export default function ManageComments() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(c => {
+                {currentItems.map(c => {
                   return (
                     <tr key={c.cmtid} style={{ opacity: c.visible ? 1 : 0.4, transition: 'opacity 0.2s' }}>
                       <td className="ps-4 text-nowrap">
@@ -112,6 +120,14 @@ export default function ManageComments() {
           </div>
         )}
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={p => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        />
+      )}
 
       <ConfirmDeleteModal
         show={!!deleteTarget}

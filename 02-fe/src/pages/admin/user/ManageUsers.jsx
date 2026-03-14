@@ -3,6 +3,9 @@ import { getAllUsers, toggleUserStatus, deleteUser } from '../../../api/userServ
 import { USER_ROLES, getRoleLabel } from '../../../constants/roles';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import Avatar from '../../../components/common/Avatar';
+import { Pagination } from '../../../components/common/StoryCard';
+
+const PAGE_SIZE = 15;
 
 export default function ManageUsers() {
   const [users, setUsers]         = useState([]);
@@ -10,6 +13,7 @@ export default function ManageUsers() {
   const [search, setSearch]       = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [currentPage,   setCurrentPage]  = useState(1);
 
   useEffect(() => {
     getAllUsers().then(setUsers).finally(() => setLoading(false));
@@ -21,6 +25,10 @@ export default function ManageUsers() {
     const matchRole = filterRole ? u.role === filterRole : true;
     return matchName && matchRole;
   });
+
+  useEffect(() => { setCurrentPage(1); }, [search, filterRole]);
+  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handleToggle = async (u) => {
     if (u.role === 'admin') return;
@@ -88,7 +96,7 @@ export default function ManageUsers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(u => {
+                {currentItems.map(u => {
                   const isAdmin = u.role === 'admin';
                   return (
                     <tr key={u.userid} style={{ opacity: isAdmin || u.status === 1 ? 1 : 0.4, transition: 'opacity 0.2s' }}>
@@ -134,6 +142,14 @@ export default function ManageUsers() {
           </div>
         )}
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={p => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        />
+      )}
 
       <ConfirmDeleteModal
         show={!!deleteTarget}
