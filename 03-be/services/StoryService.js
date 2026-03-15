@@ -5,9 +5,7 @@ const StoryService = {
    */
   async getAllStories(options = {}) {
     try {
-      // options sẽ chứa { visibleOnly: true/false } truyền từ Controller
-      const stories = await Story.getAll(options);
-      return stories;
+      return await Story.getAll(options);
     } catch (error) {
       throw new Error('Lỗi khi lấy danh sách truyện: ' + error.message);
     }
@@ -18,9 +16,7 @@ const StoryService = {
   async getStoryDetailForUser(storyid) {
     try {
       if (!storyid) throw new Error('Yêu cầu cung cấp ID truyện');
-      
-      const story = await Story.getDetailForUser(storyid);
-      return story; // Sẽ trả về null nếu truyện bị ẩn (do logic trong Model)
+      return await Story.getDetailForUser(storyid);
     } catch (error) {
       throw new Error('Lỗi khi lấy thông tin truyện: ' + error.message);
     }
@@ -31,23 +27,24 @@ const StoryService = {
   async getStoryDetailForAdmin(storyid) {
     try {
       if (!storyid) throw new Error('Yêu cầu cung cấp ID truyện');
-      
-      const story = await Story.getDetailForAdmin(storyid);
-      return story;
+      return await Story.getDetailForAdmin(storyid);
     } catch (error) {
       throw new Error('Lỗi khi lấy thông tin quản trị: ' + error.message);
     }
   },
 
-  /** * Thêm mới truyện (Nhận data chứa storyCount từ Controller)
+  /** * Thêm mới truyện
+   * @param {Object} data - Thông tin truyện (bao gồm cả image path và storyCount)
+   * @param {Array} categoryIDs - Mảng các ID thể loại [1, 2, 20]
    */
-  async createStory(data) {
+  async createStory(data, categoryIDs) {
     try {
       if (!data.title || !data.author) {
         throw new Error('Tiêu đề và tên tác giả là bắt buộc');
       }
-      // storyCount sẽ nằm trong object data
-      const newId = await Story.create(data);
+      
+      // Truyền cả 2 tham số xuống Model để thực hiện Transaction
+      const newId = await Story.create(data, categoryIDs);
       return newId;
     } catch (error) {
       throw new Error('Lỗi khi tạo truyện mới: ' + error.message);
@@ -56,15 +53,15 @@ const StoryService = {
 
   /** * Cập nhật thông tin truyện
    */
-  async updateStory(storyid, data) {
+  async updateStory(storyid, data, categoryIDs) {
     try {
-      // Dùng hàm Admin để kiểm tra tồn tại (vì truyện ẩn vẫn phải update được)
       const existingStory = await Story.getDetailForAdmin(storyid);
       if (!existingStory) {
         throw new Error('Truyện không tồn tại hoặc đã bị xoá');
       }
 
-      await Story.update(storyid, data);
+      // Cập nhật cả thông tin truyện và danh sách thể loại mới
+      await Story.update(storyid, data, categoryIDs);
       return { success: true };
     } catch (error) {
       throw error;

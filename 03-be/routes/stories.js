@@ -1,39 +1,52 @@
-const router   = require('express').Router();
-const ctrl     = require('../controllers/storyController');
+const express = require('express');
+const router = express.Router();
+const ctrl = require('../controllers/storyController');
 const { authenticate, requireAdmin } = require('../middleware/auth');
-const upload   = require('../middleware/upload');
+const upload = require('../middleware/upload');
 
 // ── USER ROUTES (Public) ─────────────────────────────────────────────────────
-// Lấy danh sách truyện cho trang chủ/danh sách (chỉ hiện truyện status = 1)
-router.get('/', ctrl.getPublicStories); 
 
-// Xem chi tiết truyện cho người đọc (chỉ xem được truyện đang hiện)
-// Khớp với FE: /stories/:storyid
+// Lấy danh sách truyện cho trang chủ (Chỉ hiện truyện status = 1)
+// URL: GET /api/stories
+router.get('/', ctrl.getPublicStories);
+
+// Xem chi tiết truyện cho người đọc
+// URL: GET /api/stories/:storyid
 router.get('/:storyid', ctrl.getDetailForUser);
 
 
-// ── ADMIN ROUTES (Protected) ──────────────────────────────────────────────────
-// Áp dụng middleware bảo mật cho toàn bộ các route admin bên dưới
-router.use(authenticate, requireAdmin);
+// ── ADMIN ROUTES (Cần đăng nhập & Quyền Admin) ───────────────────────────────
 
-// Lấy toàn bộ danh sách truyện cho trang quản lý (hiện cả truyện ẩn)
-// Khớp với FE: /admin/stories
-router.get('/admin/all', ctrl.getAdminStories);
+// Lấy toàn bộ danh sách truyện cho trang quản lý (Hiện cả truyện ẩn)
+// URL: GET /api/stories/admin/all
+router.get('/admin/all', authenticate, requireAdmin, ctrl.getAdminStories);
 
-// Xem chi tiết truyện dành cho Admin (lấy hết các cột, cả truyện đang ẩn)
-// Khớp với FE: /admin/stories/detail
-router.get('/admin/:storyid', ctrl.getDetailForAdmin);
+// Lấy chi tiết truyện để Admin sửa (Lấy toàn bộ các cột)
+// URL: GET /api/stories/admin/:storyid
+router.get('/admin/:storyid', authenticate, requireAdmin, ctrl.getDetailForAdmin);
 
-// Tạo truyện mới
-router.post('/', upload.single('cover'), ctrl.create);
+/**
+ * TẠO TRUYỆN MỚI
+ * Sử dụng upload.single('image') để bắt file ảnh từ trường 'image' trong FormData
+ */
+router.post('/', authenticate, requireAdmin, upload.single('image'), ctrl.create);
 
-// Cập nhật truyện
-router.put('/:storyid', upload.single('cover'), ctrl.update);
+/**
+ * CẬP NHẬT TRUYỆN
+ * Cho phép cập nhật thông tin và thay đổi ảnh bìa mới
+ */
+router.put('/:storyid', authenticate, requireAdmin, upload.single('image'), ctrl.update);
 
-// Xóa truyện
-router.delete('/:storyid', ctrl.remove);
+/**
+ * XÓA TRUYỆN
+ * URL: DELETE /api/stories/:storyid
+ */
+router.delete('/:storyid', authenticate, requireAdmin, ctrl.remove);
 
-// Ẩn/Hiện truyện
-router.patch('/:storyid/toggle', ctrl.toggleVisibility);
+/**
+ * ẨN/HIỆN TRUYỆN
+ * URL: PATCH /api/stories/:storyid/toggle
+ */
+router.patch('/:storyid/toggle', authenticate, requireAdmin, ctrl.toggleVisibility);
 
 module.exports = router;

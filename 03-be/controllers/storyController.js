@@ -1,9 +1,9 @@
 const StoryService = require('../services/StoryService');
 
 const StoryController = {
-  // ── USER CONTROLLERS ────────────────────────────────────────────────
-  
-  /** Lấy danh sách truyện cho User (Chỉ truyện đang hiện) */
+  // ── USER CONTROLLERS (Public) ──────────────────────────────────────
+
+  /** Lấy danh sách truyện công khai */
   async getPublicStories(req, res) {
     try {
       const stories = await StoryService.getAllStories({ visibleOnly: true });
@@ -13,14 +13,14 @@ const StoryController = {
     }
   },
 
-  /** Xem chi tiết truyện cho User */
+  /** Xem chi tiết truyện cho người đọc */
   async getDetailForUser(req, res) {
     try {
       const { storyid } = req.params;
       const story = await StoryService.getStoryDetailForUser(storyid);
       
       if (!story) {
-        return res.status(404).json({ success: false, message: 'Không tìm thấy truyện hoặc truyện đã bị ẩn' });
+        return res.status(404).json({ success: false, message: 'Truyện không tồn tại hoặc đã bị ẩn' });
       }
 
       return res.status(200).json({ success: true, data: story });
@@ -29,9 +29,9 @@ const StoryController = {
     }
   },
 
-  // ── ADMIN CONTROLLERS ───────────────────────────────────────────────
+  // ── ADMIN CONTROLLERS (Quản trị) ────────────────────────────────────
 
-  /** Lấy tất cả truyện cho Admin (Bao gồm cả truyện ẩn) */
+  /** Lấy tất cả truyện (Bao gồm cả truyện ẩn) */
   async getAdminStories(req, res) {
     try {
       const stories = await StoryService.getAllStories({ visibleOnly: false });
@@ -60,20 +60,43 @@ const StoryController = {
   /** Tạo truyện mới */
   async create(req, res) {
     try {
-      const storyData = req.body;
+      // 1. Thu thập dữ liệu text
+      const storyData = {
+        title: req.body.title,
+        author: req.body.author,
+        description: req.body.description,
+        storyCount: req.body.storyCount || "0",
+        trangthai_rachuong: req.body.trangthai_rachuong,
+        status: (req.body.status === 'true' || req.body.status === '1' || req.body.status === 1) ? 1 : 0
+      };
       
-      // Nếu có upload ảnh, lấy đường dẫn ảnh từ req.file
+      // 2. Xử lý ảnh (Multer)
       if (req.file) {
-        storyData.image = `/uploads/covers/${req.file.filename}`;
+        storyData.image = `uploads/covers/${req.file.filename}`;
+      } else {
+        storyData.image = req.body.image || null; // Hỗ trợ gán path thủ công nếu cần
       }
 
-      const result = await StoryService.createStory(storyData);
+      // 3. Xử lý categoryIDs an toàn
+      let categoryIDs = [];
+      const rawIDs = req.body.categoryIDs;
+      if (rawIDs) {
+        if (typeof rawIDs === 'string') {
+          categoryIDs = rawIDs.split(',').map(Number).filter(id => !isNaN(id));
+        } else if (Array.isArray(rawIDs)) {
+          categoryIDs = rawIDs.map(Number).filter(id => !isNaN(id));
+        }
+      }
+
+      const result = await StoryService.createStory(storyData, categoryIDs);
+      
       return res.status(201).json({
         success: true,
         message: 'Tạo truyện mới thành công',
         storyid: result
       });
     } catch (error) {
+      console.error("Lỗi tại Controller Create:", error);
       return res.status(400).json({ success: false, message: error.message });
     }
   },
@@ -82,16 +105,35 @@ const StoryController = {
   async update(req, res) {
     try {
       const { storyid } = req.params;
-      const storyData = req.body;
+      
+      const storyData = {
+        title: req.body.title,
+        author: req.body.author,
+        description: req.body.description,
+        storyCount: req.body.storyCount,
+        trangthai_rachuong: req.body.trangthai_rachuong,
+        status: (req.body.status === 'true' || req.body.status === '1' || req.body.status === 1) ? 1 : 0
+      };
 
-      // Cập nhật ảnh mới nếu có upload
       if (req.file) {
-        storyData.image = `/uploads/covers/${req.file.filename}`;
+        storyData.image = `uploads/covers/${req.file.filename}`;
       }
 
-      await StoryService.updateStory(storyid, storyData);
+      let categoryIDs = [];
+      const rawIDs = req.body.categoryIDs;
+      if (rawIDs) {
+        if (typeof rawIDs === 'string') {
+          categoryIDs = rawIDs.split(',').map(Number).filter(id => !isNaN(id));
+        } else if (Array.isArray(rawIDs)) {
+          categoryIDs = rawIDs.map(Number).filter(id => !isNaN(id));
+        }
+      }
+
+      await StoryService.updateStory(storyid, storyData, categoryIDs);
+      
       return res.status(200).json({ success: true, message: 'Cập nhật truyện thành công' });
     } catch (error) {
+      console.error("Lỗi tại Controller Update:", error);
       return res.status(400).json({ success: false, message: error.message });
     }
   },
@@ -107,7 +149,7 @@ const StoryController = {
     }
   },
 
-  /** Ẩn/Hiện truyện */
+  /** Đổi trạng thái hiển thị nhanh */
   async toggleVisibility(req, res) {
     try {
       const { storyid } = req.params;
