@@ -1,148 +1,138 @@
-const db = require('../config/db');
+import axiosConfig from './axiosConfig';
+import { STORY_STATUS } from '../constants/storyStatus';
 
-const Story = {
-  /**
-   * Lấy danh sách truyện kèm mảng thể loại (Dùng JSON_ARRAYAGG)
-   * Admin lấy hết, User chỉ lấy truyện có status = 1
-   */
-  async getAll({ visibleOnly = false } = {}) {
-    const where = visibleOnly ? 'WHERE s.status = 1' : '';
-    const [rows] = await db.query(
-      `SELECT s.storyid, s.title, s.author, s.image, s.description, 
-              s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
-              COALESCE(
-                (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
-                 FROM story_category sc
-                 JOIN category c ON sc.categoryid = c.categoryid
-                 WHERE sc.storyid = s.storyid), 
-                '[]'
-              ) AS categories
-       FROM stories s
-       ${where}
-       GROUP BY s.storyid
-       ORDER BY s.createdat DESC`
-    );
-    return rows;
-  },
+const API_BASE = "http://localhost:8080";
 
-  /**
-   * Lấy chi tiết truyện cho Admin (Để đổ vào Form Edit)
-   */
-  async getDetailForAdmin(storyid) {
-    const [rows] = await db.query(
-      `SELECT s.*, 
-              COALESCE(
-                (SELECT JSON_ARRAYAGG(c.categoryid)
-                 FROM story_category sc
-                 JOIN category c ON sc.categoryid = c.categoryid
-                 WHERE sc.storyid = s.storyid), 
-                '[]'
-              ) AS categoryIDs
-       FROM stories s 
-       WHERE s.storyid = ?
-       GROUP BY s.storyid`,
-      [storyid]
-    );
-    return rows[0] || null;
-  },
+/**
+ * 1. HÀM CHUẨN HÓA DỮ LIỆU (Normalize)
+ */
+const normalize = (s) => {
+  if (!s) return null;
+  if (s.statusStyle && s.categories && Array.isArray(s.categories)) return s;
 
-  /**
-   * Tạo truyện mới (Dùng Transaction)
-   */
-  async create(data, categoryIDs) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
+  const st = STORY_STATUS[s.trangthai_rachuong] ?? STORY_STATUS.dangra;
+  
+  // Xử lý URL ảnh bìa
+  const coverUrl = s.image 
+    ? (s.image.startsWith('http') ? s.image : `${API_BASE}/${s.image}`) 
+    : null;
 
-      // 1. Chèn vào bảng stories
-      const [result] = await conn.query(
-        `INSERT INTO stories (title, author, description, image, trangthai_rachuong, storyCount, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [data.title, data.author, data.description, data.image, data.trangthai_rachuong, data.storyCount, data.status]
-      );
-      const storyid = result.insertId;
-
-      // 2. Chèn vào bảng trung gian story_category
-      if (categoryIDs && categoryIDs.length > 0) {
-        const values = categoryIDs.map(catID => [storyid, catID]);
-        await conn.query(`INSERT INTO story_category (storyid, categoryid) VALUES ?`, [values]);
-      }
-
-      await conn.commit();
-      return storyid;
-    } catch (err) {
-      await conn.rollback();
-      throw err;
-    } finally {
-      conn.release();
-    }
-  },
-
-  /**
-   * Cập nhật truyện (Dùng Transaction)
-   */
-  async update(storyid, data, categoryIDs) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
-
-      // 1. Cập nhật bảng stories (Chỉ cập nhật ảnh nếu có ảnh mới)
-      let sql = `UPDATE stories SET title = ?, author = ?, description = ?, trangthai_rachuong = ?, storyCount = ?, status = ?`;
-      let params = [data.title, data.author, data.description, data.trangthai_rachuong, data.storyCount, data.status];
-
-      if (data.image) {
-        sql += `, image = ?`;
-        params.push(data.image);
-      }
-
-      sql += ` WHERE storyid = ?`;
-      params.push(storyid);
-
-      await conn.query(sql, params);
-
-      // 2. Cập nhật thể loại: Xóa tất cả liên kết cũ và chèn lại mảng mới
-      if (categoryIDs) {
-        await conn.query(`DELETE FROM story_category WHERE storyid = ?`, [storyid]);
-        if (categoryIDs.length > 0) {
-          const values = categoryIDs.map(catID => [storyid, catID]);
-          await conn.query(`INSERT INTO story_category (storyid, categoryid) VALUES ?`, [values]);
-        }
-      }
-
-      await conn.commit();
-      return true;
-    } catch (err) {
-      await conn.rollback();
-      throw err;
-    } finally {
-      conn.release();
-    }
-  },
-
-  /**
-   * Đổi trạng thái ẩn/hiện
-   */
-  async toggleVisibility(storyid) {
-    await db.query(`UPDATE stories SET status = 1 - status WHERE storyid = ?`, [storyid]);
-  },
-
-  /**
-   * Xóa truyện và liên kết
-   */
-  async remove(storyid) {
-    const conn = await db.getConnection();
-    try {
-      await conn.beginTransaction();
-      await conn.query(`DELETE FROM story_category WHERE storyid = ?`, [storyid]);
-      await conn.query(`DELETE FROM stories WHERE storyid = ?`, [storyid]);
-      await conn.commit();
-    } catch (err) {
-      await conn.rollback();
-      throw err;
-    } finally {
-      conn.release();
-    }
-  }
+  return {
+    ...s,
+    storyid: s.storyid || s.storyID,
+    storyCount: s.storyCount ?? s.story_count ?? 0,
+    coverUrl: coverUrl,
+    categories: Array.isArray(s.categories) 
+      ? s.categories 
+      : (typeof s.categories === 'string' ? JSON.parse(s.categories) : []),
+    statusLabel: st.label,
+    statusStyle: { bg: st.bg, color: st.color },
+    updatedat: s.updatedat || s.updatedAt || '—',
+  };
 };
 
-module.exports = Story;
+/**
+ * 2. LẤY TOÀN BỘ TRUYỆN (ADMIN/USER)
+ */
+export async function getAllStories({ visibleOnly = false } = {}) {
+  try {
+    const res = await axiosConfig.get('/stories');
+    const rawList = res.data?.data || res.data || [];
+    const list = rawList.map(normalize);
+    return visibleOnly ? list.filter(s => s.status === 1) : list;
+  } catch (error) {
+    console.error("Lỗi getAllStories:", error);
+    return [];
+  }
+}
+
+/**
+ * 3. CHI TIẾT TRUYỆN (DÀNH CHO NGƯỜI ĐỌC - USER VIEW)
+ * Hàm này dùng ở StoryDetail.jsx
+ */
+export async function getStoryDetail(storyid) {
+  try {
+    const res = await axiosConfig.get(`/stories/${storyid}/detail`);
+    const result = res.data?.data || res.data;
+    // Backend trả về story + chapters
+    return {
+      story: normalize(result),
+      chapters: result.chapters || []
+    };
+  } catch (error) {
+    console.error("Lỗi getStoryDetail:", error);
+    return { story: null, chapters: [] };
+  }
+}
+
+/**
+ * 4. LẤY 1 TRUYỆN THEO ID (DÀNH CHO TRANG EDIT)
+ */
+export async function getStoryById(storyid) {
+  try {
+    const res = await axiosConfig.get(`/stories/${storyid}`);
+    const data = res.data?.data || res.data;
+    return normalize(data);
+  } catch (error) {
+    console.error("Lỗi getStoryById:", error);
+    return null;
+  }
+}
+
+/**
+ * 5. THÊM TRUYỆN MỚI
+ */
+export async function addStory(formData) {
+  try {
+    const res = await axiosConfig.post('/stories', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi addStory:", error);
+    throw error;
+  }
+}
+
+/**
+ * 6. CẬP NHẬT TRUYỆN
+ */
+export async function updateStory(storyid, formData) {
+  try {
+    const res = await axiosConfig.put(`/stories/${storyid}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi updateStory:", error);
+    throw error;
+  }
+}
+
+/**
+ * 7. ẨN/HIỆN TRUYỆN nhanh
+ */
+export async function toggleStoryVisibility(storyid) {
+  try {
+    const res = await axiosConfig.patch(`/stories/${storyid}/toggle`);
+    const rawList = res.data?.data || res.data || [];
+    return rawList.map(normalize);
+  } catch (error) {
+    console.error("Lỗi toggleStoryVisibility:", error);
+    throw error;
+  }
+}
+
+/**
+ * 8. XÓA TRUYỆN
+ */
+export async function deleteStory(storyid) {
+  try {
+    await axiosConfig.delete(`/stories/${storyid}`);
+    // Sau khi xóa, lấy lại danh sách mới để cập nhật UI
+    return await getAllStories();
+  } catch (error) {
+    console.error("Lỗi deleteStory:", error);
+    throw error;
+  }
+}

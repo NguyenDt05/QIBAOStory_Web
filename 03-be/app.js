@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
+const path    = require('path'); // THÊM DÒNG NÀY
 
 const routes       = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
@@ -13,8 +14,8 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve ảnh bìa tĩnh  →  GET /covers/<filename>
-app.use('/covers', express.static('public/covers'));
+// Cho phép truy cập thư mục uploads để hiện ảnh bìa
+app.use('/uploads/covers', express.static(path.join(__dirname, 'public/covers')));
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api', routes);

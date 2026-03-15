@@ -11,8 +11,21 @@ const PAGE_SIZE = 15;
 export default function ManageStories() {
   const navigate = useNavigate();
   const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { getAllStories().then(setStories); }, []);
+  // Load dữ liệu ban đầu
+  const loadData = async () => {
+    try {
+      const data = await getAllStories();
+      setStories(data);
+    } catch (err) {
+      console.error("Lỗi tải danh sách:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   const [search, setSearch] = useState('');
   const [filterGenre, setFilterGenre] = useState([]);
@@ -20,11 +33,31 @@ export default function ManageStories() {
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handleToggle = (storyid) => toggleStoryVisibility(storyid).then(setStories);
-  const handleDelete = (storyid) => { deleteStory(storyid).then(setStories); setDeleteId(null); };
+  // Xử lý Toggle Ẩn/Hiện
+  const handleToggle = async (storyid) => {
+    try {
+      const updatedList = await toggleStoryVisibility(storyid);
+      setStories(updatedList);
+    } catch (err) {
+      alert("Không thể thay đổi trạng thái!");
+    }
+  };
 
+  // Xử lý Xóa
+  const handleDelete = async (storyid) => {
+    try {
+      const newList = await deleteStory(storyid);
+      setStories(newList);
+      setDeleteId(null);
+    } catch (err) {
+      alert("Xóa thất bại!");
+    }
+  };
+
+  // Logic lọc dữ liệu
   const filtered = stories.filter(t => {
-    const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) || t.author.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = (t.title?.toLowerCase() || "").includes(search.toLowerCase()) || 
+                       (t.author?.toLowerCase() || "").includes(search.toLowerCase());
     const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID));
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
@@ -33,6 +66,8 @@ export default function ManageStories() {
   useEffect(() => { setCurrentPage(1); }, [search, filterGenre, filterStatus]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  if (loading) return <div className="text-center py-5 text-muted">Đang tải danh sách truyện...</div>;
 
   return (
     <div>
@@ -95,10 +130,7 @@ export default function ManageStories() {
                 <th className="ps-4 py-3 text-secondary fw-semibold small border-bottom-0">Tên truyện</th>
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0">Tác giả</th>
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center">Số chương</th>
-                
-                {/* THAY ĐỔI: Thêm text-center vào tiêu đề */}
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '25%' }}>Thể loại</th>
-                
                 <th className="py-3 text-secondary fw-semibold small border-bottom-0">Trạng thái</th>
                 <th className="py-3 px-3 text-secondary fw-semibold small border-bottom-0 text-center">Hành động</th>
               </tr>
@@ -117,13 +149,17 @@ export default function ManageStories() {
                   <tr key={t.storyid} style={{ borderTop: '1px solid var(--border)', opacity: t.status ? 1 : 0.4 }}>
                     <td className="ps-4 py-3">
                       <div className="d-flex align-items-center">
-                        <div className="d-flex align-items-center justify-content-center text-muted fw-bold me-3"
-                          style={{ width: '40px', height: '52px', fontSize: '0.75rem', backgroundColor: 'var(--surface-2)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                          IMG
+                        {/* HIỂN THỊ ẢNH THẬT */}
+                        <div className="me-3" style={{ width: '45px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)', backgroundColor: '#2a3142' }}>
+                          {t.coverUrl ? (
+                            <img src={t.coverUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <div className="d-flex h-100 align-items-center justify-content-center text-muted" style={{ fontSize: '10px' }}>NO IMG</div>
+                          )}
                         </div>
                         <div>
-                          <div className="fw-bold" style={{ cursor: 'pointer' }}
-                            onClick={() => navigate('/admin/stories/detail', { state: { story: t } })}>
+                          <div className="fw-bold text-light" style={{ cursor: 'pointer' }}
+                            onClick={() => navigate(`/admin/stories/detail/${t.storyid}`, { state: { story: t } })}>
                             {t.title}
                           </div>
                           <small className="text-muted" style={{ fontSize: '0.75rem' }}>ID: #{t.storyid}</small>
@@ -131,12 +167,9 @@ export default function ManageStories() {
                       </div>
                     </td>
                     <td className="text-secondary">{t.author}</td>
-                    
                     <td className="text-center fw-bold" style={{ color: 'var(--primary-color)' }}>
                       {t.storyCount ?? 0}
                     </td>
-
-                    {/* THAY ĐỔI: Thêm text-center và justify-content-center để căn giữa Badges */}
                     <td className="text-center">
                       <div className="d-flex flex-wrap gap-1 justify-content-center">
                         {(t.categories ?? []).map(c => (
@@ -144,14 +177,12 @@ export default function ManageStories() {
                         ))}
                       </div>
                     </td>
-                    
                     <td>
                       <span className="fw-semibold small px-3 py-1"
                         style={{ borderRadius: '50px', backgroundColor: statusInfo.bg, color: statusInfo.color }}>
                         {statusInfo.label}
                       </span>
                     </td>
-
                     <td className="px-3">
                       <div className="d-flex align-items-center justify-content-center gap-2">
                         <div className="form-check form-switch mb-0" title={t.status ? 'Đang hiện' : 'Đang ẩn'}>
@@ -161,7 +192,7 @@ export default function ManageStories() {
                         </div>
                         <button className="btn btn-sm fw-bold"
                           style={{ borderRadius: '50px', backgroundColor: '#e3f2fd', color: '#1565c0', border: 'none' }}
-                          onClick={() => navigate('/admin/stories/edit', { state: { story: t } })}>
+                          onClick={() => navigate(`/admin/stories/edit/${t.storyid}`, { state: { story: t } })}>
                           <i className="bi bi-pencil-square"></i>
                         </button>
                         <button className="btn btn-sm fw-bold"

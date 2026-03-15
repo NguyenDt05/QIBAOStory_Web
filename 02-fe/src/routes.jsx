@@ -49,8 +49,9 @@ export default function AppRoutes() {
         <Route path="dashboard"   element={<Dashboard />} />
         <Route path="stories"     element={<ManageStories />} />
         <Route path="stories/add" element={<AddStory />} />
-        <Route path="stories/edit"   element={<EditStory />} />
-        <Route path="stories/detail" element={<StoryDetailAdmin />} />
+        <Route path="stories/edit/:storyid"   element={<EditStory />} />
+        <Route path="stories/detail/:storyid" element={<StoryDetailAdmin />} />
+        <Route path="chapters/edit/:chapterid"  element={<EditChapter />} />
         <Route path="chapters/add"   element={<AddChapter />} />
         <Route path="chapters/edit"  element={<EditChapter />} />
         <Route path="categories"  element={<ManageCategories />} />
