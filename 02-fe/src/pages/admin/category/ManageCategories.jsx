@@ -23,31 +23,33 @@ export default function ManageCategories() {
   // Logic chia trang giống code mẫu
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 1. Lấy dữ liệu danh sách thể loại
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const response = await getAllCategories();
-        
-        let finalData = [];
-        if (Array.isArray(response)) {
-          finalData = response;
-        } else if (response?.data && Array.isArray(response.data)) {
-          finalData = response.data;
-        } else if (response?.result && Array.isArray(response.result)) {
-          finalData = response.result;
-        }
-
-        setCategories(finalData);
-      } catch (err) {
-        console.error("Lỗi khi load categories:", err);
-      } finally {
-        setLoading(false);
+  // --- SỬA Ở ĐÂY: Đưa loadData ra ngoài để có thể gọi lại nhiều lần ---
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllCategories();
+      
+      let finalData = [];
+      if (Array.isArray(response)) {
+        finalData = response;
+      } else if (response?.data && Array.isArray(response.data)) {
+        finalData = response.data;
+      } else if (response?.result && Array.isArray(response.result)) {
+        finalData = response.result;
       }
-    };
+
+      setCategories(finalData);
+    } catch (err) {
+      console.error("Lỗi khi load categories:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadData();
   }, []);
+  // ----------------------------------------------------------------
 
   // 2. Bộ lọc tìm kiếm
   const safeList = Array.isArray(categories) ? categories : [];
@@ -66,10 +68,8 @@ export default function ManageCategories() {
       const id = tl.categoryID || tl.categoryid;
       await toggleCategoryStatus(id);
       
-      const newStatus = (tl.status === "1" || tl.status === 1) ? "0" : "1";
-      setCategories(prev => prev.map(c => 
-        (c.categoryID === id || c.categoryid === id) ? { ...c, status: newStatus } : c
-      ));
+      // SỬA Ở ĐÂY: Load lại dữ liệu để cập nhật giao diện ngay
+      loadData();
     } catch (err) { console.error("Lỗi toggle status:", err); }
   };
 
@@ -79,17 +79,13 @@ export default function ManageCategories() {
       if (editTarget) {
         const id = editTarget.categoryID || editTarget.categoryid;
         const payload = { ...data, categoryID: id };
-        
         await updateCategory(id, payload);
-        
-        setCategories(prev => prev.map(c => 
-          (c.categoryID === id || c.categoryid === id) ? { ...c, ...data } : c
-        ));
       } else {
-        const created = await addCategory(data);
-        const newItem = created?.data || created || data;
-        setCategories(prev => [...prev, newItem]);
+        await addCategory(data);
       }
+      
+      // SỬA Ở ĐÂY: Load lại dữ liệu để cập nhật danh sách mới nhất từ server
+      await loadData();
       closeModal();
     } catch (err) { console.error("Lỗi lưu dữ liệu:", err); }
   };
@@ -102,10 +98,8 @@ export default function ManageCategories() {
 
       await deleteCategory(id);
       
-      setCategories(prev => prev.filter(c => 
-        c.categoryID !== id && c.categoryid !== id
-      ));
-
+      // SỬA Ở ĐÂY: Load lại dữ liệu sau khi xóa
+      loadData();
       setDeleteTarget(null);
     } catch (err) { 
       console.error("Lỗi xóa:", err); 
@@ -162,7 +156,6 @@ export default function ManageCategories() {
                 </tr>
               </thead>
               <tbody>
-                {/* Thay đổi từ filtered sang currentItems để hiển thị theo trang */}
                 {currentItems.map((tl, idx) => (
                   <tr key={tl.categoryID || tl.categoryid || idx} style={{ opacity: (tl.status === "1" || tl.status === 1) ? 1 : 0.4, transition: 'opacity 0.2s' }}>
                     <td className="ps-4 text-secondary" style={{ fontSize: '0.85rem' }}>{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
@@ -197,7 +190,7 @@ export default function ManageCategories() {
         )}
       </div>
 
-      {/* Thêm phần hiển thị Phân trang giống code mẫu */}
+      {/* PHÂN TRANG */}
       {filtered.length > 0 && (
         <Pagination
           currentPage={currentPage}
@@ -221,7 +214,7 @@ export default function ManageCategories() {
   );
 }
 
-// --- CHI TIẾT MODAL FORM ---
+// --- CHI TIẾT MODAL FORM (Giữ nguyên) ---
 function CategoryModal({ show, editTarget, onClose, onSave }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState(true);

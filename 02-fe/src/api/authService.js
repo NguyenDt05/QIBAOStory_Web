@@ -1,19 +1,40 @@
-import { delay } from './http';
-import { USERS_MOCK, EXISTING_USERNAMES } from '../constants/mockData';
+import axios from 'axios';
 
+const API_URL = 'http://localhost:8080/api/auth';
+
+// Kiểm tra username tồn tại (Đã có)
 export async function checkUsernameExists(username) {
-  await delay(200);
-  const normalized = username.trim().toLowerCase();
-  return USERS_MOCK.some(u => u.username.toLowerCase() === normalized) ||
-    EXISTING_USERNAMES.some(u => u.toLowerCase() === normalized);
+  if (!username) return false;
+  try {
+    const response = await axios.get(`${API_URL}/check-username/${username.trim()}`);
+    return response.data.exists;
+  } catch (error) {
+    return false;
+  }
 }
 
+/**
+ * HÀM ĐĂNG KÝ MỚI (Cần bổ sung)
+ */
+export async function register(userData) {
+  try {
+    const response = await axios.post(`${API_URL}/register`, userData);
+    return response.data; // Trả về { success: true, message: "..." }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Đăng ký thất bại');
+  }
+}
+
+// Hàm Login (Giữ nguyên bản cũ của bạn)
 export async function login(username, password) {
-  await delay(400);
-  const user = USERS_MOCK.find(
-    u => u.username.toLowerCase() === username.trim().toLowerCase(),
-  );
-  if (!user) throw new Error('Tên đăng nhập hoặc mật khẩu không đúng.');
-  if (!user.status) throw new Error('Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.');
-  return { role: user.role, tenhienthi: user.tenhienthi, username: user.username.trim() };
+  try {
+    const response = await axios.post(`${API_URL}/login`, { username: username.trim(), password });
+    if (response.data.success) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data.user;
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Đăng nhập thất bại');
+  }
 }

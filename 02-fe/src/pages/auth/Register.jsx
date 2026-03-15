@@ -1,28 +1,36 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { checkUsernameExists } from '../../api/authService';
+import { checkUsernameExists, register as apiRegister } from '../../api/authService';
 import AuthBanner from './AuthBanner';
 import '../../styles/Register.css';
 
 function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', tenhienthi: '', password: '', confirmPassword: '' });
-  const [showPwd,       setShowPwd]       = useState(false);
-  const [showConfirm,   setShowConfirm]   = useState(false);
-  const [error,         setError]         = useState('');
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState('');
   const [usernameTaken, setUsernameTaken] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Trạng thái đợi Server phản hồi
 
   const update = (field, value) => {
     setForm(f => ({ ...f, [field]: value }));
     setError('');
     if (field === 'username') {
-      checkUsernameExists(value).then(setUsernameTaken);
+      // Debounce nhẹ hoặc check ngay khi nhập
+      if (value.trim()) {
+        checkUsernameExists(value).then(setUsernameTaken);
+      } else {
+        setUsernameTaken(false);
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { username, tenhienthi, password, confirmPassword } = form;
+
+    // 1. Validation tại Client
     if (!username || !tenhienthi || !password || !confirmPassword) {
       setError('Vui lòng nhập đầy đủ thông tin.');
       return;
@@ -39,7 +47,26 @@ function Register() {
       setError('Mật khẩu xác nhận không khớp.');
       return;
     }
-    navigate('/login');
+
+    // 2. Gọi API Đăng ký
+    setError('');
+    setIsLoading(true);
+    try {
+      const response = await apiRegister({
+        username: username.trim(),
+        password,
+        tenhienthi: tenhienthi.trim()
+      });
+
+      if (response.success) {
+        // Có thể dùng toast thông báo ở đây nếu muốn
+        navigate('/login', { state: { message: 'Đăng ký thành công! Mời bạn đăng nhập.' } });
+      }
+    } catch (err) {
+      setError(err.message || 'Có lỗi xảy ra khi đăng ký.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -86,6 +113,7 @@ function Register() {
                   placeholder="VD: nguyen_van_a"
                   value={form.username}
                   onChange={e => update('username', e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -102,6 +130,7 @@ function Register() {
                   placeholder="VD: Nguyễn Văn A"
                   value={form.tenhienthi}
                   onChange={e => update('tenhienthi', e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -109,11 +138,8 @@ function Register() {
             <div className="mb-3">
               <div className="d-flex justify-content-between align-items-center mb-1">
                 <label className="reg-label form-label fw-semibold small mb-0">Mật khẩu</label>
-                {form.password && form.password.length < 6 && (
+                {form.password && form.password.length > 0 && form.password.length < 6 && (
                   <small className="reg-username-taken"><i className="bi bi-x-circle me-1" />Cần ít nhất 6 ký tự</small>
-                )}
-                {form.password && form.password.length >= 6 && (
-                  <small className="reg-username-ok"><i className="bi bi-check-circle me-1" />Độ dài hợp lệ</small>
                 )}
               </div>
               <div className="input-group">
@@ -126,6 +152,7 @@ function Register() {
                   placeholder="Tối thiểu 6 ký tự"
                   value={form.password}
                   onChange={e => update('password', e.target.value)}
+                  disabled={isLoading}
                 />
                 <span className="input-group-text reg-pwd-toggle" onClick={() => setShowPwd(p => !p)}>
                   <i className={`bi ${showPwd ? 'bi-eye-slash' : 'bi-eye'} text-secondary`} />
@@ -139,9 +166,6 @@ function Register() {
                 {form.confirmPassword && form.confirmPassword !== form.password && (
                   <small className="reg-username-taken"><i className="bi bi-x-circle me-1" />Mật khẩu không khớp</small>
                 )}
-                {form.confirmPassword && form.confirmPassword === form.password && (
-                  <small className="reg-username-ok"><i className="bi bi-check-circle me-1" />Khớp</small>
-                )}
               </div>
               <div className="input-group">
                 <span className="input-group-text reg-input-prefix">
@@ -153,6 +177,7 @@ function Register() {
                   placeholder="Nhập lại mật khẩu"
                   value={form.confirmPassword}
                   onChange={e => update('confirmPassword', e.target.value)}
+                  disabled={isLoading}
                 />
                 <span className="input-group-text reg-pwd-toggle" onClick={() => setShowConfirm(p => !p)}>
                   <i className={`bi ${showConfirm ? 'bi-eye-slash' : 'bi-eye'} text-secondary`} />
@@ -160,8 +185,16 @@ function Register() {
               </div>
             </div>
 
-            <button type="submit" className="reg-btn btn fw-bold w-100 py-2 shadow-sm">
-              <i className="bi bi-person-plus me-2" />Đăng ký
+            <button 
+              type="submit" 
+              className="reg-btn btn fw-bold w-100 py-2 shadow-sm"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" /> Đang xử lý...</>
+              ) : (
+                <><i className="bi bi-person-plus me-2" /> Đăng ký</>
+              )}
             </button>
           </form>
 

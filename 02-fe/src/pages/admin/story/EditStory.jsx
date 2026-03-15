@@ -80,10 +80,13 @@ export default function EditStory() {
                   style={{ borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'none' }} required />
               </div>
               <div className="col-md-4">
-                <label className="form-label fw-semibold text-secondary small">Số chương</label>
-                <input type="text" className="form-control" placeholder="Nhập số chương..."
-                  defaultValue={story?.chapters ?? ''}
-                  style={{ borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'none' }} />
+              <label className="form-label fw-semibold text-secondary small">Số chương</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="Nhập số chương..."
+                defaultValue={story?.storyCount ?? ''} 
+                style={{ borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'none' }} />
               </div>
               <div className="col-md-8">
                 <label className="form-label fw-semibold text-secondary small">Tác giả <span className="text-danger">*</span></label>

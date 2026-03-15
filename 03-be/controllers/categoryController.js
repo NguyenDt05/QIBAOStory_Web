@@ -1,58 +1,55 @@
-
-const categoryService = require('../services/CategoryService');
+const Category = require('../models/Category');
 
 const categoryController = {
-  // GET: /api/categories
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
-      const categories = await categoryService.getAllCategories();
-      res.status(200).json(categories);
-    } catch (error) {
-      res.status(500).json({ message: "Khong lay duoc danh sach danh muc" });
+      // Nếu có token và role là admin thì visibleOnly = false (lấy tất cả)
+      const isAdmin = req.user && req.user.role === 'admin';
+      const categories = await Category.getAll({ visibleOnly: !isAdmin });
+      
+      res.json({ success: true, data: categories });
+    } catch (err) {
+      next(err);
     }
   },
 
-  // POST: /api/categories
-  async create(req, res) {
+  async create(req, res, next) {
     try {
-      const newCategory = await categoryService.createCategory(req.body);
-      res.status(201).json(newCategory);
-    } catch (error) {
-      // 400 cho lỗi dữ liệu đầu vào không hợp lệ
-      res.status(400).json({ message: error.message });
+      const { categoryname } = req.body;
+      const existing = await Category.findByName(categoryname);
+      if (existing) return res.status(400).json({ success: false, message: 'Thể loại đã tồn tại.' });
+
+      await Category.create(req.body);
+      res.status(201).json({ success: true, message: 'Thêm thể loại thành công.' });
+    } catch (err) {
+      next(err);
     }
   },
 
-  // PUT: /api/categories/:id
-  async update(req, res) {
+  async update(req, res, next) {
     try {
-      const { categoryID } = req.params; 
-      const result = await categoryService.updateCategory(categoryID, req.body);
-      res.status(200).json(result);
-    } catch (error) {
-     res.status(400).json({ message: error.message });
-  }
-},
-
-  // DELETE: /api/categories/:categoryID
-  async delete(req, res) {
-    try {
-      const { categoryID } = req.params;
-      const result = await categoryService.deleteCategory(categoryID);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+      await Category.update(req.params.id, req.body);
+      res.json({ success: true, message: 'Cập nhật thành công.' });
+    } catch (err) {
+      next(err);
     }
   },
 
-  // PATCH: /api/categories/:categoryID/toggle
-  async toggleStatus(req, res) {
+  async toggle(req, res, next) {
     try {
-      const { categoryID } = req.params;
-      const updatedList = await categoryService.toggleCategoryStatus(categoryID);
-      res.status(200).json(updatedList);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+      const updated = await Category.toggleVisibility(req.params.id);
+      res.json({ success: true, data: updated });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async delete(req, res, next) {
+    try {
+      await Category.remove(req.params.id);
+      res.json({ success: true, message: 'Đã xóa thể loại và dọn dẹp liên kết.' });
+    } catch (err) {
+      next(err);
     }
   }
 };

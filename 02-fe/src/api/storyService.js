@@ -102,21 +102,21 @@ export async function getStoryDetail(storyid) {
   }
 }
 
-/**
- * 6. TRUYỆN LIÊN QUAN
- */
-export async function getRelatedStories(storyid) {
-  try {
-    const list = await getAllStories({ visibleOnly: true });
-    const others = list.filter(s => String(s.storyid) !== String(storyid));
-    return others.slice(0, 6).map(s => ({
-      ...s,
-      categoryname: s.categories?.[0]?.categoryname || '',
-    }));
-  } catch (error) {
-    return [];
-  }
-}
+// /**
+//  * 6. TRUYỆN LIÊN QUAN
+//  */
+// export async function getRelatedStories(storyid) {
+//   try {
+//     const list = await getAllStories({ visibleOnly: true });
+//     const others = list.filter(s => String(s.storyid) !== String(storyid));
+//     return others.slice(0, 6).map(s => ({
+//       ...s,
+//       categoryname: s.categories?.[0]?.categoryname || '',
+//     }));
+//   } catch (error) {
+//     return [];
+//   }
+// }
 
 /**
  * 7. LẤY 1 TRUYỆN (EDIT)

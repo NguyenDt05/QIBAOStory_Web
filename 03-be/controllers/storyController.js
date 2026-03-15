@@ -1,138 +1,120 @@
-const StoryService = require('../services/StoryService'); 
+const StoryService = require('../services/StoryService');
 
 const StoryController = {
-  /**
-   * Lấy danh sách truyện
-   * Route: GET /api/stories?visibleOnly=true
-   */
-  async getAll(req, res) {
+  // ── USER CONTROLLERS ────────────────────────────────────────────────
+  
+  /** Lấy danh sách truyện cho User (Chỉ truyện đang hiện) */
+  async getPublicStories(req, res) {
     try {
-      // Ép kiểu query param visibleOnly từ string sang boolean
-      const visibleOnly = req.query.visibleOnly === 'true'; 
-      
-      const stories = await StoryService.getAllStories({ visibleOnly });
-      return res.status(200).json({
-        success: true,
-        data: stories
-      });
+      const stories = await StoryService.getAllStories({ visibleOnly: true });
+      return res.status(200).json({ success: true, data: stories });
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(500).json({ success: false, message: error.message });
     }
   },
 
-  /**
-   * Lấy chi tiết 1 truyện
-   * Route: GET /api/stories/:id
-   */
-  async getById(req, res) {
+  /** Xem chi tiết truyện cho User */
+  async getDetailForUser(req, res) {
     try {
-      const storyId = req.params.id;
-      const story = await StoryService.getStoryById(storyId);
+      const { storyid } = req.params;
+      const story = await StoryService.getStoryDetailForUser(storyid);
       
-      return res.status(200).json({
-        success: true,
-        data: story
-      });
+      if (!story) {
+        return res.status(404).json({ success: false, message: 'Không tìm thấy truyện hoặc truyện đã bị ẩn' });
+      }
+
+      return res.status(200).json({ success: true, data: story });
     } catch (error) {
-      // Phân loại lỗi cơ bản: 404 nếu không tìm thấy, 400 hoặc 500 cho các lỗi khác
-      const statusCode = error.message.includes('Không tìm thấy') ? 404 : 400;
-      return res.status(statusCode).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(500).json({ success: false, message: error.message });
     }
   },
 
-  /**
-   * Tạo truyện mới
-   * Route: POST /api/stories
-   */
+  // ── ADMIN CONTROLLERS ───────────────────────────────────────────────
+
+  /** Lấy tất cả truyện cho Admin (Bao gồm cả truyện ẩn) */
+  async getAdminStories(req, res) {
+    try {
+      const stories = await StoryService.getAllStories({ visibleOnly: false });
+      return res.status(200).json({ success: true, data: stories });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
+  /** Lấy chi tiết đầy đủ cho Admin (Để đổ vào form Edit) */
+  async getDetailForAdmin(req, res) {
+    try {
+      const { storyid } = req.params;
+      const story = await StoryService.getStoryDetailForAdmin(storyid);
+      
+      if (!story) {
+        return res.status(404).json({ success: false, message: 'Truyện không tồn tại' });
+      }
+
+      return res.status(200).json({ success: true, data: story });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
+  /** Tạo truyện mới */
   async create(req, res) {
     try {
       const storyData = req.body;
-      const result = await StoryService.createStory(storyData);
       
+      // Nếu có upload ảnh, lấy đường dẫn ảnh từ req.file
+      if (req.file) {
+        storyData.image = `/uploads/covers/${req.file.filename}`;
+      }
+
+      const result = await StoryService.createStory(storyData);
       return res.status(201).json({
         success: true,
-        message: result.message,
-        data: { storyid: result.storyid }
+        message: 'Tạo truyện mới thành công',
+        storyid: result
       });
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
   },
 
-  /**
-   * Cập nhật thông tin truyện
-   * Route: PUT /api/stories/:id
-   */
+  /** Cập nhật truyện */
   async update(req, res) {
     try {
-      const storyId = req.params.id;
+      const { storyid } = req.params;
       const storyData = req.body;
-      
-      const result = await StoryService.updateStory(storyId, storyData);
-      return res.status(200).json({
-        success: true,
-        message: result.message
-      });
+
+      // Cập nhật ảnh mới nếu có upload
+      if (req.file) {
+        storyData.image = `/uploads/covers/${req.file.filename}`;
+      }
+
+      await StoryService.updateStory(storyid, storyData);
+      return res.status(200).json({ success: true, message: 'Cập nhật truyện thành công' });
     } catch (error) {
-      const statusCode = error.message.includes('không tồn tại') ? 404 : 400;
-      return res.status(statusCode).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
   },
 
-  /**
-   * Xoá truyện
-   * Route: DELETE /api/stories/:id
-   */
-  async delete(req, res) {
+  /** Xóa truyện */
+  async remove(req, res) {
     try {
-      const storyId = req.params.id;
-      const result = await StoryService.deleteStory(storyId);
-      
-      return res.status(200).json({
-        success: true,
-        message: result.message
-      });
+      const { storyid } = req.params;
+      await StoryService.deleteStory(storyid);
+      return res.status(200).json({ success: true, message: 'Xóa truyện thành công' });
     } catch (error) {
-      const statusCode = error.message.includes('không tồn tại') ? 404 : 400;
-      return res.status(statusCode).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
   },
 
-  /**
-   * Đổi trạng thái ẩn/hiện của truyện
-   * Route: PATCH /api/stories/:id/toggle-visibility
-   */
+  /** Ẩn/Hiện truyện */
   async toggleVisibility(req, res) {
     try {
-      const storyId = req.params.id;
-      const updatedList = await StoryService.toggleStoryVisibility(storyId);
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Đổi trạng thái truyện thành công',
-        data: updatedList
-      });
+      const { storyid } = req.params;
+      await StoryService.toggleStoryVisibility(storyid);
+      return res.status(200).json({ success: true, message: 'Đã thay đổi trạng thái hiển thị' });
     } catch (error) {
-      const statusCode = error.message.includes('không tồn tại') ? 404 : 400;
-      return res.status(statusCode).json({
-        success: false,
-        message: error.message
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
   }
 };

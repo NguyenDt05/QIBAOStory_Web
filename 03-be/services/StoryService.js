@@ -1,107 +1,103 @@
-const Story = require('../models/Story'); // Thay đổi đường dẫn tuỳ theo cấu trúc thư mục của bạn
+const Story = require('../models/Story');
 
 const StoryService = {
-  /** * Lấy danh sách truyện 
+  /** * Lấy danh sách truyện (Hỗ trợ visibleOnly cho User)
    */
   async getAllStories(options = {}) {
     try {
+      // options sẽ chứa { visibleOnly: true/false } truyền từ Controller
       const stories = await Story.getAll(options);
       return stories;
     } catch (error) {
-      // Bạn có thể log lỗi ra hệ thống ở đây
       throw new Error('Lỗi khi lấy danh sách truyện: ' + error.message);
     }
   },
 
-  /** * Lấy chi tiết 1 truyện theo ID 
+  /** * Lấy chi tiết truyện cho USER (Chỉ xem được nếu status = 1)
    */
-  async getStoryById(storyid) {
+  async getStoryDetailForUser(storyid) {
     try {
       if (!storyid) throw new Error('Yêu cầu cung cấp ID truyện');
       
-      const story = await Story.getById(storyid);
-      if (!story) {
-        throw new Error('Không tìm thấy truyện này trong hệ thống');
-      }
-      return story;
+      const story = await Story.getDetailForUser(storyid);
+      return story; // Sẽ trả về null nếu truyện bị ẩn (do logic trong Model)
     } catch (error) {
-      throw error;
+      throw new Error('Lỗi khi lấy thông tin truyện: ' + error.message);
     }
   },
 
-  /** * Thêm mới truyện 
+  /** * Lấy chi tiết truyện cho ADMIN (Lấy hết mọi thông tin để Edit)
+   */
+  async getStoryDetailForAdmin(storyid) {
+    try {
+      if (!storyid) throw new Error('Yêu cầu cung cấp ID truyện');
+      
+      const story = await Story.getDetailForAdmin(storyid);
+      return story;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy thông tin quản trị: ' + error.message);
+    }
+  },
+
+  /** * Thêm mới truyện (Nhận data chứa storyCount từ Controller)
    */
   async createStory(data) {
     try {
-      // Validation cơ bản (Nghiệp vụ)
       if (!data.title || !data.author) {
         throw new Error('Tiêu đề và tên tác giả là bắt buộc');
       }
-
-      // Có thể thêm logic xử lý default cho data ở đây nếu cần
+      // storyCount sẽ nằm trong object data
       const newId = await Story.create(data);
-      return { 
-        success: true, 
-        message: 'Tạo truyện thành công', 
-        storyid: newId 
-      };
+      return newId;
     } catch (error) {
       throw new Error('Lỗi khi tạo truyện mới: ' + error.message);
     }
   },
 
-  /** * Cập nhật thông tin truyện 
+  /** * Cập nhật thông tin truyện
    */
   async updateStory(storyid, data) {
     try {
-      // Kiểm tra xem truyện có tồn tại không trước khi update
-      const existingStory = await Story.getById(storyid);
+      // Dùng hàm Admin để kiểm tra tồn tại (vì truyện ẩn vẫn phải update được)
+      const existingStory = await Story.getDetailForAdmin(storyid);
       if (!existingStory) {
         throw new Error('Truyện không tồn tại hoặc đã bị xoá');
       }
 
       await Story.update(storyid, data);
-      return { 
-        success: true, 
-        message: 'Cập nhật thông tin truyện thành công' 
-      };
+      return { success: true };
     } catch (error) {
       throw error;
     }
   },
 
-  /** * Xoá truyện 
+  /** * Xoá truyện
    */
   async deleteStory(storyid) {
     try {
-      // Kiểm tra truyện có tồn tại không
-      const existingStory = await Story.getById(storyid);
+      const existingStory = await Story.getDetailForAdmin(storyid);
       if (!existingStory) {
         throw new Error('Truyện không tồn tại để xoá');
       }
 
       await Story.remove(storyid);
-      return { 
-        success: true, 
-        message: 'Xoá truyện thành công' 
-      };
+      return { success: true };
     } catch (error) {
       throw error;
     }
   },
 
-  /** * Đổi trạng thái ẩn/hiện của truyện 
+  /** * Đổi trạng thái ẩn/hiện
    */
   async toggleStoryVisibility(storyid) {
     try {
-      const existingStory = await Story.getById(storyid);
+      const existingStory = await Story.getDetailForAdmin(storyid);
       if (!existingStory) {
         throw new Error('Truyện không tồn tại để đổi trạng thái');
       }
 
-      // Trả về danh sách mới dựa theo logic model của bạn
-      const updatedList = await Story.toggleVisibility(storyid);
-      return updatedList; 
+      await Story.toggleVisibility(storyid);
+      return { success: true };
     } catch (error) {
       throw error;
     }
