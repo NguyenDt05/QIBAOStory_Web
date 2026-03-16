@@ -102,6 +102,7 @@ const StoryController = {
   },
 
   /** Cập nhật truyện */
+  
   async update(req, res) {
     try {
       const { storyid } = req.params;
@@ -153,12 +154,19 @@ const StoryController = {
   async toggleVisibility(req, res) {
     try {
       const { storyid } = req.params;
+      
+      // 1. Thực hiện đảo ngược status trong DB
       await StoryService.toggleStoryVisibility(storyid);
-      return res.status(200).json({ success: true, message: 'Đã thay đổi trạng thái hiển thị' });
+      
+      // 2. Lấy lại toàn bộ danh sách truyện mới để FE cập nhật lại State
+      // Điều này giúp giao diện mượt mà, không cần F5
+      const updatedList = await StoryService.getAllStories(); 
+      
+      return res.status(200).json(updatedList); 
     } catch (error) {
+      console.error("Lỗi toggleVisibility:", error);
       return res.status(400).json({ success: false, message: error.message });
     }
   }
 };
-
 module.exports = StoryController;

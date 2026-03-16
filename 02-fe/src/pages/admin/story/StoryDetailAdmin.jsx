@@ -5,6 +5,10 @@ import { getChaptersByStory, toggleChapterVisibility, deleteChapter } from '../.
 import { GenreBadge } from '../../../components/common/GenreSelect';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import { STORY_STATUS, getStatusStyle } from '../../../constants/storyStatus';
+// 1. Import Pagination từ StoryCard
+import { Pagination } from '../../../components/common/StoryCard';
+
+const PAGE_SIZE = 20;
 
 export default function StoryDetailAdmin() {
   const navigate = useNavigate();
@@ -16,9 +20,8 @@ export default function StoryDetailAdmin() {
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 20;
 
-  // 1. Lấy dữ liệu truyện nếu F5 trang hoặc truy cập trực tiếp bằng ID
+  // 1. Lấy dữ liệu truyện
   useEffect(() => {
     const fetchStory = async () => {
       if (!story && storyid) {
@@ -34,7 +37,7 @@ export default function StoryDetailAdmin() {
     fetchStory();
   }, [storyid, state]);
 
-  // 2. Lấy danh sách chương khi đã có storyid
+  // 2. Lấy danh sách chương
   useEffect(() => {
     const sid = story?.storyid || storyid;
     if (!sid) return;
@@ -62,10 +65,10 @@ export default function StoryDetailAdmin() {
       });
   };
 
+  // Tính toán phân trang
   const totalPages = Math.max(1, Math.ceil(chapters.length / PAGE_SIZE));
   const pagedChapters = chapters.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  // Nếu loading xong mà vẫn không thấy truyện
   if (!loading && !story) {
     return (
       <div className="text-center py-5 text-muted">
@@ -75,13 +78,13 @@ export default function StoryDetailAdmin() {
     );
   }
 
-  // Chờ lấy thông tin truyện để tránh lỗi render property của null
   if (!story) return <div className="text-center py-5 text-muted">Đang tải thông tin truyện...</div>;
 
   const statusStyle = getStatusStyle(story.trangthai_rachuong);
 
   return (
     <>
+      {/* Header Actions */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
           <h4 className="fw-bold mb-0" style={{ color: 'var(--primary-color)' }}>
@@ -145,8 +148,8 @@ export default function StoryDetailAdmin() {
         </div>
       </div>
 
-      {/* Chapter list */}
-      <div style={{ backgroundColor: 'var(--surface-1)', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
+      {/* Chapter list table */}
+      <div className="mb-3" style={{ backgroundColor: 'var(--surface-1)', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
         <div className="d-flex justify-content-between align-items-center px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
           <h6 className="fw-bold mb-0"><i className="bi bi-list-ol me-2 text-danger"></i>Danh sách chương</h6>
           <span className="badge text-secondary" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '50px', padding: '4px 12px' }}>{chapters.length} chương</span>
@@ -180,15 +183,17 @@ export default function StoryDetailAdmin() {
                     </td>
                     <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{c.createdat || '—'}</td>
                     <td className="text-center">
-                      <button className="btn btn-sm me-2"
+                      {/* Đã cập nhật nút Sửa theo code mẫu 2 */}
+                      <button className="btn btn-sm fw-bold me-2"
                         onClick={() => navigate(`/admin/chapters/edit/${c.chapterid}`, { state: { story, chapter: c } })}
-                        style={{ borderRadius: '50px', backgroundColor: '#fff3cd', color: '#856404', border: 'none', padding: '4px 14px' }}>
-                        <i className="bi bi-pencil-fill me-1"></i>Sửa
+                        style={{ borderRadius: '50px', backgroundColor: '#e3f2fd', color: '#1565c0', border: 'none', padding: '4px 14px' }}>
+                        <i className="bi bi-pencil-square"></i>
                       </button>
-                      <button className="btn btn-sm"
+                      {/* Đã cập nhật nút Xóa theo code mẫu 2 */}
+                      <button className="btn btn-sm fw-bold"
                         onClick={() => setDeleteTarget(c)}
-                        style={{ borderRadius: '50px', backgroundColor: 'rgba(220,53,69,0.1)', color: '#dc3545', border: 'none', padding: '4px 14px' }}>
-                        <i className="bi bi-trash-fill me-1"></i>Xóa
+                        style={{ borderRadius: '50px', backgroundColor: 'rgba(224,82,82,0.1)', color: 'var(--primary-color)', border: 'none', padding: '4px 14px' }}>
+                        <i className="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -199,10 +204,23 @@ export default function StoryDetailAdmin() {
         )}
       </div>
 
+      {/* Hiển thị phân trang nếu có dữ liệu */}
+      {chapters.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={p => { 
+            setCurrentPage(p); 
+            // Cuộn lên đầu danh sách chương thay vì đầu trang nếu muốn
+            window.scrollTo({ top: 400, behavior: 'smooth' }); 
+          }}
+        />
+      )}
+
       <ConfirmDeleteModal
         show={!!deleteTarget}
         title="Xóa chương"
-        message={`Bạn có chắc chắn muốn xóa chương "${deleteTarget?.chaptername}" không?`}
+        message={`Bạn có chắc chắn muốn xóa chương "${deleteTarget?.chaptername}" không? Thao tác này không thể hoàn tác.`}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleDeleteChapter}
       />

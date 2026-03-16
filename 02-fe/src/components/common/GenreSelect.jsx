@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { CATEGORIES_OPTIONS } from '../../constants/categories';
+// 1. Import hàm gọi API (đảm bảo bạn đã tạo hàm này trong categoryService)
+import { getAllCategories } from '../../api/categoryService';
 
 export function GenreBadge({ label }) {
   return (
@@ -20,10 +21,13 @@ export function GenreBadge({ label }) {
   );
 }
 
+// Hàm chuẩn hóa dữ liệu để khớp với mọi kiểu trả về từ Backend
 function normalizeOptions(list) {
+  if (!list) return [];
   return list.map(g => ({
-    value: g.value ?? g.categoryID ?? g.giaTri,
-    label: g.label ?? g.categoryname ?? g.nhan,
+    // Ưu tiên lấy categoryid (số) làm value
+    value: g.categoryid ?? g.categoryID ?? g.value, 
+    label: g.categoryname ?? g.label,
   }));
 }
 
@@ -32,14 +36,36 @@ function GenreSelect({
   onChange,
   label = 'Thể loại',
   placeholder = 'Tìm thể loại...',
-  options = CATEGORIES_OPTIONS,
   showTags = true,
 }) {
   const [searchText, setSearchText] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  // 2. Tạo state để lưu danh sách thể loại từ Database
+  const [dbOptions, setDbOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const wrapRef = useRef();
 
-  const normalizedOptions = normalizeOptions(options);
+  // 3. Gọi API khi component vừa hiển thị
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const res = await getAllCategories();
+        // axiosConfig của bạn đã bóc sẵn data, nên res thường là mảng hoặc {data: []}
+        const data = res?.data || res; 
+        if (Array.isArray(data)) {
+          setDbOptions(data);
+        }
+      } catch (err) {
+        console.error("Lỗi tải thể loại từ DB:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const normalizedOptions = normalizeOptions(dbOptions);
 
   const toggle = (value) => {
     onChange(
@@ -50,8 +76,7 @@ function GenreSelect({
   };
 
   const filtered = normalizedOptions.filter(g =>
-    g.label.toLowerCase().includes(searchText.toLowerCase()) ||
-    g.value.toLowerCase().includes(searchText.toLowerCase())
+    g.label?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   useEffect(() => {
@@ -75,6 +100,7 @@ function GenreSelect({
               ({selected.length} đã chọn)
             </span>
           )}
+          {loading && <span className="ms-2 spinner-border spinner-border-sm" style={{width: '10px', height: '10px'}}></span>}
         </label>
       )}
 
@@ -95,10 +121,11 @@ function GenreSelect({
         <input
           type="text"
           className="form-control border-0"
-          placeholder={placeholder}
+          placeholder={loading ? "Đang tải dữ liệu..." : placeholder}
           value={searchText}
           onChange={e => { setSearchText(e.target.value); setDropdownOpen(true); }}
           onFocus={() => setDropdownOpen(true)}
+          disabled={loading}
           style={{
             boxShadow: 'none',
             fontSize: '0.9rem',
@@ -126,7 +153,7 @@ function GenreSelect({
           right: 0,
           zIndex: 200,
           backgroundColor: 'var(--surface-1)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1px solid var(--border)',
           borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           maxHeight: '220px',

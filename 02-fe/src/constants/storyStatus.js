@@ -1,21 +1,21 @@
 export const STORY_STATUS = {
-  dangra: {
-    value: 'dangra',
+  dang_ra: {
+    value: 'dang_ra',
     label: 'Đang ra',
     bgColor: '#e3f2fd',
     textColor: '#1565c0',
   },
-  tamngung: {
-    value: 'tamngung',
-    label: 'Tạm ngưng',
-    bgColor: '#fff8e1',
-    textColor: '#f57f17',
-  },
-  hoanthanh: {
-    value: 'hoanthanh',
+  hoan_thanh: {
+    value: 'hoan_thanh',
     label: 'Hoàn thành',
     bgColor: '#e8f5e9',
     textColor: '#2e7d32',
+  },
+  tam_ngung: {
+    value: 'tam_ngung',
+    label: 'Tạm ngưng',
+    bgColor: '#ffebee',
+    textColor: '#c62828',
   },
 };
 
@@ -25,5 +25,5 @@ export const STORY_STATUS_LIST = Object.values(STORY_STATUS).map(s => ({
 }));
 
 export function getStatusStyle(value) {
-  return STORY_STATUS[value] ?? STORY_STATUS.dangra;
+  return STORY_STATUS[value] ?? STORY_STATUS.dang_ra;
 }

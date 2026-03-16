@@ -89,7 +89,7 @@ export default function EditStory() {
     // 5. Gọi API với formDataToSend
     await updateStory(storyid, formDataToSend);
     
-    alert("Cập nhật truyện thành công!");
+    // alert("Cập nhật truyện thành công!");
     navigate('/admin/stories');
   } catch (err) {
     console.error("Lỗi cập nhật:", err);

@@ -87,7 +87,7 @@ export async function addStory(formData) {
     const res = await axiosConfig.post('/stories', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    return res.data;
+    return res;
   } catch (error) {
     console.error("Lỗi addStory:", error);
     throw error;
@@ -102,7 +102,7 @@ export async function updateStory(storyid, formData) {
     const res = await axiosConfig.put(`/stories/${storyid}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    return res.data;
+    return res;
   } catch (error) {
     console.error("Lỗi updateStory:", error);
     throw error;
@@ -110,19 +110,19 @@ export async function updateStory(storyid, formData) {
 }
 
 /**
+/**
  * 7. ẨN/HIỆN TRUYỆN nhanh
  */
 export async function toggleStoryVisibility(storyid) {
   try {
-    const res = await axiosConfig.patch(`/stories/${storyid}/toggle`);
-    const rawList = res.data?.data || res.data || [];
+    const res = await axiosConfig.patch(`/stories/${storyid}/toggle`);  
+    const rawList = Array.isArray(res) ? res : (res?.data || []);
     return rawList.map(normalize);
   } catch (error) {
     console.error("Lỗi toggleStoryVisibility:", error);
     throw error;
   }
 }
-
 /**
  * 8. XÓA TRUYỆN
  */

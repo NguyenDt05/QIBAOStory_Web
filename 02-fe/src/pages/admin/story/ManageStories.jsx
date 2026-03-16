@@ -57,8 +57,8 @@ export default function ManageStories() {
   // Logic lọc dữ liệu
   const filtered = stories.filter(t => {
     const matchSearch = (t.title?.toLowerCase() || "").includes(search.toLowerCase()) || 
-                       (t.author?.toLowerCase() || "").includes(search.toLowerCase());
-    const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID));
+                        (t.author?.toLowerCase() || "").includes(search.toLowerCase());
+    const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID || c.categoryid));
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
   });
@@ -107,7 +107,7 @@ export default function ManageStories() {
               style={{ borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'none' }}>
               <option value="">Trạng thái</option>
               {Object.entries(STORY_STATUS).map(([key, val]) => (
-                <option key={key} value={key}>{val.label}</option>
+                <option key={key} value={val.value}>{val.label}</option>
               ))}
             </select>
           </div>
@@ -144,12 +144,11 @@ export default function ManageStories() {
                   </td>
                 </tr>
               ) : currentItems.map(t => {
-                const statusInfo = STORY_STATUS[t.trangthai_rachuong] ?? STORY_STATUS.dangra;
+                const statusInfo = STORY_STATUS[t.trangthai_rachuong] ?? Object.values(STORY_STATUS).find(s => s.value === t.trangthai_rachuong) ?? STORY_STATUS.dangra;
                 return (
                   <tr key={t.storyid} style={{ borderTop: '1px solid var(--border)', opacity: t.status ? 1 : 0.4 }}>
                     <td className="ps-4 py-3">
                       <div className="d-flex align-items-center">
-                        {/* HIỂN THỊ ẢNH THẬT */}
                         <div className="me-3" style={{ width: '45px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)', backgroundColor: '#2a3142' }}>
                           {t.coverUrl ? (
                             <img src={t.coverUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -170,16 +169,33 @@ export default function ManageStories() {
                     <td className="text-center fw-bold" style={{ color: 'var(--primary-color)' }}>
                       {t.storyCount ?? 0}
                     </td>
+                    {/* LOGIC HIỂN THỊ THỂ LOẠI MỚI (MAX 2 + X) */}
                     <td className="text-center">
-                      <div className="d-flex flex-wrap gap-1 justify-content-center">
-                        {(t.categories ?? []).map(c => (
-                          <GenreBadge key={c.categoryID} value={c.categoryID} label={c.categoryname} />
+                      <div className="d-flex flex-wrap gap-1 justify-content-center align-items-center">
+                        {(t.categories ?? []).slice(0, 2).map(c => (
+                          <GenreBadge key={c.categoryID || c.categoryid} value={c.categoryID || c.categoryid} label={c.categoryname} />
                         ))}
+                        {t.categories?.length > 2 && (
+                          <span 
+                            className="fw-bold" 
+                            style={{ 
+                              fontSize: '0.75rem', 
+                              color: 'var(--primary-color)', 
+                              backgroundColor: 'rgba(224,82,82,0.1)', 
+                              padding: '2px 8px',
+                              borderRadius: '50px',
+                              cursor: 'help'
+                            }}
+                            title={t.categories.slice(2).map(c => c.categoryname).join(', ')}
+                          >
+                            +{t.categories.length - 2}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td>
                       <span className="fw-semibold small px-3 py-1"
-                        style={{ borderRadius: '50px', backgroundColor: statusInfo.bg, color: statusInfo.color }}>
+                        style={{ borderRadius: '50px', backgroundColor: statusInfo.bg || statusInfo.bgColor, color: statusInfo.color || statusInfo.textColor }}>
                         {statusInfo.label}
                       </span>
                     </td>
