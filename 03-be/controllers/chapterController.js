@@ -4,8 +4,8 @@ const Chapter = require('../models/Chapter');
 async function getByStory(req, res, next) {
   try {
     const { storyid } = req.params;
-    // TODO
-    res.json({ success: true, data: [] });
+    const chapters = await Chapter.getByStory(storyid);
+    res.json({ success: true, data: chapters });
   } catch (err) { next(err); }
 }
 
@@ -13,8 +13,17 @@ async function getByStory(req, res, next) {
 async function getById(req, res, next) {
   try {
     const { storyid, chapterid } = req.params;
-    // TODO: hỗ trợ chapterid = 'first' | 'last' | <số>
-    res.json({ success: true, data: null });
+    
+    // Xử lý logic lấy chương theo ID
+    // Note: Nếu muốn hỗ trợ 'first'|'last', bạn cần viết thêm hàm riêng trong Model. 
+    // Ở đây ta xử lý theo ID số trước:
+    const chapter = await Chapter.getById(storyid, chapterid);
+    
+    if (!chapter) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy chương' });
+    }
+    
+    res.json({ success: true, data: chapter });
   } catch (err) { next(err); }
 }
 
@@ -22,8 +31,18 @@ async function getById(req, res, next) {
 async function create(req, res, next) {
   try {
     const { storyid } = req.params;
-    // TODO
-    res.status(201).json({ success: true, data: null });
+    const { chaptername, content } = req.body;
+
+    if (!chaptername || !content) {
+      return res.status(400).json({ success: false, message: 'Thiếu tên chương hoặc nội dung' });
+    }
+
+    const newChapterId = await Chapter.create(storyid, { chaptername, content });
+    res.status(201).json({ 
+      success: true, 
+      message: 'Tạo chương mới thành công',
+      data: { chapterid: newChapterId } 
+    });
   } catch (err) { next(err); }
 }
 
@@ -31,8 +50,10 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const { storyid, chapterid } = req.params;
-    // TODO
-    res.json({ success: true, data: null });
+    const { chaptername, content } = req.body;
+
+    await Chapter.update(storyid, chapterid, { chaptername, content });
+    res.json({ success: true, message: 'Cập nhật chương thành công' });
   } catch (err) { next(err); }
 }
 
@@ -40,8 +61,8 @@ async function update(req, res, next) {
 async function remove(req, res, next) {
   try {
     const { storyid, chapterid } = req.params;
-    // TODO
-    res.json({ success: true });
+    await Chapter.remove(storyid, chapterid);
+    res.json({ success: true, message: 'Xóa chương thành công' });
   } catch (err) { next(err); }
 }
 
@@ -49,8 +70,9 @@ async function remove(req, res, next) {
 async function toggleVisibility(req, res, next) {
   try {
     const { storyid, chapterid } = req.params;
-    // TODO
-    res.json({ success: true, data: [] });
+    // Hàm này trong Model trả về danh sách chương mới sau khi update
+    const updatedChapters = await Chapter.toggleVisibility(storyid, chapterid);
+    res.json({ success: true, data: updatedChapters });
   } catch (err) { next(err); }
 }
 

@@ -4,6 +4,10 @@ const ctrl = require('../controllers/storyController');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
+// NHÚNG ROUTER CHAPTER TẠI ĐÂY
+const chapterRouter = require('./chapters');
+router.use('/', chapterRouter);
+
 // ── USER ROUTES (Public) ─────────────────────────────────────────────────────
 
 // Lấy danh sách truyện cho trang chủ (Chỉ hiện truyện status = 1)
@@ -28,13 +32,13 @@ router.get('/admin/:storyid', authenticate, requireAdmin, ctrl.getDetailForAdmin
 /**
  * TẠO TRUYỆN MỚI
  * Sử dụng upload.single('image') để bắt file ảnh từ trường 'image' trong FormData
- */
+ */http://localhost:8080/api/stories
 router.post('/', authenticate, requireAdmin, upload.single('image'), ctrl.create);
 
 /**
  * CẬP NHẬT TRUYỆN
  * Cho phép cập nhật thông tin và thay đổi ảnh bìa mới
- */
+ */http://localhost:8080/api/stories/:storyid
 router.put('/:storyid', authenticate, requireAdmin, upload.single('image'), ctrl.update);
 
 /**
