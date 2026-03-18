@@ -234,13 +234,15 @@
 
 /* ── Chapter content ── */
 .tdc-content {
-  line-height: 1.9;
+  line-height: 2;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .tdc-content__para {
   color: var(--text-1);
-  font-size: 1rem;
-  margin-bottom: 1.1rem;
+  font-size: 1.05rem;
+  font-family: 'Times New Roman', Times, serif;
+  margin-bottom: 1.15rem;
   text-align: justify;
   hyphens: auto;
 }

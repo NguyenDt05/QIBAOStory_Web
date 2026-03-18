@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { getProfile } from '../../api/userService';
 import { useAuth } from '../../context/AuthContext';
 import ProfileSidebar from './profile/ProfileSidebar';
 import PersonalInfo from './profile/PersonalInfo';
@@ -21,6 +22,22 @@ export default function Profile() {
   if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
+
+  // Tự động đồng bộ data mới nhất từ Backend khi vào trang Profile
+  useEffect(() => {
+    async function syncProfile() {
+      try {
+        const latestProfile = await getProfile(currentUser.userid);
+        if (latestProfile) {
+          // Chỉ cần cập nhật context, các child components sẽ tự re-render với data mới
+          login({ ...currentUser, ...latestProfile });
+        }
+      } catch (err) {
+        console.error('Không thể đồng bộ profile:', err);
+      }
+    }
+    syncProfile();
+  }, [currentUser.userid]); // Chỉ chạy 1 lần khi vô trang profile của user này
 
   const handleSaveName = (newName) => {
     setTenhienthi(newName);

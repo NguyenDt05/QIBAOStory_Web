@@ -27,9 +27,20 @@ export async function deleteUser(userid) {
 
 // ── USER PROFILE ───────────────────────────────────────────────────
 
-/** Cập nhật thông tin cá nhân (tenhienthi, avatar) */
-export async function updateProfile(userid, { tenhienthi, avatar }) {
-  const res = await axiosConfig.put(`/users/${userid}/profile`, { tenhienthi, avatar });
+/** Lấy thông tin cá nhân */
+export async function getProfile(userid) {
+  const res = await axiosConfig.get(`/users/${userid}`);
+  return res?.data || res;
+}
+
+/** Cập nhật thông tin cá nhân — nhận FormData (có image) hoặc object JSON */
+export async function updateProfile(userid, data) {
+  const isFormData = data instanceof FormData;
+  const res = await axiosConfig.put(
+    `/users/${userid}/profile`,
+    data,
+    isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {}
+  );
   return res?.data || res;
 }
 

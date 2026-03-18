@@ -69,7 +69,8 @@ export default function StoryDetail() {
     return <Navigate to="/home" replace />;
   }
 
-  const isHiatus     = !isAdmin && story.trangthai_rachuong === 'tamngung';
+  const normalizedStatus = String(story.trangthai_rachuong || '').trim().toLowerCase();
+  const isHiatus     = !isAdmin && ['tamngung', 'tam_ngung', 'tạm ngưng'].includes(normalizedStatus);
   const statusInfo   = STORY_STATUS[story.trangthai_rachuong] ?? STORY_STATUS.dangra;
   const recentChapters = chapters.slice(-3).reverse();
   const saved        = isInLibrary(story.storyid);
@@ -186,7 +187,7 @@ export default function StoryDetail() {
 
                 {isAdmin && (
                   <Link
-                    to="/admin/stories/detail"
+                    to={`/admin/stories/detail/${story.storyid}`}
                     state={{ story }}
                     className="btn fw-semibold d-flex align-items-center gap-2 text-decoration-none"
                     style={{

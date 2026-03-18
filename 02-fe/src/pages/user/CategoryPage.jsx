@@ -69,7 +69,7 @@ function CategoryPage() {
           <h4 className="story-list-page__title">THỂ LOẠI TRUYỆN</h4>
         </div>
 
-        <div className="tab-wrapper d-flex gap-0 mb-4" style={{ flexWrap: 'wrap' }}>
+        <div className="tab-wrapper d-flex gap-2 mb-4">
           {/* Tab "Tất cả" */}
           <button
             className={`tab-btn${'all' === activeTab ? ' active' : ''}`}

@@ -36,16 +36,30 @@ const normalize = (s) => {
 
 /**
  * Lấy danh sách truyện (GET /stories — public, chỉ status=1)
- * visibleOnly: filter thêm ở FE nếu cần (BE đã lọc status=1 rồi)
  */
-export async function getAllStories({ visibleOnly = false } = {}) {
+export async function getAllStories() {
   try {
     const res     = await axiosConfig.get('/stories');
     const rawList = res?.data || res || [];
     const list    = rawList.map(normalize);
-    return visibleOnly ? list.filter(s => s.status === 1) : list;
+    return list;
   } catch (error) {
     console.error('Lỗi getAllStories:', error);
+    return [];
+  }
+}
+
+/**
+ * Lấy danh sách TẤT CẢ truyện cho Admin (GET /stories/admin/all)
+ * (Kể cả status=0)
+ */
+export async function getAdminStories() {
+  try {
+    const res     = await axiosConfig.get('/stories/admin/all');
+    const rawList = res?.data || res || [];
+    return rawList.map(normalize);
+  } catch (error) {
+    console.error('Lỗi getAdminStories:', error);
     return [];
   }
 }
@@ -128,7 +142,7 @@ export async function toggleStoryVisibility(storyid) {
 export async function deleteStory(storyid) {
   try {
     await axiosConfig.delete(`/stories/${storyid}`);
-    return await getAllStories();
+    return await getAdminStories();
   } catch (error) {
     console.error('Lỗi deleteStory:', error);
     throw error;

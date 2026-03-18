@@ -23,11 +23,10 @@ export default function ManageCategories() {
   // Logic chia trang giống code mẫu
   const [currentPage, setCurrentPage] = useState(1);
 
-  // --- SỬA Ở ĐÂY: Đưa loadData ra ngoài để có thể gọi lại nhiều lần ---
   const loadData = async () => {
     try {
       setLoading(true);
-      const response = await getAllCategories();
+      const response = await getAllCategories(true);
       
       let finalData = [];
       if (Array.isArray(response)) {
@@ -66,11 +65,19 @@ export default function ManageCategories() {
   const handleToggle = async (tl) => {
     try {
       const id = tl.categoryID || tl.categoryid;
-      await toggleCategoryStatus(id);
       
-      // SỬA Ở ĐÂY: Load lại dữ liệu để cập nhật giao diện ngay
-      loadData();
-    } catch (err) { console.error("Lỗi toggle status:", err); }
+      // SỬA Ở ĐÂY: Chống nhảy bảng (giật giao diện) bằng cách update state cục bộ trước
+      setCategories(prev => prev.map(c => 
+        (c.categoryID === id || c.categoryid === id) 
+          ? { ...c, status: (c.status === "1" || c.status === 1) ? 0 : 1 } 
+          : c
+      ));
+
+      await toggleCategoryStatus(id);
+    } catch (err) { 
+      console.error("Lỗi toggle status:", err); 
+      loadData(); // Revert back if error
+    }
   };
 
   // 4. API: Thêm hoặc Sửa thể loại

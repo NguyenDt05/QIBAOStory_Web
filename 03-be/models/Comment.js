@@ -44,8 +44,8 @@ const Comment = {
    */
   async create(data) {
     const [result] = await db.query(
-      'INSERT INTO comment (storyid, userid, content, tenhienthi) VALUES (?, ?, ?, ?)',
-      [data.storyid, data.userid, data.content, data.tenhienthi || '']
+      'INSERT INTO comment (storyid, userid, content) VALUES (?, ?, ?)',
+      [data.storyid, data.userid, data.content]
     );
     return result.insertId;
   },

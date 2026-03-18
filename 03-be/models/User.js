@@ -61,13 +61,24 @@ const User = {
 
   /**
    * Cập nhật thông tin cá nhân (Tên hiển thị, Avatar)
+   * Chỉ cập nhật avatar khi có giá trị mới (avatar !== undefined)
    */
   async updateProfile(userid, data) {
-    await db.query(
-      `UPDATE users SET tenhienthi = ?, avatar = ? WHERE userid = ?`, 
-      [data.tenhienthi, data.avatar, userid]
-    );
+    if (data.avatar !== undefined) {
+      // Cập nhật cả tenhienthi và avatar
+      await db.query(
+        `UPDATE users SET tenhienthi = ?, avatar = ? WHERE userid = ?`,
+        [data.tenhienthi, data.avatar, userid]
+      );
+    } else {
+      // Chỉ cập nhật tenhienthi, giữ nguyên avatar cũ
+      await db.query(
+        `UPDATE users SET tenhienthi = ? WHERE userid = ?`,
+        [data.tenhienthi, userid]
+      );
+    }
   },
+
 
   /**
    * Cập nhật mật khẩu mới (Đã hash)

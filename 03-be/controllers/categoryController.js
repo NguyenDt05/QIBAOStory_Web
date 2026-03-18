@@ -6,9 +6,12 @@ const Category = require('../models/Category');
 const categoryController = {
   async getAll(req, res, next) {
     try {
-      // Nếu có token và role là admin thì visibleOnly = false (lấy tất cả)
       const isAdmin = req.user && req.user.role === 'admin';
-      const categories = await Category.getAll({ visibleOnly: !isAdmin });
+      const requestAll = req.query.all === 'true'; 
+      // Chỉ lấy TẤT CẢ nếu: là Admin VÀ trên URL có ?all=true
+      const visibleOnly = !(isAdmin && requestAll);
+
+      const categories = await Category.getAll({ visibleOnly });
       
       res.json({ success: true, data: categories });
     } catch (err) {

@@ -8,6 +8,8 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME     || 'qibao_db',
   waitForConnections: true,
   connectionLimit:    10,
+  dateStrings:        true,
+  timezone:           '+07:00'
 });
 
 // Test kết nối khi khởi động

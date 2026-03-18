@@ -9,7 +9,7 @@ const Category = {
   async getAll({ visibleOnly = false } = {}) {
     const where = visibleOnly ? 'WHERE c.status = 1' : '';
     const [rows] = await db.query(
-      `SELECT c.categoryid, c.categoryname, c.status, COUNT(sc.storyid) as totalStories
+      `SELECT c.categoryid AS categoryID, c.categoryname, c.status, COUNT(sc.storyid) as totalStories
        FROM category c 
        LEFT JOIN story_category sc ON sc.categoryid = c.categoryid
        ${where}

@@ -62,4 +62,28 @@ function optionalAuthenticate(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, requireAdmin, optionalAuthenticate };
+/**
+ * Chỉ cho phép Chủ sở hữu (Owner) hoặc Admin thực hiện hành động
+ */
+function requireOwnerOrAdmin(req, res, next) {
+  const targetId = String(req.params.id || req.params.userid);
+  const currentUserId = String(req.user.userid);
+
+  console.log('[DEBUG-AUTH] requireOwnerOrAdmin:', { 
+    params: req.params, 
+    user: req.user, 
+    targetId, 
+    currentUserId 
+  });
+
+  if (req.user.role === 'admin' || currentUserId === targetId) {
+    return next();
+  }
+
+  return res.status(403).json({ 
+    success: false, 
+    message: 'Quyền truy cập bị từ chối. Bạn không có quyền thao tác trên người dùng này!' 
+  });
+}
+
+module.exports = { authenticate, requireAdmin, optionalAuthenticate, requireOwnerOrAdmin };

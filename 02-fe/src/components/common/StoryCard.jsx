@@ -10,7 +10,18 @@ const STATUS_MAP = {
 };
 
 export function StatusBadge({ status }) {
-  const { modifier, label } = STATUS_MAP[status] ?? STATUS_MAP.dangra;
+  let normalized = String(status || '').trim().toLowerCase();
+  
+  let key = 'dangra'; // Default
+  if (['hoanthanh', 'hoan_thanh', 'da_hoan', 'full'].includes(normalized)) {
+    key = 'hoanthanh';
+  } else if (['tamngung', 'tam_ngung', 'tạm ngưng'].includes(normalized)) {
+    key = 'tamngung';
+  } else if (['dangra', 'dang_ra'].includes(normalized)) {
+    key = 'dangra';
+  }
+
+  const { modifier, label } = STATUS_MAP[key];
   return (
     <span className={`status-badge status-badge--${modifier}`}>
       {label}

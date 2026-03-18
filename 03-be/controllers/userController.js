@@ -1,5 +1,5 @@
-const UserService = require('../services/UserService'); 
-const bcrypt = require('bcrypt'); 
+const UserService = require('../services/UserService');
+const bcrypt = require('bcrypt');
 
 const UserController = {
   /**
@@ -42,14 +42,14 @@ const UserController = {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // 3. Gửi dữ liệu xuống Service (đã thay thế password gốc bằng password đã mã hóa)
-      const userData = { 
-        username, 
-        password: hashedPassword, 
-        tenhienthi 
+      const userData = {
+        username,
+        password: hashedPassword,
+        tenhienthi
       };
-      
+
       const result = await UserService.createUser(userData);
-      
+
       return res.status(201).json(result);
     } catch (error) {
       // Bắt lỗi trùng username từ Service ném lên
@@ -107,7 +107,7 @@ const UserController = {
 
       // Tạm thời chỉ trả về thông tin user (nhớ xóa password trước khi trả về client)
       delete user.password;
-      
+
       return res.status(200).json({
         success: true,
         message: 'Đăng nhập thành công',
@@ -129,9 +129,9 @@ const UserController = {
    */
   async toggleStatus(req, res) {
     try {
-      const userId = req.params.id;
+      const userId = req.params.id || req.params.userid;
       const result = await UserService.toggleUserStatus(userId);
-      
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -147,9 +147,9 @@ const UserController = {
    */
   async delete(req, res) {
     try {
-      const userId = req.params.id;
+      const userId = req.params.id || req.params.userid;
       const result = await UserService.deleteUser(userId);
-      
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -162,15 +162,21 @@ const UserController = {
   /**
    * [PUT] Cập nhật Profile (Tên hiển thị, Avatar)
    * Route: PUT /api/users/:id/profile
+   * Body: multipart/form-data — key "tenhienthi" (text) + key "image" (file, tuỳ chọn)
    */
   async updateProfile(req, res) {
     try {
       const userId = req.params.id;
-      const { tenhienthi, avatar } = req.body; // Lấy data từ form
-      
+      const tenhienthi = req.body.tenhienthi || null;
+      // Nếu có file upload mới → dùng path file, ngược lại giữ nguyên (không ghi đè)
+      const avatar = req.file ? `avatars/${req.file.filename}` : undefined;
+
       const result = await UserService.updateProfile(userId, { tenhienthi, avatar });
-      
-      return res.status(200).json(result);
+
+      return res.status(200).json({
+        ...result,
+        avatar: avatar || undefined
+      });
     } catch (error) {
       return res.status(400).json({
         success: false,

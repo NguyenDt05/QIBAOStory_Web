@@ -82,6 +82,24 @@ export default function ReadChapter() {
 
   const { chapter, prevChapter, nextChapter, storyTitle, totalChapters, chapterIndex } = data;
 
+  const isAdmin = currentUser?.role === 'admin';
+  const isHiatus = !isAdmin && ['tamngung', 'tam_ngung', 'tạm ngưng'].includes(String(chapter.trangthai_rachuong || '').trim().toLowerCase());
+
+  if (isHiatus) {
+    return (
+      <div className="tdc-page d-flex align-items-center justify-content-center">
+        <div className="text-center p-5" style={{ backgroundColor: 'var(--surface-1)', borderRadius: '16px', border: '1px solid var(--border)' }}>
+          <i className="bi bi-pause-circle mb-3 d-block" style={{ fontSize: '3rem', color: 'var(--text-2)' }}></i>
+          <h4 className="fw-bold mb-2 text-white">Truyện đang tạm ngưng</h4>
+          <p className="text-muted mb-4">Tính năng đọc chương tạm thời bị khóa cho đến khi truyện được mở lại.</p>
+          <Link to={`/stories/${storyid}`} className="btn fw-bold px-4 py-2" style={{ borderRadius: '50px', backgroundColor: 'var(--primary-color)', color: '#fff' }}>
+            Quay lại trang truyện
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const colonIdx    = chapter.chaptername.indexOf(': ');
   const titleNumber = colonIdx !== -1 ? chapter.chaptername.slice(0, colonIdx) : chapter.chaptername;
   const titleName   = colonIdx !== -1 ? chapter.chaptername.slice(colonIdx + 2) : '';

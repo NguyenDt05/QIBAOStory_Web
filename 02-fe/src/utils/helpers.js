@@ -14,13 +14,18 @@ export function getRelativeTime(input) {
   if (typeof input === 'number') {
     ts = input;
   } else if (typeof input === 'string') {
-    try {
-      const [datePart, timePart] = input.split(' ');
-      const [d, m, y] = datePart.split('/');
-      const [hh, mm] = (timePart ?? '00:00').split(':');
-      ts = new Date(y, m - 1, d, hh, mm).getTime();
-    } catch {
-      return input;
+    const d = new Date(input);
+    if (!isNaN(d.getTime())) {
+      ts = d.getTime();
+    } else {
+      try {
+        const [datePart, timePart] = input.split(' ');
+        const [dPart, mPart, yPart] = datePart.split('/');
+        const [hh, mm] = (timePart ?? '00:00').split(':');
+        ts = new Date(yPart, mPart - 1, dPart, hh, mm).getTime();
+      } catch {
+        return input;
+      }
     }
   } else {
     return String(input);

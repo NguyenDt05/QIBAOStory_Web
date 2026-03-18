@@ -15,7 +15,10 @@ const Chapter = {
   /** Lấy chi tiết 1 chương (có prev/next) */
   async getById(storyid, chapterid) {
     const [rows] = await db.query(
-      `SELECT * FROM chapter WHERE storyid = ? AND chapterid = ?`,
+      `SELECT c.*, s.title as storyTitle, s.author as storyAuthor, s.trangthai_rachuong
+       FROM chapter c
+       JOIN stories s ON c.storyid = s.storyid
+       WHERE c.storyid = ? AND c.chapterid = ?`,
       [storyid, chapterid]
     );
     return rows[0] ?? null;
@@ -33,9 +36,9 @@ const Chapter = {
       );
       const chapterid = result.insertId;
 
-      // Cập nhật số chương và thời gian cập nhật của truyện
+      // Chỉ cập nhật updatedat; storyCount là varchar (ví dụ: "114 + 7 NT") nên Admin quản lý thủ công
       await conn.query(
-        `UPDATE stories SET storyCount = storyCount + 1, updatedat = CURRENT_TIMESTAMP WHERE storyid = ?`,
+        `UPDATE stories SET updatedat = CURRENT_TIMESTAMP WHERE storyid = ?`,
         [storyid]
       );
 

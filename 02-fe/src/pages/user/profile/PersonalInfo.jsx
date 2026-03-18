@@ -4,14 +4,23 @@ import { getRoleLabel } from '../../../constants/roles';
 import { updateProfile } from '../../../api/userService';
 import { useAuth } from '../../../context/AuthContext';
 
+const BASE_URL = 'http://localhost:8080';
+
+function resolveAvatar(avatar) {
+  if (!avatar) return null;
+  if (avatar.startsWith('http') || avatar.startsWith('data:')) return avatar;
+  return `${BASE_URL}/${avatar}`;
+}
+
 export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) {
-  const name  = currentUser?.tenhienthi || '';
+  const name = currentUser?.tenhienthi || '';
   const { login: updateContext } = useAuth();
 
-  const [isEditing,  setIsEditing]  = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [nameBuffer, setNameBuffer] = useState(name);
-  const [isSaving,   setIsSaving]   = useState(false);
-  const [saveError,  setSaveError]  = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState(null); // preview tạm khi chọn file
   const fileInputRef = useRef(null);
 
   const handleAvatarClick = () => fileInputRef.current?.click();
@@ -19,18 +28,31 @@ export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = reader.result;
-      try {
-        await updateProfile(currentUser.userid, { tenhienthi: name, avatar: dataUrl });
-        onSaveAvatar?.(dataUrl);
-        updateContext({ ...currentUser, tenhienthi: name, avatar: dataUrl });
-      } catch (err) {
-        setSaveError('Lỗi khi lưu ảnh đại diện');
-      }
-    };
-    reader.readAsDataURL(file);
+
+    // Preview tạm ngay khi chọn
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('tenhienthi', name);
+
+    try {
+      const res = await updateProfile(currentUser.userid, formData);
+      
+      // Lấy đường dẫn thật tĩnh từ backend (ví dụ: avatars/xyz.jpg)
+      const finalAvatarUrl = res?.avatar || currentUser.avatar;
+
+      // Xóa URL tạm thời khỏi bộ nhớ của trình duyệt
+      URL.revokeObjectURL(previewUrl); 
+      setAvatarPreview(null);
+
+      onSaveAvatar?.(finalAvatarUrl);
+      updateContext({ ...currentUser, tenhienthi: name, avatar: finalAvatarUrl });
+    } catch (err) {
+      setSaveError('Lỗi khi lưu ảnh đại diện');
+      setAvatarPreview(null);
+    }
     e.target.value = '';
   };
 
@@ -48,7 +70,10 @@ export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) 
     setIsSaving(true);
     setSaveError('');
     try {
-      await updateProfile(currentUser.userid, { tenhienthi: trimmed, avatar: currentUser.avatar });
+      const formData = new FormData();
+      formData.append('tenhienthi', trimmed);
+      // Không append 'image' → BE sẽ giữ nguyên avatar cũ
+      await updateProfile(currentUser.userid, formData);
       onSaveName?.(trimmed);
       updateContext({ ...currentUser, tenhienthi: trimmed });
     } catch (err) {
@@ -59,6 +84,7 @@ export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) 
     }
   };
 
+
   const cancelEdit = () => {
     setIsEditing(false);
     setNameBuffer(name);
@@ -66,7 +92,7 @@ export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) 
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter')  saveName();
+    if (e.key === 'Enter') saveName();
     if (e.key === 'Escape') cancelEdit();
   };
 
@@ -84,7 +110,7 @@ export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) 
         <div className="ttcn-avatar" onClick={handleAvatarClick} title="Đổi ảnh đại diện" style={{ position: 'relative' }}>
           <Avatar
             tenhienthi={name || currentUser?.username || '?'}
-            avatar={currentUser?.avatar}
+            avatar={avatarPreview || currentUser?.avatar}
             size={100}
             style={{ cursor: 'pointer' }}
           />

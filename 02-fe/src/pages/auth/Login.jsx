@@ -23,8 +23,8 @@ function Login() {
     setError('');
     setIsLoading(true);
     try {
-      const { role, tenhienthi } = await apiLogin(username, password);
-      login({ username: username.trim(), tenhienthi, role });
+      const { role, tenhienthi, userid } = await apiLogin(username, password);
+      login({ userid, username: username.trim(), tenhienthi, role });
       navigate(role === 'admin' ? '/admin/dashboard' : '/home', { replace: true });
     } catch (err) {
       setError(err.message);

@@ -32,8 +32,18 @@ function StoryList() {
 
   const filtered = useMemo(() => {
     let list = [...allStories];
-    if (activeTab === 'ongoing')   list = list.filter(s => s.trangthai_rachuong === 'dangra');
-    if (activeTab === 'completed') list = list.filter(s => s.trangthai_rachuong === 'hoanthanh');
+    if (activeTab === 'ongoing') {
+      list = list.filter(s => {
+        const v = String(s.trangthai_rachuong || '').trim().toLowerCase();
+        return ['dang_ra', 'dangra'].includes(v);
+      });
+    }
+    if (activeTab === 'completed') {
+      list = list.filter(s => {
+        const v = String(s.trangthai_rachuong || '').trim().toLowerCase();
+        return ['hoanthanh', 'hoan_thanh', 'da_hoan', 'full'].includes(v);
+      });
+    }
     list.sort((a, b) => (b.updatedat ?? 0) - (a.updatedat ?? 0));
     return list;
   }, [allStories, activeTab]);

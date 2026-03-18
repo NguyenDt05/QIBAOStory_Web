@@ -46,15 +46,19 @@ export async function getChapterDetail(storyid, chapterid) {
   }
 
   // Bước 3: Lấy nội dung đầy đủ chương (có field content)
+  // detailRes từ axios interceptor đã là { success, data: { chapter, prevChapter, ... } }
   const detailRes = await axiosConfig.get(`/stories/${storyid}/chapters/${targetChapter.chapterid}`);
-  const chapter   = detailRes?.data || detailRes || targetChapter;
+  // Unwrap đúng: detailRes.data chính là { chapter, prevChapter, ... }
+  // nên phải lấy detailRes.data.chapter (hoặc detailRes.chapter nếu đã unwrap 1 lần)
+  const chapterData = detailRes?.data || detailRes;
+  const chapter = chapterData?.chapter || targetChapter;
 
   return {
     chapter,
     prevChapter:   idx > 0               ? list[idx - 1] : null,
     nextChapter:   idx < list.length - 1 ? list[idx + 1] : null,
     storyTitle:    story.title  ?? '',
-    storyCover:    story.image  ?? null,
+    storyCover:    story.cover  ?? story.image ?? null,
     storyid,
     totalChapters: list.length,
     chapterIndex:  idx,
@@ -84,5 +88,14 @@ export async function deleteChapter(storyid, chapterid) {
  */
 export async function updateChapter(storyid, chapterid, data) {
   const res = await axiosConfig.put(`/stories/${storyid}/chapters/${chapterid}`, data);
+  return res?.data || res;
+}
+
+/**
+ * Tạo chương mới (POST /stories/:storyid/chapters)
+ * data: { chaptername, content, status }
+ */
+export async function createChapter(storyid, data) {
+  const res = await axiosConfig.post(`/stories/${storyid}/chapters`, data);
   return res?.data || res;
 }

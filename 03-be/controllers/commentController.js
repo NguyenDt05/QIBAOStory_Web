@@ -64,7 +64,9 @@ async function deleteMyComment(req, res, next) {
     const db = require('../config/db');
     const [rows] = await db.query('SELECT userid FROM comment WHERE cmtid = ?', [cmtid]);
     if (rows.length === 0) return res.status(404).json({ success: false, message: 'Không tìm thấy bình luận' });
-    if (rows[0].userid !== userid) return res.status(403).json({ success: false, message: 'Không có quyền xóa bình luận của người khác' });
+    if (Number(rows[0].userid) !== Number(userid)) {
+      return res.status(403).json({ success: false, message: 'Không có quyền xóa bình luận của người khác' });
+    }
     await Comment.remove(cmtid);
     res.json({ success: true, message: 'Đã xóa bình luận' });
   } catch (err) { next(err); }

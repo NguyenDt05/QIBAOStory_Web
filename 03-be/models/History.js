@@ -7,14 +7,14 @@ const History = {
    */
   async getByUser(userid) {
     const [rows] = await db.query(
-      `SELECT rh.userid, rh.storyid, rh.chapterid, rh.read_at,
+      `SELECT rh.userid, rh.storyid, rh.last_chapter_id AS chapterid, rh.updatedat AS read_at,
               s.title AS storyTitle, s.image AS storyCover,
               c.chaptername
        FROM reading_history rh
        JOIN stories s ON rh.storyid = s.storyid
-       JOIN chapter c ON rh.chapterid = c.chapterid
+       JOIN chapter c ON rh.last_chapter_id = c.chapterid
        WHERE rh.userid = ?
-       ORDER BY rh.read_at DESC`,
+       ORDER BY rh.updatedat DESC`,
       [userid]
     );
     // Deduplicate: chỉ lấy bản ghi mới nhất của mỗi truyện
@@ -32,9 +32,9 @@ const History = {
    */
   async upsert(userid, storyid, chapterid) {
     await db.query(
-      `INSERT INTO reading_history (userid, storyid, chapterid, read_at)
+      `INSERT INTO reading_history (userid, storyid, last_chapter_id, updatedat)
        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-       ON DUPLICATE KEY UPDATE chapterid = VALUES(chapterid), read_at = CURRENT_TIMESTAMP`,
+       ON DUPLICATE KEY UPDATE last_chapter_id = VALUES(last_chapter_id), updatedat = CURRENT_TIMESTAMP`,
       [userid, storyid, chapterid]
     );
   },

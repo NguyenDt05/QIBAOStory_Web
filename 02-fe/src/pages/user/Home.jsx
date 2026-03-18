@@ -204,7 +204,7 @@ function Home() {
                       </td>
                       {/* Tên truyện + tên chương */}
                       <td className="py-2">
-                        <Link to={`/stories/${s.storyid}`} className="fw-semibold text-decoration-none text-light d-block text-truncate" style={{ fontSize: '0.85rem', maxWidth: 200 }}>
+                        <Link to={`/stories/${s.storyid}`} className="fw-semibold text-decoration-none text-light d-block text-truncate" style={{ fontSize: '0.85rem', maxWidth: 700 }}>
                           {s.title}
                         </Link>
                         {s.latestChapterName && (
@@ -217,7 +217,7 @@ function Home() {
                       </td>
                       {/* Số chương */}
                       <td className="py-2 d-none d-md-table-cell text-accent" style={{ fontSize: '0.8rem' }}>
-                        {s.storyCount} ch.
+                        {s.storyCount}
                       </td>
                       {/* Tác giả */}
                       <td className="py-2 d-none d-lg-table-cell text-secondary" style={{ fontSize: '0.8rem' }}>

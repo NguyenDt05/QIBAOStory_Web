@@ -6,7 +6,7 @@ const db = require('../config/db');
 const Story = {
   /** Lấy danh sách truyện kèm mảng thể loại */
   async getAllStories({ visibleOnly = false } = {}) {
-    const where = visibleOnly ? "WHERE s.status = 1 AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')" : '';
+    const where = visibleOnly ? "WHERE s.status = 1" : '';
     const [rows] = await db.query(
       `SELECT s.storyid, s.title, s.author, s.image, s.description, 
               s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
@@ -152,7 +152,7 @@ const Story = {
     const [rows] = await db.query(
       `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
        FROM stories
-       WHERE status = 1 AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
+       WHERE status = 1
        ORDER BY storyCount DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -165,7 +165,7 @@ const Story = {
     const [rows] = await db.query(
       `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
        FROM stories
-       WHERE status = 1 AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
+       WHERE status = 1
        ORDER BY createdat DESC, storyid DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -173,17 +173,14 @@ const Story = {
     return rows;
   },
 
-  // 3. Truyện Hoàn Thành — match cả 'Full' lẫn 'hoanthanh' (case insensitive)
+  // 3. Truyện Hoàn Thành — match tất cả alias: 'hoanthanh', 'hoan_thanh', 'da_hoan', 'Full', 'full'
   async getCompletedStories(limit = 4) {
     const [rows] = await db.query(
       `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
        FROM stories
        WHERE status = 1
-         AND (trangthai_rachuong = 'Full'
-              OR LOWER(trangthai_rachuong) = 'hoanthanh'
-              OR LOWER(trangthai_rachuong) = 'full')
-         AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
-       ORDER BY updatedat DESC
+         AND LOWER(trangthai_rachuong) IN ('hoanthanh', 'hoan_thanh', 'da_hoan', 'full')
+       ORDER BY COALESCE(updatedat, createdat) DESC, storyid DESC
        LIMIT ?`,
       [parseInt(limit)]
     );
@@ -195,7 +192,6 @@ const Story = {
     const [rows] = await db.query(
       `SELECT s.storyid, s.title, s.author, s.image, s.storyCount,
               s.status, s.trangthai_rachuong, s.updatedat,
-              s.categories,
               lc.chaptername AS latestChapterName,
               lc.createdat   AS latestChapterDate,
               lc.chapterid   AS latestChapterId
@@ -210,7 +206,7 @@ const Story = {
            GROUP BY storyid
          ) c2 ON c1.storyid = c2.storyid AND c1.createdat = c2.max_date
        ) lc ON s.storyid = lc.storyid
-       WHERE s.status = 1 AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')
+       WHERE s.status = 1
        ORDER BY COALESCE(lc.createdat, s.updatedat) DESC, s.storyid DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -234,7 +230,6 @@ const Story = {
        JOIN story_category sc_filter ON s.storyid = sc_filter.storyid
        WHERE sc_filter.categoryid = ?
          AND s.status = 1 
-         AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')
        GROUP BY s.storyid
        ORDER BY s.updatedat DESC
        LIMIT ?`,

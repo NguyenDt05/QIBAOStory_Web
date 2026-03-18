@@ -7,7 +7,7 @@ async function getDashboard(req, res, next) {
       db.query('SELECT COUNT(*) AS cnt FROM stories'),
       db.query('SELECT COUNT(*) AS cnt FROM category'),
       db.query('SELECT COUNT(*) AS cnt FROM users'),
-      db.query('SELECT COUNT(*) AS cnt FROM comments'),
+      db.query('SELECT COUNT(*) AS cnt FROM comment'),
     ]);
 
     res.json({

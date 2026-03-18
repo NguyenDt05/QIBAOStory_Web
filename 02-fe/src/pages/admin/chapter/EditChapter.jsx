@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getChapterDetail, updateChapter } from '../../../api/chapterService';
 
@@ -62,7 +62,7 @@ export default function EditChapter() {
             {chapter?.chaptername ? ` › ${chapter.chaptername}` : ''}
           </small>
         </div>
-        <Link to="/admin/stories/detail" state={{ story }} className="btn fw-bold text-decoration-none"
+        <Link to={`/admin/stories/detail/${story?.storyid}`} state={{ story }} className="btn fw-bold text-decoration-none"
           style={{ borderRadius: '50px', backgroundColor: 'rgba(224,82,82,0.1)', color: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 22px' }}>
           <i className="bi bi-arrow-left me-2"></i>Quay lại
         </Link>

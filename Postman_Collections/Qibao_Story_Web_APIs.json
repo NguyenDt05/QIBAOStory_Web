@@ -711,7 +711,7 @@
                 "header": [{ "key": "Content-Type", "value": "application/json" }],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"storyID\": 1,\n  \"content\": \"Truyện rất hay!\"\n}"
+                  "raw": "{\n  \"storyid\": 1,\n  \"content\": \"Truyện rất hay!\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/comments",

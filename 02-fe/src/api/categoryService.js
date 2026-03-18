@@ -2,8 +2,9 @@
 // de ManageCategories.jsx goi de thao tac voi Category
 import axiosConfig from './axiosConfig';
 
-export async function getAllCategories() {
-  const response = await axiosConfig.get('/categories');
+export async function getAllCategories(all = false) {
+  const url = all ? '/categories?all=true' : '/categories';
+  const response = await axiosConfig.get(url);
   return response;
 }
 

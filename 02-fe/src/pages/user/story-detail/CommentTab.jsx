@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { getCommentsByStory, submitComment, deleteMyComment } from '../../../api/commentService';
 import { getRelativeTime } from '../../../utils/helpers';
 import AvatarBase from '../../../components/common/Avatar';
+import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import '../../../styles/CommentTab.css';
 
 const PAGE_SIZE = 5;
@@ -29,6 +30,7 @@ export default function CommentTab({ storyid }) {
   const [isSending,  setIsSending]  = useState(false);
   const [sendError,  setSendError]  = useState('');
   const [isDeleting,  setIsDeleting]  = useState(null); // cmtid đang xóa
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,11 +73,11 @@ export default function CommentTab({ storyid }) {
     }
   };
 
-  const handleDelete = async (cmtid) => {
-    if (!window.confirm('Bạn có chắc muốn xóa bình luận này?')) return;
-    setIsDeleting(cmtid);
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(deleteTarget.cmtid);
     try {
-      await deleteMyComment(cmtid);
+      await deleteMyComment(deleteTarget.cmtid);
       getCommentsByStory(storyid).then(list => {
         if (Array.isArray(list)) setComments(list);
       });
@@ -83,6 +85,7 @@ export default function CommentTab({ storyid }) {
       alert(err?.response?.data?.message || 'Xóa bình luận thất bại');
     } finally {
       setIsDeleting(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -146,12 +149,13 @@ export default function CommentTab({ storyid }) {
                 <div className="bl-item__body">
                   <div className="bl-item__name">
                     {cmt.tenhienthi}
-                    {currentUser && String(cmt.userid) === String(currentUser.userid) && (
+                    {currentUser && String(cmt.userid) === String(currentUser.userid || currentUser.id) && (
                       <button
-                        className="bl-btn-delete"
+                        className="btn btn-sm btn-outline-danger ms-auto"
                         title="Xóa bình luận"
                         disabled={isDeleting === cmt.cmtid}
-                        onClick={() => handleDelete(cmt.cmtid)}
+                        onClick={() => setDeleteTarget(cmt)}
+                        style={{ padding: '0.15rem 0.4rem', fontSize: '0.8rem' }}
                       >
                         {isDeleting === cmt.cmtid
                           ? <span className="spinner-border spinner-border-sm" />
@@ -191,6 +195,14 @@ export default function CommentTab({ storyid }) {
           )}
         </>
       )}
+
+      <ConfirmDeleteModal
+        show={!!deleteTarget}
+        title="Xóa bình luận"
+        message="Bạn có chắc muốn xóa bình luận này? Hành động này không thể hoàn tác."
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import GenreSelect, { GenreBadge } from '../../../components/common/GenreSelect';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
-import { getAllStories, toggleStoryVisibility, deleteStory } from '../../../api/storyService';
+import { getAdminStories, toggleStoryVisibility, deleteStory } from '../../../api/storyService';
 import { STORY_STATUS } from '../../../constants/storyStatus';
 import { Pagination } from '../../../components/common/StoryCard';
 
@@ -16,7 +16,7 @@ export default function ManageStories() {
   // Load dữ liệu ban đầu
   const loadData = async () => {
     try {
-      const data = await getAllStories();
+      const data = await getAdminStories();
       setStories(data);
     } catch (err) {
       console.error("Lỗi tải danh sách:", err);
@@ -76,7 +76,7 @@ export default function ManageStories() {
           <h4 className="fw-bold mb-0" style={{ color: 'var(--primary-color)' }}>
             <i className="bi bi-book me-2"></i>Quản lý truyện
           </h4>
-          <small className="text-muted">Danh sách toàn bộ truyện trong hệ thống</small>
+          <small className="text-muted">Tổng cộng {stories.length} bộ truyện</small>
         </div>
       </div>
 
@@ -124,15 +124,15 @@ export default function ManageStories() {
       {/* Table */}
       <div style={{ backgroundColor: 'var(--surface-1)', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
         <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0">
+          <table className="table table-hover align-middle mb-0" style={{ tableLayout: 'fixed', width: '100%' }}>
             <thead style={{ backgroundColor: 'var(--surface-2)' }}>
               <tr>
-                <th className="ps-4 py-3 text-secondary fw-semibold small border-bottom-0">Tên truyện</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0">Tác giả</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center">Số chương</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '25%' }}>Thể loại</th>
-                <th className="py-3 text-secondary fw-semibold small border-bottom-0">Trạng thái</th>
-                <th className="py-3 px-3 text-secondary fw-semibold small border-bottom-0 text-center">Hành động</th>
+                <th className="ps-4 py-3 text-secondary fw-semibold small border-bottom-0" style={{ width: '30%' }}>Tên truyện</th>
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0" style={{ width: '14%' }}>Tác giả</th>
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '10%' }}>Số chương</th>
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '18%' }}>Thể loại</th>
+                <th className="py-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '12%' }}>Trạng thái</th>
+                <th className="py-3 px-3 text-secondary fw-semibold small border-bottom-0 text-center" style={{ width: '12%' }}>Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -156,8 +156,8 @@ export default function ManageStories() {
                             <div className="d-flex h-100 align-items-center justify-content-center text-muted" style={{ fontSize: '10px' }}>NO IMG</div>
                           )}
                         </div>
-                        <div>
-                          <div className="fw-bold text-light" style={{ cursor: 'pointer' }}
+                        <div style={{ minWidth: 0 }}>
+                          <div className="fw-bold text-light" style={{ cursor: 'pointer', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}
                             onClick={() => navigate(`/admin/stories/detail/${t.storyid}`, { state: { story: t } })}>
                             {t.title}
                           </div>
@@ -165,8 +165,8 @@ export default function ManageStories() {
                         </div>
                       </div>
                     </td>
-                    <td className="text-secondary">{t.author}</td>
-                    <td className="text-center fw-bold" style={{ color: 'var(--primary-color)' }}>
+                    <td className="text-secondary" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0 }}>{t.author}</td>
+                    <td className="text-center fw-bold" style={{ color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>
                       {t.storyCount ?? 0}
                     </td>
                     {/* LOGIC HIỂN THỊ THỂ LOẠI MỚI (MAX 2 + X) */}
@@ -193,7 +193,7 @@ export default function ManageStories() {
                         )}
                       </div>
                     </td>
-                    <td>
+                    <td className="text-center" style={{ whiteSpace: 'nowrap' }}>
                       <span className="fw-semibold small px-3 py-1"
                         style={{ borderRadius: '50px', backgroundColor: statusInfo.bg || statusInfo.bgColor, color: statusInfo.color || statusInfo.textColor }}>
                         {statusInfo.label}
