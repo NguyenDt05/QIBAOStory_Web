@@ -143,7 +143,7 @@ export default function StoryDetail() {
                 </span>
                 <span>
                   <i className="bi bi-book me-1 cdt-hero__meta-icon"></i>
-                  {chapters.length} chương
+                  {story.storyCount ?? chapters.length} chương
                 </span>
                 <span
                   className="cdt-hero__status-badge"

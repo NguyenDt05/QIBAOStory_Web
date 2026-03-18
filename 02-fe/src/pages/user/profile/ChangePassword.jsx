@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
+import { changePassword } from '../../../api/userService';
 
 const FIELDS = [
   { key: 'currentPassword', label: 'Mật khẩu hiện tại',    icon: 'bi-lock' },
@@ -7,15 +9,18 @@ const FIELDS = [
 ];
 
 export default function ChangePassword() {
-  const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [errors, setErrors]     = useState({});
+  const { currentUser } = useAuth();
+  const [form, setForm]     = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [errors, setErrors] = useState({});
   const [success, setSuccess]   = useState(false);
+  const [apiError, setApiError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const update = (key, val) => {
     setForm(prev => ({ ...prev, [key]: val }));
     setErrors(prev => ({ ...prev, [key]: undefined }));
     setSuccess(false);
+    setApiError('');
   };
 
   const validate = () => {
@@ -35,10 +40,19 @@ export default function ChangePassword() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 700));
-    setIsLoading(false);
-    setSuccess(true);
-    setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    setApiError('');
+    try {
+      await changePassword(currentUser.userid, {
+        currentPassword: form.currentPassword,
+        newPassword:     form.newPassword,
+      });
+      setSuccess(true);
+      setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setApiError(err.response?.data?.message || err.message || 'Đổi mật khẩu thất bại');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -50,6 +64,12 @@ export default function ChangePassword() {
           <div className="dmk-success">
             <i className="bi bi-check-circle-fill me-2"></i>
             Đổi mật khẩu thành công!
+          </div>
+        )}
+
+        {apiError && (
+          <div className="alert alert-danger py-2 px-3 mb-3" style={{ fontSize: '0.85rem' }}>
+            <i className="bi bi-exclamation-triangle me-2" />{apiError}
           </div>
         )}
 

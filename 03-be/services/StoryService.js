@@ -1,10 +1,18 @@
+// StoryService.js
+// Tầng service cho Story: xử lý business logic giữa controller và model
+// bao gồm xóa file ảnh cũ khi update/delete
+
 const Story = require('../models/Story');
-const fs = require('fs');
-const path = require('path');
+const fs    = require('fs');
+const path  = require('path');
 
 const StoryService = {
   async getAllStories(options) {
     return await Story.getAllStories(options);
+  },
+
+  async getStoryDetailForUser(storyid) {
+    return await Story.getForUser(storyid);
   },
 
   async getStoryDetailForAdmin(storyid) {

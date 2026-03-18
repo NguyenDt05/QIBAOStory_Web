@@ -11,7 +11,7 @@ export default function ManageComments() {
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [currentPage,   setCurrentPage]  = useState(1);
+  const [currentPage,  setCurrentPage]  = useState(1);
 
   useEffect(() => {
     getAllComments().then(setComments).finally(() => setLoading(false));
@@ -31,14 +31,18 @@ export default function ManageComments() {
   const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  // Toggle dùng cmtid (PK thật trong bảng comment)
   const handleToggle = async (c) => {
     const updated = await toggleCommentVisibility(c.cmtid);
-    setComments(updated);
+    if (Array.isArray(updated)) setComments(updated);
+    else getAllComments().then(list => { if (Array.isArray(list)) setComments(list); });
   };
 
+  // Delete dùng cmtid
   const handleDelete = async () => {
-    await deleteComment(deleteTarget.cmtid);
-    setComments(prev => prev.filter(c => c.cmtid !== deleteTarget.cmtid));
+    const updated = await deleteComment(deleteTarget.cmtid);
+    if (Array.isArray(updated)) setComments(updated);
+    else getAllComments().then(list => { if (Array.isArray(list)) setComments(list); });
     setDeleteTarget(null);
   };
 
@@ -80,41 +84,44 @@ export default function ManageComments() {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map(c => {
-                  return (
-                    <tr key={c.cmtid} style={{ opacity: c.visible ? 1 : 0.4, transition: 'opacity 0.2s' }}>
-                      <td className="ps-4 text-nowrap">
-                        <div className="d-flex align-items-center gap-2">
-                          <Avatar tenhienthi={c.tenhienthi} avatar={c.avatar} size={32} />
-                          <div>
-                            <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{c.tenhienthi}</div>
-                            <div className="text-muted" style={{ fontSize: '0.75rem' }}>@{c.username}</div>
-                          </div>
+                {currentItems.map(c => (
+                  // Dùng cmtid — PK thật trong bảng comment
+                  <tr key={c.cmtid} style={{ opacity: c.visible === 1 ? 1 : 0.4, transition: 'opacity 0.2s' }}>
+                    <td className="ps-4 text-nowrap">
+                      <div className="d-flex align-items-center gap-2">
+                        <Avatar tenhienthi={c.tenhienthi} avatar={c.avatar} size={32} />
+                        <div>
+                          <div className="fw-semibold" style={{ fontSize: '0.85rem' }}>{c.tenhienthi}</div>
+                          <div className="text-muted" style={{ fontSize: '0.75rem' }}>@{c.username}</div>
                         </div>
-                      </td>
-                      <td style={{ maxWidth: 260, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.85rem' }}>
-                        <span title={c.content}>{c.content}</span>
-                      </td>
-                      <td className="text-secondary text-nowrap" style={{ fontSize: '0.82rem', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <i className="bi bi-book me-1"></i>{c.storyTitle}
-                      </td>
-                      <td className="text-center text-secondary text-nowrap" style={{ fontSize: '0.8rem' }}>{c.createdat}</td>
-                      <td className="text-center">
-                        <div className="form-check form-switch d-flex justify-content-center mb-0">
-                          <input className="form-check-input" type="checkbox" role="switch"
-                            checked={!!c.visible} onChange={() => handleToggle(c)}
-                            style={{ width: '2.2em', height: '1.2em', cursor: 'pointer', accentColor: 'var(--primary-color)' }} />
-                        </div>
-                      </td>
-                      <td className="text-center text-nowrap">
-                        <button className="btn btn-sm" onClick={() => setDeleteTarget(c)}
-                          style={{ borderRadius: '50px', backgroundColor: 'rgba(220,53,69,0.1)', color: '#dc3545', border: 'none', padding: '4px 14px', fontSize: '0.8rem' }}>
-                          <i className="bi bi-trash-fill me-1"></i>Xóa
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </div>
+                    </td>
+                    <td style={{ maxWidth: 260, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.85rem' }}>
+                      <span title={c.content}>{c.content}</span>
+                    </td>
+                    <td className="text-secondary text-nowrap" style={{ fontSize: '0.82rem', maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <i className="bi bi-book me-1"></i>{c.storyTitle}
+                    </td>
+                    {/* createdat là tên cột thật trong DB bảng comment */}
+                    <td className="text-center text-secondary text-nowrap" style={{ fontSize: '0.8rem' }}>
+                      {c.createdat ? new Date(c.createdat).toLocaleString('vi-VN') : '—'}
+                    </td>
+                    <td className="text-center">
+                      <div className="form-check form-switch d-flex justify-content-center mb-0">
+                        {/* visible: 1=hiển thị, 0=ẩn */}
+                        <input className="form-check-input" type="checkbox" role="switch"
+                          checked={c.visible === 1} onChange={() => handleToggle(c)}
+                          style={{ width: '2.2em', height: '1.2em', cursor: 'pointer', accentColor: 'var(--primary-color)' }} />
+                      </div>
+                    </td>
+                    <td className="text-center text-nowrap">
+                      <button className="btn btn-sm" onClick={() => setDeleteTarget(c)}
+                        style={{ borderRadius: '50px', backgroundColor: 'rgba(220,53,69,0.1)', color: '#dc3545', border: 'none', padding: '4px 14px', fontSize: '0.8rem' }}>
+                        <i className="bi bi-trash-fill me-1"></i>Xóa
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -35,7 +35,7 @@ axiosConfig.interceptors.response.use(
       if (error.response.status === 401) {
         console.error('Phiên đăng nhập hết hạn. Đang đăng xuất...');
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('qibao_user');
         // window.location.href = '/login'; 
       }
       console.error('Lỗi API:', error.response.data.message || error.message);

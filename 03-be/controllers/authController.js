@@ -1,6 +1,9 @@
-const User = require('../models/User');
+// authController.js
+// Xử lý đăng ký, đăng nhập và kiểm tra tên tài khoản
+
+const User   = require('../models/User');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key_here';
 

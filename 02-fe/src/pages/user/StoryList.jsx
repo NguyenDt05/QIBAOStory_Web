@@ -4,7 +4,7 @@ import { getAllStories } from '../../api/storyService';
 import { StoryCardHorizontal, Pagination, SkeletonCard } from '../../components/common/StoryCard';
 import '../../styles/StoryList.css';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 16;
 
 const TABS = [
   { key: 'all',       label: 'Mới đăng' },

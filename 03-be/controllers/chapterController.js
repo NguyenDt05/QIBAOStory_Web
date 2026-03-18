@@ -1,3 +1,6 @@
+// chapterController.js
+// Xử lý CRUD chương truyện: getByStory, getById, create, update, remove, toggleVisibility
+
 const Chapter = require('../models/Chapter');
 
 /** GET /api/stories/:storyid/chapters */
@@ -50,9 +53,9 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   try {
     const { storyid, chapterid } = req.params;
-    const { chaptername, content } = req.body;
+    const { chaptername, content, status } = req.body;
 
-    await Chapter.update(storyid, chapterid, { chaptername, content });
+    await Chapter.update(storyid, chapterid, { chaptername, content, status });
     res.json({ success: true, message: 'Cập nhật chương thành công' });
   } catch (err) { next(err); }
 }

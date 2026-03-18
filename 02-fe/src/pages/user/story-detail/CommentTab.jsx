@@ -27,6 +27,7 @@ export default function CommentTab({ storyid }) {
   const [content,    setContent]    = useState('');
   const [page,       setPage]       = useState(1);
   const [isSending,  setIsSending]  = useState(false);
+  const [sendError,  setSendError]  = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -48,17 +49,22 @@ export default function CommentTab({ storyid }) {
   const handleSend = async () => {
     if (!content.trim() || isSending || !currentUser) return;
     setIsSending(true);
+    setSendError('');
     try {
       const updated = await submitComment({
         storyid,
-        username:    currentUser.username,
-        tenhienthi:  currentUser.tenhienthi,
-        avatar:      currentUser.avatar ?? null,
-        content:     content.trim(),
+        content: content.trim(),
       });
-      setComments(updated);
+      if (Array.isArray(updated)) setComments(updated);
+      else {
+        // Re-load again
+        getCommentsByStory(storyid).then(list => { if (Array.isArray(list)) setComments(list); });
+      }
       setContent('');
       setPage(1);
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || 'Gửi bình luận thất bại';
+      setSendError(msg);
     } finally {
       setIsSending(false);
     }
@@ -102,6 +108,11 @@ export default function CommentTab({ storyid }) {
         ) : (
           <Link to="/login" className="bl-btn-login">Đăng nhập để bình luận</Link>
         )}
+        {sendError && (
+          <div className="text-danger mt-2" style={{ fontSize: '0.82rem' }}>
+            <i className="bi bi-exclamation-circle me-1" />{sendError}
+          </div>
+        )}
       </div>
 
       {comments.length === 0 ? (
@@ -113,6 +124,7 @@ export default function CommentTab({ storyid }) {
         <>
           <div>
             {pageItems.map(cmt => (
+              // cmtid — tên cột PK thật trong bảng comment
               <div key={cmt.cmtid} className="bl-item">
                 <Avatar tenhienthi={cmt.tenhienthi} avatar={cmt.avatar} size={40} />
                 <div className="bl-item__body">

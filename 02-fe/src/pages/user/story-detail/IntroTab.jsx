@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+// Format ngày an toàn: nếu nhận ISO string hoặc Date object từ MySQL — hiển thị đẹp
+function formatDate(raw) {
+  if (!raw) return '';
+  try {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return String(raw);
+    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch { return String(raw); }
+}
+
 export default function IntroTab({ story, recentChapters = [], isHiatus = false }) {
   const { storyid } = useParams();
   const [expanded, setExpanded] = useState(false);
@@ -17,7 +27,7 @@ export default function IntroTab({ story, recentChapters = [], isHiatus = false 
               <div key={c.chapterid} className="cdt-chuong-moi__row" style={{ cursor: 'not-allowed', opacity: 0.45 }}>
                 <span className="cdt-chuong-moi__index"><i className="bi bi-lock" /></span>
                 <span className="cdt-chuong-moi__title text-truncate">{c.chaptername}</span>
-                <span className="cdt-chuong-moi__date">{c.createdat}</span>
+                <span className="cdt-chuong-moi__date">{formatDate(c.createdat)}</span>
               </div>
             ) : (
               <Link
@@ -29,7 +39,7 @@ export default function IntroTab({ story, recentChapters = [], isHiatus = false 
                   {i === 0 ? <i className="bi bi-fire" /> : i + 1}
                 </span>
                 <span className="cdt-chuong-moi__title text-truncate">{c.chaptername}</span>
-                <span className="cdt-chuong-moi__date">{c.createdat}</span>
+                <span className="cdt-chuong-moi__date">{formatDate(c.createdat)}</span>
               </Link>
             )
           )) : (

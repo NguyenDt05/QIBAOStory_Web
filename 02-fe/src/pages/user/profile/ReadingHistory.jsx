@@ -2,6 +2,18 @@ import { Link } from 'react-router-dom';
 import { useReader } from '../../../context/ReaderContext';
 import StoryCover from '../../../components/common/StoryCover';
 
+// Format ngày giờ tương đối
+function relativeTime(raw) {
+  if (!raw) return '';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return '';
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (diff < 60)    return `${diff} giây trước`;
+  if (diff < 3600)  return `${Math.floor(diff / 60)} phút trước`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+  return `${Math.floor(diff / 86400)} ngày trước`;
+}
+
 export default function ReadingHistory() {
   const { readingHistory, removeFromHistory } = useReader();
 
@@ -17,11 +29,20 @@ export default function ReadingHistory() {
       ) : (
         <div className="lich-su-list">
           {readingHistory.map(item => {
+            // Data từ API: storyid, chapterid, storyTitle, storyCover, chaptername, read_at
+            // Data từ localStorage (chưa login): storyid, chapterid, storyTitle, storyCover, chaptername, id
             const href = `/stories/${item.storyid}/chapters/${item.chapterid}`;
+            const removeKey = item.storyid; // removeFromHistory dùng storyid
+
             return (
-              <div className="lich-su-item" key={item.id}>
+              <div className="lich-su-item" key={`${item.storyid}-${item.chapterid}`}>
                 <Link to={href} className="lich-su-item__bia">
-                  <StoryCover cover={item.storyCover} title={item.storyTitle} storyid={item.storyid} style={{ position: 'absolute', inset: 0 }} />
+                  <StoryCover
+                    // cover={item.storyCover || item.cover}
+                    title={item.storyTitle}
+                    storyid={item.storyid}
+                    style={{ position: 'absolute', inset: 0 }}
+                  />
                 </Link>
 
                 <Link to={href} className="lich-su-item__info">
@@ -32,19 +53,13 @@ export default function ReadingHistory() {
                   </span>
                   <span className="lich-su-item__meta">
                     <i className="bi bi-clock me-1"></i>
-                    {(() => {
-                      const diff = Math.max(0, Date.now() - item.id) / 1000;
-                      if (diff < 60)    return `${Math.floor(diff)} giây trước`;
-                      if (diff < 3600)  return `${Math.floor(diff / 60)} phút trước`;
-                      if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
-                      return `${Math.floor(diff / 86400)} ngày trước`;
-                    })()}
+                    {relativeTime(item.read_at) || relativeTime(item.id)}
                   </span>
                 </Link>
 
                 <button
                   className="lich-su-item__xoa"
-                  onClick={() => removeFromHistory(item.id)}
+                  onClick={() => removeFromHistory(removeKey)}
                   title="Xoá khỏi lịch sử"
                 >
                   <i className="bi bi-x-lg"></i>

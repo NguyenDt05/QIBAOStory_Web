@@ -21,10 +21,10 @@ export default function StoryDetailAdmin() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 1. Lấy dữ liệu truyện
+  // 1. Lấy dữ liệu truyện (Luôn lấy mới từ DB để đảm bảo thông tin chuẩn nhất)
   useEffect(() => {
     const fetchStory = async () => {
-      if (!story && storyid) {
+      if (storyid) {
         try {
           const res = await getStoryById(storyid);
           setStory(res);
@@ -138,8 +138,8 @@ export default function StoryDetailAdmin() {
               ))}
             </div>
             <div className="row g-2 text-secondary" style={{ fontSize: '0.82rem' }}>
-              <div className="col-auto"><i className="bi bi-layers me-1"></i>{chapters.length} chương</div>
-              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat || '—'}</div>
+              <div className="col-auto"><i className="bi bi-layers me-1"></i>{story.storyCount ?? 0} chương</div>
+              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat ? new Date(story.updatedat).toLocaleDateString('vi-VN') : '—'}</div>
             </div>
             {story.description && (
               <p className="mt-3 text-secondary" style={{ fontSize: '0.88rem', lineHeight: '1.6' }}>{story.description}</p>
@@ -164,7 +164,7 @@ export default function StoryDetailAdmin() {
                 <tr>
                   <th className="ps-4 text-secondary fw-semibold">Tên chương</th>
                   <th className="text-secondary fw-semibold text-center">Trạng thái</th>
-                  <th className="text-secondary fw-semibold">Ngày tạo</th>
+                  <th className="text-secondary fw-semibold">Ngày đăng</th>
                   <th className="text-secondary fw-semibold text-center">Hành động</th>
                 </tr>
               </thead>
@@ -181,7 +181,7 @@ export default function StoryDetailAdmin() {
                           style={{ width: '2.2em', height: '1.2em', cursor: 'pointer' }} />
                       </div>
                     </td>
-                    <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{c.createdat || '—'}</td>
+                    <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{c.createdat ? new Date(c.createdat).toLocaleDateString('vi-VN') : '—'}</td>
                     <td className="text-center">
                       {/* Đã cập nhật nút Sửa theo code mẫu 2 */}
                       <button className="btn btn-sm fw-bold me-2"

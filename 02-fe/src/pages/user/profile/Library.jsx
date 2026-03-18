@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useReader } from '../../../context/ReaderContext';
-import { STORY_STATUS } from '../../../constants/storyStatus';
+import { getStatusStyle } from '../../../constants/storyStatus';
 import StoryCover from '../../../components/common/StoryCover';
 
 function LibraryCard({ story, onRemove }) {
-  const statusInfo = STORY_STATUS[story.trangthai_rachuong] ?? STORY_STATUS.dangra;
+  // getStatusStyle hỗ trợ nhiều dạng key khác nhau và fallback an toàn
+  const statusInfo = getStatusStyle(story.trangthai_rachuong);
 
   return (
     <div className="tt-card">
       <Link to={`/stories/${story.storyid}`} className="tt-card__bia">
-        <StoryCover cover={story.cover} title={story.title} storyid={story.storyid} style={{ position: 'absolute', inset: 0 }} />
+        {/* Backend trả về field 'image', LocalStorage mock có thể dùng 'cover' */}
+        <StoryCover cover={story.image || story.cover} title={story.title} storyid={story.storyid} style={{ position: 'absolute', inset: 0 }} />
       </Link>
 
       <div className="tt-card__body">

@@ -1,3 +1,6 @@
+// Story.js
+// Model tương tác với bảng stories và story_category trong MySQL
+
 const db = require('../config/db');
 
 const Story = {
@@ -17,9 +20,29 @@ const Story = {
        FROM stories s
        ${where}
        GROUP BY s.storyid
-       ORDER BY s.createdat DESC`
+       ORDER BY s.createdat DESC, s.storyid DESC`
     );
     return rows;
+  },
+
+  /** Lấy 1 truyện đang hiện (status=1) theo ID — cho User xem chi tiết */
+  async getForUser(storyid) {
+    const [rows] = await db.query(
+      `SELECT s.storyid, s.title, s.author, s.image, s.description,
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
+              COALESCE(
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
+                 FROM story_category sc
+                 JOIN category c ON sc.categoryid = c.categoryid
+                 WHERE sc.storyid = s.storyid),
+                '[]'
+              ) AS categories
+       FROM stories s
+       WHERE s.storyid = ? AND s.status = 1
+       GROUP BY s.storyid`,
+      [storyid]
+    );
+    return rows[0] || null;
   },
 
   async getDetailForAdmin(storyid) {
@@ -97,8 +120,16 @@ const Story = {
     const conn = await db.getConnection();
     try {
       await conn.beginTransaction();
+      
+      // Xóa các dữ liệu liên quan phân tầng (Cascade delete)
       await conn.query(`DELETE FROM story_category WHERE storyid = ?`, [storyid]);
+      await conn.query(`DELETE FROM user_library WHERE storyid = ?`, [storyid]).catch(() => {/* Ignore if table doesn't exist just in case */});
+      await conn.query(`DELETE FROM comments WHERE storyid = ?`, [storyid]).catch(() => {});
+      await conn.query(`DELETE FROM chapter WHERE storyid = ?`, [storyid]);
+      
+      // Cuối cùng xóa truyện
       await conn.query(`DELETE FROM stories WHERE storyid = ?`, [storyid]);
+      
       await conn.commit();
     } catch (err) {
       await conn.rollback();
@@ -110,7 +141,81 @@ const Story = {
 
   async toggleVisibility(storyid) {
     await db.query(`UPDATE stories SET status = 1 - status WHERE storyid = ?`, [storyid]);
-  }
+  },
+
+  /** ==========================================
+   *  CÁC QUERY TRANG CHỦ (PUBLIC API) - LIMIT 4
+   *  ========================================== */
+
+  // 1. Truyện Hot (Dựa trên số lượt xem/follows, hoặc tạm dùng storyCount nếu chưa có)
+  async getHotStories(limit = 4) {
+    const [rows] = await db.query(
+      `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
+       FROM stories
+       WHERE status = 1
+       ORDER BY storyCount DESC
+       LIMIT ?`,
+      [parseInt(limit)]
+    );
+    return rows;
+  },
+
+  // 2. Truyện Khác/Mới (Sắp xếp theo ngày tạo)
+  async getNewestStories(limit = 4) {
+    const [rows] = await db.query(
+      `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
+       FROM stories
+       WHERE status = 1
+       ORDER BY createdat DESC, storyid DESC
+       LIMIT ?`,
+      [parseInt(limit)]
+    );
+    return rows;
+  },
+
+  // 3. Truyện Hoàn Thành — match cả 'Full' lẫn 'hoanthanh' (case insensitive)
+  async getCompletedStories(limit = 4) {
+    const [rows] = await db.query(
+      `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
+       FROM stories
+       WHERE status = 1
+         AND (trangthai_rachuong = 'Full'
+              OR LOWER(trangthai_rachuong) = 'hoanthanh'
+              OR LOWER(trangthai_rachuong) = 'full')
+       ORDER BY updatedat DESC
+       LIMIT ?`,
+      [parseInt(limit)]
+    );
+    return rows;
+  },
+
+  // 4. Mới Cập Nhật — JOIN chapter để lấy tên chương mới nhất của mỗi truyện
+  async getRecentlyUpdated(limit = 7) {
+    const [rows] = await db.query(
+      `SELECT s.storyid, s.title, s.author, s.image, s.storyCount,
+              s.status, s.trangthai_rachuong, s.updatedat,
+              s.categories,
+              lc.chaptername AS latestChapterName,
+              lc.createdat   AS latestChapterDate,
+              lc.chapterid   AS latestChapterId
+       FROM stories s
+       LEFT JOIN (
+         SELECT c1.storyid, c1.chaptername, c1.createdat, c1.chapterid
+         FROM chapter c1
+         INNER JOIN (
+           SELECT storyid, MAX(createdat) AS max_date
+           FROM chapter
+           WHERE status = 1
+           GROUP BY storyid
+         ) c2 ON c1.storyid = c2.storyid AND c1.createdat = c2.max_date
+       ) lc ON s.storyid = lc.storyid
+       WHERE s.status = 1
+       ORDER BY COALESCE(lc.createdat, s.updatedat) DESC, s.storyid DESC
+       LIMIT ?`,
+      [parseInt(limit)]
+    );
+    return rows;
+  },
 };
 
 module.exports = Story;

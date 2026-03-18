@@ -32,13 +32,15 @@ export default function ManageUsers() {
 
   const handleToggle = async (u) => {
     if (u.role === 'admin') return;
+    // toggleUserStatus trả về array mới sau khi server cập nhật
     const updatedList = await toggleUserStatus(u.userid);
-    setUsers(updatedList);
+    setUsers(Array.isArray(updatedList) ? updatedList : []);
   };
 
   const handleDelete = async () => {
-    await deleteUser(deleteTarget.userid);
-    setUsers(prev => prev.filter(u => u.userid !== deleteTarget.userid));
+    // deleteUser trả về array mới (đã gọi getAllUsers() lại từ server)
+    const updatedList = await deleteUser(deleteTarget.userid);
+    setUsers(Array.isArray(updatedList) ? updatedList : []);
     setDeleteTarget(null);
   };
 
@@ -112,7 +114,10 @@ export default function ManageUsers() {
                           {getRoleLabel(u.role)}
                         </span>
                       </td>
-                      <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{u.joined ?? '—'}</td>
+                      <td className="text-secondary" style={{ fontSize: '0.82rem' }}>
+                        {/* createdat — tên cột trong bảng users */}
+                        {u.createdat ? new Date(u.createdat).toLocaleDateString('vi-VN') : '—'}
+                      </td>
                       <td className="text-center">
                         {isAdmin ? (
                           <span className="text-muted" style={{ fontSize: '0.78rem' }}>Không thể chỉnh sửa</span>

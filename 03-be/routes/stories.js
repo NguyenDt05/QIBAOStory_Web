@@ -1,56 +1,54 @@
-const express = require('express');
-const router = express.Router();
-const ctrl = require('../controllers/storyController');
-const { authenticate, requireAdmin } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+// routes/stories.js
+// Định nghĩa toàn bộ route cho /api/stories và /api/stories/:storyid/chapters
 
-// NHÚNG ROUTER CHAPTER TẠI ĐÂY
+const express = require('express');
+const router  = express.Router();
+const ctrl    = require('../controllers/storyController');
+const { authenticate, requireAdmin } = require('../middleware/auth');
+const upload  = require('../middleware/upload');
+
+// Nhúng chapter router (xử lý /:storyid/chapters/*)
 const chapterRouter = require('./chapters');
 router.use('/', chapterRouter);
 
-// ── USER ROUTES (Public) ─────────────────────────────────────────────────────
+// ── PUBLIC ───────────────────────────────────────────────────────────
 
-// Lấy danh sách truyện cho trang chủ (Chỉ hiện truyện status = 1)
-// URL: GET /api/stories
+// CÁC API TRANG CHỦ (Lấy nhanh, có LIMIT để tối ưu)
+router.get('/home/hot', ctrl.getHotHome);
+router.get('/home/newest', ctrl.getNewestHome);
+router.get('/home/completed', ctrl.getCompletedHome);
+router.get('/home/updated', ctrl.getUpdatedHome);
+
+// GET /api/stories — Danh sách truyện (chỉ hiện status = 1)
 router.get('/', ctrl.getPublicStories);
 
-// Xem chi tiết truyện cho người đọc
-// URL: GET /api/stories/:storyid
-router.get('/:storyid', ctrl.getDetailForUser);
+// GET /api/stories/:storyid/detail — Chi tiết truyện + danh sách chương (cho trang đọc)
+router.get('/:storyid/detail', ctrl.getDetailForUser);
 
+// ── ADMIN ────────────────────────────────────────────────────────────
 
-// ── ADMIN ROUTES (Cần đăng nhập & Quyền Admin) ───────────────────────────────
+// LƯU Ý: /admin/all và /admin/:storyid phải đặt TRƯỚC /:storyid
+// để tránh 'admin' bị match như một storyid
 
-// Lấy toàn bộ danh sách truyện cho trang quản lý (Hiện cả truyện ẩn)
-// URL: GET /api/stories/admin/all
+// GET /api/stories/admin/all — Tất cả truyện (kể cả ẩn)
 router.get('/admin/all', authenticate, requireAdmin, ctrl.getAdminStories);
 
-// Lấy chi tiết truyện để Admin sửa (Lấy toàn bộ các cột)
-// URL: GET /api/stories/admin/:storyid
+// GET /api/stories/admin/:storyid — Chi tiết đầy đủ để Admin sửa
 router.get('/admin/:storyid', authenticate, requireAdmin, ctrl.getDetailForAdmin);
 
-/**
- * TẠO TRUYỆN MỚI
- * Sử dụng upload.single('image') để bắt file ảnh từ trường 'image' trong FormData
- */http://localhost:8080/api/stories
+// GET /api/stories/:storyid — Xem 1 truyện (public, dùng cho admin getStoryById)
+router.get('/:storyid', ctrl.getDetailForAdmin);
+
+// POST /api/stories — Tạo truyện mới
 router.post('/', authenticate, requireAdmin, upload.single('image'), ctrl.create);
 
-/**
- * CẬP NHẬT TRUYỆN
- * Cho phép cập nhật thông tin và thay đổi ảnh bìa mới
- */http://localhost:8080/api/stories/:storyid
+// PUT /api/stories/:storyid — Cập nhật truyện
 router.put('/:storyid', authenticate, requireAdmin, upload.single('image'), ctrl.update);
 
-/**
- * XÓA TRUYỆN
- * URL: DELETE /api/stories/:storyid
- */
+// DELETE /api/stories/:storyid — Xóa truyện
 router.delete('/:storyid', authenticate, requireAdmin, ctrl.remove);
 
-/**
- * ẨN/HIỆN TRUYỆN
- * URL: PATCH /api/stories/:storyid/toggle
- */
+// PATCH /api/stories/:storyid/toggle — Ẩn/hiện truyện
 router.patch('/:storyid/toggle', authenticate, requireAdmin, ctrl.toggleVisibility);
 
 module.exports = router;

@@ -1,3 +1,6 @@
+// categoryController.js
+// Xử lý CRUD thể loại: getAll (user/admin), create, update, toggle, delete
+
 const Category = require('../models/Category');
 
 const categoryController = {

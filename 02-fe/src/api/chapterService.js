@@ -1,15 +1,35 @@
-import { delay } from './http';
-import { CHAPTERS_MOCK, CHAPTER_CONTENT_MOCK, STORIES_MOCK } from '../constants/mockData';
+// chapterService.js
+// Gọi API BE cho chapter: CRUD chương, lấy chi tiết chương kèm prev/next
 
+import axiosConfig from './axiosConfig';
+
+/**
+ * Lấy danh sách chương của một truyện (GET /stories/:storyid/chapters)
+ * Trả về mảng chapter: { chapterid, storyid, chaptername, status, createdat }
+ */
 export async function getChaptersByStory(storyid) {
-  await delay();
-  return CHAPTERS_MOCK();
+  const res = await axiosConfig.get(`/stories/${storyid}/chapters`);
+  return res?.data || res || [];
 }
 
+/**
+ * Lấy chi tiết 1 chương kèm prev/next (GET /stories/:storyid/chapters/:chapterid)
+ * Hỗ trợ chapterid = 'first' | 'last' | số
+ * Trả về: { chapter, prevChapter, nextChapter, storyTitle, storyCover, storyid, totalChapters, chapterIndex }
+ */
 export async function getChapterDetail(storyid, chapterid) {
-  await delay(200);
-  const list = CHAPTERS_MOCK();
+  // Bước 1: Lấy toàn bộ danh sách chương để tính prev/next và resolve 'first'/'last'
+  const [listRes, storyRes] = await Promise.all([
+    axiosConfig.get(`/stories/${storyid}/chapters`),
+    axiosConfig.get(`/stories/${storyid}`),
+  ]);
 
+  // Bỏ filter status !== 0 ở FE vì Admin cần thấy chương ẩn.
+  // Việc ẩn chương đối với User bình thường sẽ do Backend xử lý ở API getDetailForUser
+  const list  = listRes?.data || listRes || [];
+  const story = storyRes?.data || storyRes || {};
+
+  // Bước 2: Resolve chapterid
   let idx;
   if (chapterid === 'first') {
     idx = 0;
@@ -20,31 +40,49 @@ export async function getChapterDetail(storyid, chapterid) {
     if (idx === -1) idx = 0;
   }
 
-  const chapter = {
-    ...list[idx],
-    content: CHAPTER_CONTENT_MOCK,
-    author: 'Đồng Uyên',
-    createdat: '2019-09-15 23:09:48',
-  };
+  const targetChapter = list[idx];
+  if (!targetChapter) {
+    return null;
+  }
+
+  // Bước 3: Lấy nội dung đầy đủ chương (có field content)
+  const detailRes = await axiosConfig.get(`/stories/${storyid}/chapters/${targetChapter.chapterid}`);
+  const chapter   = detailRes?.data || detailRes || targetChapter;
 
   return {
     chapter,
-    prevChapter: idx > 0 ? list[idx - 1] : null,
-    nextChapter: idx < list.length - 1 ? list[idx + 1] : null,
-    storyTitle: STORIES_MOCK.find(s => String(s.storyid) === String(storyid))?.title ?? 'Truyện chưa có tên',
-    storyCover: STORIES_MOCK.find(s => String(s.storyid) === String(storyid))?.cover ?? null,
+    prevChapter:   idx > 0               ? list[idx - 1] : null,
+    nextChapter:   idx < list.length - 1 ? list[idx + 1] : null,
+    storyTitle:    story.title  ?? '',
+    storyCover:    story.image  ?? null,
     storyid,
     totalChapters: list.length,
-    chapterIndex: idx,
+    chapterIndex:  idx,
   };
 }
 
-export async function toggleChapterVisibility(storyid, chapterid, currentList) {
-  await delay(150);
-  return currentList.map(c => c.chapterid === chapterid ? { ...c, status: c.status ? 0 : 1 } : c);
+/**
+ * Ẩn/hiện chương (PATCH /stories/:storyid/chapters/:chapterid/toggle)
+ * Trả về danh sách chương mới sau khi toggle
+ */
+export async function toggleChapterVisibility(storyid, chapterid) {
+  const res = await axiosConfig.patch(`/stories/${storyid}/chapters/${chapterid}/toggle`);
+  return res?.data || res || [];
 }
 
-export async function deleteChapter(storyid, chapterid, currentList) {
-  await delay(150);
-  return currentList.filter(c => c.chapterid !== chapterid);
+/**
+ * Xóa chương (DELETE /stories/:storyid/chapters/:chapterid)
+ * Sau khi xóa, gọi lại getByStory để cập nhật danh sách
+ */
+export async function deleteChapter(storyid, chapterid) {
+  await axiosConfig.delete(`/stories/${storyid}/chapters/${chapterid}`);
+  return await getChaptersByStory(storyid);
+}
+
+/**
+ * Cập nhật chương (PUT /stories/:storyid/chapters/:chapterid)
+ */
+export async function updateChapter(storyid, chapterid, data) {
+  const res = await axiosConfig.put(`/stories/${storyid}/chapters/${chapterid}`, data);
+  return res?.data || res;
 }

@@ -1,50 +1,52 @@
-import { delay } from './http';
-import { COMMENTS_MOCK } from '../constants/mockData';
-import { getAllUsers } from './userService';
+// commentService.js
+// Gọi API BE cho comments: Admin quản lý, User xem & gửi bình luận
 
-let _db = COMMENTS_MOCK.map(c => ({ ...c }));
+import axiosConfig from './axiosConfig';
 
+/**
+ * Admin: Lấy tất cả bình luận kèm thông tin user và tên truyện
+ * GET /api/comments — trả về { success, data: [...] }
+ * Mỗi item: { commentid, storyid, content, status, created_at, username, tenhienthi, avatar, storyTitle }
+ */
 export async function getAllComments() {
-  await delay();
-  return _db.map(c => ({ ...c }));
+  const res = await axiosConfig.get('/comments');
+  return res?.data || res || [];
 }
 
+/**
+ * Public: Lấy bình luận visible (status=1) theo truyện
+ * GET /api/comments/story/:storyid
+ * Mỗi item: { commentid, storyid, content, status, created_at, username, tenhienthi, avatar }
+ */
 export async function getCommentsByStory(storyid) {
-  await delay(200);
-  const users = await getAllUsers();
-  const activeUsernames = new Set(users.filter(u => u.status === 1).map(u => u.username));
-  return _db
-    .filter(c => c.storyid === storyid && c.visible && activeUsernames.has(c.username))
-    .map(c => ({ ...c }));
+  const res = await axiosConfig.get(`/comments/story/${storyid}`);
+  return res?.data || res || [];
 }
 
-export async function submitComment({ storyid, username, tenhienthi, avatar, content }) {
-  await delay(300);
-  const newComment = {
-    cmtid: 'CM' + Date.now(),
-    content,
-    username,
-    tenhienthi,
-    avatar: avatar ?? null,
-    storyTitle: '',
-    storyid,
-    createdat: new Date().toLocaleString('vi-VN'),
-    visible: true,
-  };
-  _db = [newComment, ..._db];
-  return _db
-    .filter(c => c.storyid === storyid && c.visible)
-    .map(c => ({ ...c }));
+/**
+ * User: Gửi bình luận mới (cần JWT trong header)
+ * POST /api/comments — body: { storyid, content }
+ * Sau khi submit, tự load lại danh sách mới nhất từ server
+ */
+export async function submitComment({ storyid, content }) {
+  await axiosConfig.post('/comments', { storyid, content });
+  return await getCommentsByStory(storyid);
 }
 
-export async function toggleCommentVisibility(cmtid) {
-  await delay(150);
-  _db = _db.map(c => c.cmtid === cmtid ? { ...c, visible: !c.visible } : c);
-  return _db.map(c => ({ ...c }));
+/**
+ * Admin: Toggle ẩn/hiện bình luận
+ * PATCH /api/comments/:commentid/toggle — trả về { success, data: [...] }
+ */
+export async function toggleCommentVisibility(commentid) {
+  const res = await axiosConfig.patch(`/comments/${commentid}/toggle`);
+  return res?.data || res || [];
 }
 
-export async function deleteComment(cmtid) {
-  await delay(150);
-  _db = _db.filter(c => c.cmtid !== cmtid);
-  return _db.map(c => ({ ...c }));
+/**
+ * Admin: Xóa bình luận
+ * DELETE /api/comments/:commentid — trả về { success, data: [...] }
+ */
+export async function deleteComment(commentid) {
+  const res = await axiosConfig.delete(`/comments/${commentid}`);
+  return res?.data || res || [];
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { getChapterDetail, updateChapter } from '../../../api/chapterService';
 
 export default function EditChapter() {
   const navigate = useNavigate();
@@ -8,13 +9,46 @@ export default function EditChapter() {
   const chapter = state?.chapter;
 
   const [chaptername, setChaptername] = useState(chapter?.chaptername ?? '');
-  const [content, setContent]         = useState(chapter?.content ?? '');
+  const [content, setContent]         = useState('');
   const [visible, setVisible]         = useState((chapter?.status ?? 1) === 1);
+  const [loading, setLoading]         = useState(true);
 
-  const handleSubmit = (e) => {
+  // 1. Fetch lại chi tiết chương để lấy nội dung (content)
+  useEffect(() => {
+    if (!story?.storyid || !chapter?.chapterid) return;
+    
+    setLoading(true);
+    getChapterDetail(story.storyid, chapter.chapterid)
+      .then(res => {
+        if (res && res.chapter) {
+          setChaptername(res.chapter.chaptername);
+          setContent(res.chapter.content || '');
+          setVisible(res.chapter.status === 1);
+        }
+      })
+      .catch(err => console.error("Lỗi lấy nội dung chương:", err))
+      .finally(() => setLoading(false));
+  }, [story?.storyid, chapter?.chapterid]);
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/admin/stories/detail', { state: { story } });
+    try {
+      await updateChapter(story.storyid, chapter.chapterid, {
+        chaptername,
+        content,
+        status: visible ? 1 : 0
+      });
+      navigate(`/admin/stories/detail/${story.storyid}`, { state: { story } });
+    } catch (err) {
+      console.error("Lỗi cập nhật chương:", err);
+      alert("Lỗi khi cập nhật chương!");
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-5 text-muted">Đang tải nội dung chương...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -77,7 +111,7 @@ export default function EditChapter() {
               required />
           </div>
           <div className="col-12 d-flex justify-content-end gap-2 pt-1">
-            <Link to="/admin/stories/detail" state={{ story }} className="btn fw-bold text-decoration-none"
+            <Link to={`/admin/stories/detail/${story.storyid}`} state={{ story }} className="btn fw-bold text-decoration-none"
               style={{ borderRadius: '50px', backgroundColor: '#f5f5f5', color: '#8892a4', border: '1px solid #ddd', padding: '8px 24px' }}>
               Hủy
             </Link>

@@ -1,21 +1,60 @@
-import { delay } from './http';
-import { USERS_MOCK } from '../constants/mockData';
+// userService.js
+// Gọi API BE cho users: quản lý user (Admin) và profile (User)
+// Lưu ý: axiosConfig interceptor đã unwrap response.data của axios → 
+//   res = { success, data: [...] } nên dùng res.data nếu cần array, hoặc dùng res trực tiếp nếu BE trả về array
 
-let _db = USERS_MOCK.map(u => ({ ...u }));
+import axiosConfig from './axiosConfig';
 
+// ── ADMIN ──────────────────────────────────────────────────────────
+
+/** Lấy danh sách tất cả người dùng (Admin) */
 export async function getAllUsers() {
-  await delay();
-  return _db.map(u => ({ ...u }));
+  const res = await axiosConfig.get('/users');
+  return res?.data || res || [];
 }
 
+/** Khóa / Mở khóa user (Admin) */
 export async function toggleUserStatus(userid) {
-  await delay(150);
-  _db = _db.map(u => u.userid === userid ? { ...u, status: u.status ? 0 : 1 } : u);
-  return _db.map(u => ({ ...u }));
+  const res = await axiosConfig.patch(`/users/${userid}/toggle`);
+  return res?.data || res || [];
 }
 
+/** Xóa user (Admin) */
 export async function deleteUser(userid) {
-  await delay(150);
-  _db = _db.filter(u => u.userid !== userid);
-  return _db.map(u => ({ ...u }));
+  await axiosConfig.delete(`/users/${userid}`);
+  return await getAllUsers();
+}
+
+// ── USER PROFILE ───────────────────────────────────────────────────
+
+/** Cập nhật thông tin cá nhân (tenhienthi, avatar) */
+export async function updateProfile(userid, { tenhienthi, avatar }) {
+  const res = await axiosConfig.put(`/users/${userid}/profile`, { tenhienthi, avatar });
+  return res?.data || res;
+}
+
+/** Đổi mật khẩu — gửi cả currentPassword để server verify */
+export async function changePassword(userid, { currentPassword, newPassword }) {
+  const res = await axiosConfig.patch(`/users/${userid}/password`, { currentPassword, newPassword });
+  return res?.data || res;
+}
+
+// ── LIBRARY ────────────────────────────────────────────────────────
+
+/** Lấy danh sách tủ sách */
+export async function getLibrary(userid) {
+  const res = await axiosConfig.get(`/users/${userid}/library`);
+  return res?.data || res || [];
+}
+
+/** Thêm truyện vào tủ sách */
+export async function addToLibraryAPI(userid, storyid) {
+  const res = await axiosConfig.post(`/users/${userid}/library/${storyid}`);
+  return res?.data || res;
+}
+
+/** Xóa truyện khỏi tủ sách */
+export async function removeFromLibraryAPI(userid, storyid) {
+  const res = await axiosConfig.delete(`/users/${userid}/library/${storyid}`);
+  return res?.data || res;
 }
