@@ -6,7 +6,7 @@ const db = require('../config/db');
 const Story = {
   /** Lấy danh sách truyện kèm mảng thể loại */
   async getAllStories({ visibleOnly = false } = {}) {
-    const where = visibleOnly ? 'WHERE s.status = 1' : '';
+    const where = visibleOnly ? "WHERE s.status = 1 AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')" : '';
     const [rows] = await db.query(
       `SELECT s.storyid, s.title, s.author, s.image, s.description, 
               s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
@@ -152,7 +152,7 @@ const Story = {
     const [rows] = await db.query(
       `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
        FROM stories
-       WHERE status = 1
+       WHERE status = 1 AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
        ORDER BY storyCount DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -165,7 +165,7 @@ const Story = {
     const [rows] = await db.query(
       `SELECT storyid, title, author, image, storyCount, status, trangthai_rachuong, createdat, updatedat
        FROM stories
-       WHERE status = 1
+       WHERE status = 1 AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
        ORDER BY createdat DESC, storyid DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -182,6 +182,7 @@ const Story = {
          AND (trangthai_rachuong = 'Full'
               OR LOWER(trangthai_rachuong) = 'hoanthanh'
               OR LOWER(trangthai_rachuong) = 'full')
+         AND (trangthai_rachuong IS NULL OR LOWER(trangthai_rachuong) != 'tạm ngưng')
        ORDER BY updatedat DESC
        LIMIT ?`,
       [parseInt(limit)]
@@ -209,10 +210,35 @@ const Story = {
            GROUP BY storyid
          ) c2 ON c1.storyid = c2.storyid AND c1.createdat = c2.max_date
        ) lc ON s.storyid = lc.storyid
-       WHERE s.status = 1
+       WHERE s.status = 1 AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')
        ORDER BY COALESCE(lc.createdat, s.updatedat) DESC, s.storyid DESC
        LIMIT ?`,
       [parseInt(limit)]
+    );
+    return rows;
+  },
+
+  // 5. Lấy truyện theo thể loại
+  async getByCategory(categoryId, limit = 20) {
+    const [rows] = await db.query(
+      `SELECT s.storyid, s.title, s.author, s.image, s.description, 
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
+              COALESCE(
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
+                 FROM story_category sc
+                 JOIN category c ON sc.categoryid = c.categoryid
+                 WHERE sc.storyid = s.storyid), 
+                '[]'
+              ) AS categories
+       FROM stories s
+       JOIN story_category sc_filter ON s.storyid = sc_filter.storyid
+       WHERE sc_filter.categoryid = ?
+         AND s.status = 1 
+         AND (s.trangthai_rachuong IS NULL OR LOWER(s.trangthai_rachuong) != 'tạm ngưng')
+       GROUP BY s.storyid
+       ORDER BY s.updatedat DESC
+       LIMIT ?`,
+      [parseInt(categoryId), parseInt(limit)]
     );
     return rows;
   },

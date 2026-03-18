@@ -42,4 +42,24 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, requireAdmin };
+/**
+ * Xác thực JWT nhưng KHÔNG báo lỗi nếu không có token.
+ * Dùng cho các route cho phép cả khách và User (như đọc truyện có khóa chương).
+ */
+function optionalAuthenticate(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return next();
+
+  const token = authHeader.split(' ')[1];
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+  } catch (error) {
+    // Có token nhưng hết hạn/sai -> Bỏ qua, coi như khách
+  }
+  next();
+}
+
+module.exports = { authenticate, requireAdmin, optionalAuthenticate };

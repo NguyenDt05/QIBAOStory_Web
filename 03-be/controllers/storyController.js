@@ -73,6 +73,37 @@ const StoryController = {
     }
   },
 
+  /** GET /api/stories/category/:categoryid — Danh sách truyện theo thể loại */
+  async getByCategory(req, res) {
+    try {
+      const { categoryid } = req.params;
+      const Story = require('../models/Story');
+      const stories = await Story.getByCategory(categoryid);
+      return res.status(200).json({ success: true, data: stories });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
+  /** GET /api/stories/:storyid — Lấy thông tin cơ bản của truyện (dành cho User) */
+  async getBasicForUser(req, res) {
+    try {
+      const { storyid } = req.params;
+      const story = await StoryService.getStoryDetailForUser(storyid);
+
+      if (!story) {
+        return res.status(404).json({ success: false, message: 'Truyện không tồn tại hoặc đã bị ẩn' });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: story
+      });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
   /** GET /api/stories/:storyid/detail — Chi tiết truyện kèm danh sách chương (dành cho User) */
   async getDetailForUser(req, res) {
     try {

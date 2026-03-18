@@ -50,3 +50,11 @@ export async function deleteComment(commentid) {
   const res = await axiosConfig.delete(`/comments/${commentid}`);
   return res?.data || res || [];
 }
+
+/**
+ * User: Xóa bình luận của chính mình
+ * DELETE /api/comments/my/:cmtid
+ */
+export async function deleteMyComment(cmtid) {
+  await axiosConfig.delete(`/comments/my/${cmtid}`);
+}

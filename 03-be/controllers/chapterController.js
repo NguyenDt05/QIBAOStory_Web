@@ -12,21 +12,62 @@ async function getByStory(req, res, next) {
   } catch (err) { next(err); }
 }
 
-/** GET /api/stories/:storyid/chapters/:chapterid */
+/** GET /api/stories/:storyid/chapters/:chapterid
+ *  Hỗ trợ alias: chapterid = 'first' → chương đầu tiên
+ */
 async function getById(req, res, next) {
   try {
-    const { storyid, chapterid } = req.params;
-    
-    // Xử lý logic lấy chương theo ID
-    // Note: Nếu muốn hỗ trợ 'first'|'last', bạn cần viết thêm hàm riêng trong Model. 
-    // Ở đây ta xử lý theo ID số trước:
+    const { storyid } = req.params;
+    let { chapterid } = req.params;
+
+    // Hỗ trợ alias 'first': lấy chương đầu tiên của truyện
+    if (chapterid === 'first') {
+      const allChapters = await Chapter.getByStory(storyid);
+      if (!allChapters.length) {
+        return res.status(404).json({ success: false, message: 'Truyện chưa có chương nào' });
+      }
+      chapterid = allChapters[0].chapterid;
+    }
+
     const chapter = await Chapter.getById(storyid, chapterid);
-    
+
     if (!chapter) {
       return res.status(404).json({ success: false, message: 'Không tìm thấy chương' });
     }
-    
-    res.json({ success: true, data: chapter });
+
+    // Lấy danh sách chương để tính prev/next
+    const allChapters = await Chapter.getByStory(storyid);
+    const idx = allChapters.findIndex(c => c.chapterid == chapterid);
+    const prevChapter = idx > 0 ? allChapters[idx - 1] : null;
+    const nextChapter = idx < allChapters.length - 1 ? allChapters[idx + 1] : null;
+
+    // --- PAYWALL LOGIC ---
+    // Khách (chưa đăng nhập) chỉ được đọc 2 chương đầu (idx = 0 và 1)
+    if (idx > 1 && !req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Bạn cần đăng nhập để đọc chương này',
+        isLocked: true,
+        data: {
+          chapter: { chapterid: chapter.chapterid, chaptername: chapter.chaptername }, // Cố tình không trả về content
+          prevChapter,
+          nextChapter,
+          chapterIndex: idx,
+          totalChapters: allChapters.length,
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        chapter,
+        prevChapter,
+        nextChapter,
+        chapterIndex: idx,
+        totalChapters: allChapters.length,
+      },
+    });
   } catch (err) { next(err); }
 }
 

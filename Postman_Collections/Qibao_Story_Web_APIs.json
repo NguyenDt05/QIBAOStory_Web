@@ -1,0 +1,740 @@
+{
+  "info": {
+    "name": "Qibao Story Web APIs",
+    "description": "Postman Collection phân loại chuyên sâu theo quyền: Auth, Public, Admin, User.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "auth",
+      "description": "Các API xác thực và đăng nhập",
+      "item": [
+        {
+          "name": "Đăng ký",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"123456\",\n  \"tenhienthi\": \"Test User1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Đăng nhập",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_qibao\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Kiểm tra tên đăng nhập",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/auth/check-username/admin_qibao",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "check-username", "admin_qibao"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "public",
+      "description": "Chứa những gì ai cũng xem/làm được",
+      "item": [
+        {
+          "name": "Trang Chủ",
+          "item": [
+            {
+              "name": "xem các truyện hot (Home)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/home/hot",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "home", "hot"]
+                }
+              }
+            },
+            {
+              "name": "Xem các truyện mới đăng (Home)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/home/newest",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "home", "newest"]
+                }
+              }
+            },
+            {
+              "name": "Xem các truyện đã hoàn (Home)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/home/completed",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "home", "completed"]
+                }
+              }
+            },
+            {
+              "name": "Xem các truyện đang ra (Home)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/home/updated",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "home", "updated"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Truyện",
+          "item": [
+            {
+              "name": "Xem toàn bộ truyện đang hiển thị",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories"]
+                }
+              }
+            },
+            {
+              "name": "Xem danh sách truyện theo thể loại",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/category/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "category", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xem thông tin cơ bản truyện",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xem chi tiết truyện (gồm cả chương)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/detail",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "detail"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chương",
+          "item": [
+            {
+              "name": "Xem danh sách chương",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters"]
+                }
+              }
+            },
+            {
+              "name": "Đọc chương 1,2 (Public)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Thể loại",
+          "item": [
+            {
+              "name": "Xem danh sách thể loại",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/categories",
+                  "host": ["{{base_url}}"],
+                  "path": ["categories"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bình luận",
+          "item": [
+            {
+              "name": "Xem bình luận theo truyện",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/comments/story/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments", "story", "1"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admin",
+      "description": "Chứa các quản lý",
+      "item": [
+        {
+          "name": "Quản lý Truyện",
+          "item": [
+            {
+              "name": "Xem tất cả truyện",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/admin/all",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "admin", "all"]
+                }
+              }
+            },
+            {
+              "name": "Xem chi tiết truyện",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/admin/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "admin", "1"]
+                }
+              }
+            },
+            {
+              "name": "Thêm truyện mới",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "POST",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "title", "value": "Truyện mới", "type": "text" },
+                    { "key": "author", "value": "Tác giả", "type": "text" },
+                    { "key": "categoryIDs", "value": "1", "type": "text" },
+                    { "key": "description", "value": "Mô tả truyện", "type": "text" },
+                    { "key": "storyCount", "value": "100", "type": "text" },
+                    { "key": "trangthai_rachuong", "value": "Đang ra", "type": "text" },
+                    { "key": "status", "value": "1", "type": "text" },
+                    { "key": "image", "type": "file", "src": [] }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/stories",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories"]
+                }
+              }
+            },
+            {
+              "name": "Sửa / Cập nhật truyện",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PUT",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "title", "value": "Truyện cập nhật", "type": "text" },
+                    { "key": "author", "value": "Tác giả cập nhật", "type": "text" },
+                    { "key": "categoryIDs", "value": "1,2", "type": "text" },
+                    { "key": "description", "value": "Mô tả truyện cập nhật", "type": "text" },
+                    { "key": "storyCount", "value": "101", "type": "text" },
+                    { "key": "trangthai_rachuong", "value": "Đã hoàn thành", "type": "text" },
+                    { "key": "status", "value": "1", "type": "text" },
+                    { "key": "image", "type": "file", "src": [] }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/stories/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xóa truyện",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/stories/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1"]
+                }
+              }
+            },
+            {
+              "name": "Ẩn / Hiện truyện",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/toggle",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "toggle"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quản lý Chương",
+          "item": [
+            {
+              "name": "Thêm chương mới",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"chaptername\": \"Chương 1: Khởi đầu\",\n  \"content\": \"Nội dung chương 1...\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters"]
+                }
+              }
+            },
+            {
+              "name": "Sửa / Cập nhật chương",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"chaptername\": \"Chương 1: Cập nhật\",\n  \"content\": \"Nội dung mới...\",\n  \"status\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xóa chương",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters", "1"]
+                }
+              }
+            },
+            {
+              "name": "Ẩn / Hiện chương",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters/1/toggle",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters", "1", "toggle"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quản lý Thể loại",
+          "item": [
+            {
+              "name": "Thêm thể loại",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoryname\": \"Tiên Hiệp\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/categories",
+                  "host": ["{{base_url}}"],
+                  "path": ["categories"]
+                }
+              }
+            },
+            {
+              "name": "Sửa / Cập nhật thể loại",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoryname\": \"Tiên Hiệp Update\",\n  \"status\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/categories/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["categories", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xóa thể loại",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/categories/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["categories", "1"]
+                }
+              }
+            },
+            {
+              "name": "Ẩn / Hiện thể loại",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{base_url}}/categories/1/toggle",
+                  "host": ["{{base_url}}"],
+                  "path": ["categories", "1", "toggle"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quản lý Người dùng",
+          "item": [
+            {
+              "name": "Xem danh sách người dùng",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/users",
+                  "host": ["{{base_url}}"],
+                  "path": ["users"]
+                }
+              }
+            },
+            {
+              "name": "Ẩn / Hiện người dùng",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{base_url}}/users/1/toggle",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "toggle"]
+                }
+              }
+            },
+            {
+              "name": "Xóa người dùng",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/users/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quản lý Bình luận",
+          "item": [
+            {
+              "name": "Xem tất cả bình luận",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/comments",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments"]
+                }
+              }
+            },
+            {
+              "name": "Ẩn/Hiện bình luận",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{base_url}}/comments/1/toggle",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments", "1", "toggle"]
+                }
+              }
+            },
+            {
+              "name": "Xóa bình luận",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/comments/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Thống kê",
+          "item": [
+            {
+              "name": "Xem thống kê",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stats/dashboard",
+                  "host": ["{{base_url}}"],
+                  "path": ["stats", "dashboard"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "description": "Chứa các hành động tương tác của một người dùng",
+      "item": [
+        {
+          "name": "Truyện & Chương",
+          "item": [
+            {
+              "name": "Đọc chương khóa (Cần Auth)",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/stories/1/chapters/3",
+                  "host": ["{{base_url}}"],
+                  "path": ["stories", "1", "chapters", "3"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hồ sơ cá nhân",
+          "item": [
+            {
+              "name": "Xem thông tin cá nhân",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/users/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1"]
+                }
+              }
+            },
+            {
+              "name": "Cập nhật thông tin cá nhân",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"tenhienthi\": \"Updated Name\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/1/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "profile"]
+                }
+              }
+            },
+            {
+              "name": "Đổi mật khẩu",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "PATCH",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"123456\",\n  \"newPassword\": \"new123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/1/password",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "password"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tủ sách & Lịch sử",
+          "item": [
+            {
+              "name": "Xem tủ sách",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/users/1/library",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "library"]
+                }
+              }
+            },
+            {
+              "name": "Thêm vào tủ sách",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/users/1/library/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "library", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xóa khỏi tủ sách",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/users/1/library/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "library", "1"]
+                }
+              }
+            },
+            {
+              "name": "Xem lịch sử đọc",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/users/1/history",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "history"]
+                }
+              }
+            },
+            {
+              "name": "Xóa khỏi lịch sử đọc",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/users/1/history/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["users", "1", "history", "1"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bình luận của tôi",
+          "item": [
+            {
+              "name": "Thêm bình luận",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"storyID\": 1,\n  \"content\": \"Truyện rất hay!\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/comments",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments"]
+                }
+              }
+            },
+            {
+              "name": "Xóa bình luận của tôi",
+              "request": {
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{base_url}}/comments/my/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["comments", "my", "1"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

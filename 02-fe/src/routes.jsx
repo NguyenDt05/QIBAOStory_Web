@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import AdminLayout    from './layout/AdminLayout';
 import UserLayout     from './layout/UserLayout';
+import AdminRoute     from './components/common/ProtectedRoute';
+import NotFound       from './pages/NotFound';
 
 import Login          from './pages/auth/Login';
 import Register       from './pages/auth/Register';
@@ -44,7 +46,9 @@ export default function AppRoutes() {
       <Route path="/login"    element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={
+        <AdminRoute><AdminLayout /></AdminRoute>
+      }>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard"   element={<Dashboard />} />
         <Route path="stories"     element={<ManageStories />} />
@@ -58,6 +62,9 @@ export default function AppRoutes() {
         <Route path="users"       element={<ManageUsers />} />
         <Route path="comments"    element={<ManageComments />} />
       </Route>
+
+      {/* Catch-all: trang 404 */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

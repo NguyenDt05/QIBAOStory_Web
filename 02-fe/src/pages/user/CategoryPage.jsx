@@ -1,31 +1,39 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getAllStories } from '../../api/storyService';
-import { CATEGORIES_LIST } from '../../constants/categories';
+import { getAllCategories } from '../../api/categoryService';
 import { StoryCardHorizontal, Pagination, SkeletonCard } from '../../components/common/StoryCard';
 import '../../styles/StoryList.css';
 
 const PAGE_SIZE = 10;
 
-const TABS = [
-  { value: 'all', label: 'Tất cả' },
-  ...CATEGORIES_LIST.map(c => ({ value: c.categoryID, label: c.categoryname })),
-];
-
 function CategoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const genreParam = searchParams.get('genre') ?? 'all';
 
-  const [activeTab,   setActiveTab]   = useState(
-    TABS.find(t => String(t.value) === genreParam) ? genreParam : 'all'
-  );
+  const [categories,  setCategories]  = useState([]);
+  const [activeTab,   setActiveTab]   = useState(genreParam);
   const [currentPage, setCurrentPage] = useState(1);
   const [allStories,  setAllStories]  = useState([]);
   const [isLoading,   setIsLoading]   = useState(true);
 
+  // Lấy danh sách thể loại từ API
+  useEffect(() => {
+    getAllCategories()
+      .then(res => {
+        const list = res?.data || res || [];
+        setCategories(list);
+        // Validate activeTab sau khi có danh sách
+        if (genreParam !== 'all' && !list.some(c => String(c.categoryID) === genreParam)) {
+          setActiveTab('all');
+        }
+      })
+      .catch(() => setCategories([]));
+  }, []);
+
   useEffect(() => {
     const g = searchParams.get('genre') ?? 'all';
-    setActiveTab(TABS.find(t => String(t.value) === g) ? g : 'all');
+    setActiveTab(g);
     setCurrentPage(1);
   }, [searchParams]);
 
@@ -61,14 +69,22 @@ function CategoryPage() {
           <h4 className="story-list-page__title">THỂ LOẠI TRUYỆN</h4>
         </div>
 
-        <div className="tab-wrapper d-flex gap-0 mb-4">
-          {TABS.map(tab => (
+        <div className="tab-wrapper d-flex gap-0 mb-4" style={{ flexWrap: 'wrap' }}>
+          {/* Tab "Tất cả" */}
+          <button
+            className={`tab-btn${'all' === activeTab ? ' active' : ''}`}
+            onClick={() => switchTab('all')}
+          >
+            Tất cả
+          </button>
+          {/* Các thể loại từ API */}
+          {categories.map(cat => (
             <button
-              key={tab.value}
-              className={`tab-btn${String(tab.value) === String(activeTab) ? ' active' : ''}`}
-              onClick={() => switchTab(String(tab.value))}
+              key={cat.categoryID}
+              className={`tab-btn${String(cat.categoryID) === String(activeTab) ? ' active' : ''}`}
+              onClick={() => switchTab(String(cat.categoryID))}
             >
-              {tab.label}
+              {cat.categoryname}
             </button>
           ))}
         </div>

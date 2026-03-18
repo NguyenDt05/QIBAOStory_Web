@@ -36,8 +36,12 @@ router.get('/admin/all', authenticate, requireAdmin, ctrl.getAdminStories);
 // GET /api/stories/admin/:storyid — Chi tiết đầy đủ để Admin sửa
 router.get('/admin/:storyid', authenticate, requireAdmin, ctrl.getDetailForAdmin);
 
-// GET /api/stories/:storyid — Xem 1 truyện (public, dùng cho admin getStoryById)
-router.get('/:storyid', ctrl.getDetailForAdmin);
+// GET /api/stories/category/:categoryid — Public: Lấy danh sách truyện theo thể loại
+router.get('/category/:categoryid', ctrl.getByCategory);
+
+// GET /api/stories/:storyid — Public: lấy thông tin cơ bản 1 truyện (FE dùng để lấy storyTitle/cover)
+// Admin dùng /admin/:storyid (đã có auth riêng ở trên)
+router.get('/:storyid', ctrl.getBasicForUser);
 
 // POST /api/stories — Tạo truyện mới
 router.post('/', authenticate, requireAdmin, upload.single('image'), ctrl.create);

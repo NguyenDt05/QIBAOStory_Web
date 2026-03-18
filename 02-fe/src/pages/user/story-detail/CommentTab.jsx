@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { getCommentsByStory, submitComment } from '../../../api/commentService';
+import { getCommentsByStory, submitComment, deleteMyComment } from '../../../api/commentService';
 import { getRelativeTime } from '../../../utils/helpers';
 import AvatarBase from '../../../components/common/Avatar';
 import '../../../styles/CommentTab.css';
@@ -28,6 +28,7 @@ export default function CommentTab({ storyid }) {
   const [page,       setPage]       = useState(1);
   const [isSending,  setIsSending]  = useState(false);
   const [sendError,  setSendError]  = useState('');
+  const [isDeleting,  setIsDeleting]  = useState(null); // cmtid đang xóa
 
   useEffect(() => {
     let cancelled = false;
@@ -67,6 +68,21 @@ export default function CommentTab({ storyid }) {
       setSendError(msg);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleDelete = async (cmtid) => {
+    if (!window.confirm('Bạn có chắc muốn xóa bình luận này?')) return;
+    setIsDeleting(cmtid);
+    try {
+      await deleteMyComment(cmtid);
+      getCommentsByStory(storyid).then(list => {
+        if (Array.isArray(list)) setComments(list);
+      });
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Xóa bình luận thất bại');
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -128,7 +144,22 @@ export default function CommentTab({ storyid }) {
               <div key={cmt.cmtid} className="bl-item">
                 <Avatar tenhienthi={cmt.tenhienthi} avatar={cmt.avatar} size={40} />
                 <div className="bl-item__body">
-                  <div className="bl-item__name">{cmt.tenhienthi}</div>
+                  <div className="bl-item__name">
+                    {cmt.tenhienthi}
+                    {currentUser && String(cmt.userid) === String(currentUser.userid) && (
+                      <button
+                        className="bl-btn-delete"
+                        title="Xóa bình luận"
+                        disabled={isDeleting === cmt.cmtid}
+                        onClick={() => handleDelete(cmt.cmtid)}
+                      >
+                        {isDeleting === cmt.cmtid
+                          ? <span className="spinner-border spinner-border-sm" />
+                          : <i className="bi bi-trash3" />
+                        }
+                      </button>
+                    )}
+                  </div>
                   <p className="bl-item__content">{cmt.content}</p>
                   <span className="bl-item__time">
                     <i className="bi bi-clock" />

@@ -116,6 +116,34 @@
   font-size: 0.92rem;
   color: var(--text-1);
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bl-btn-delete {
+  background: transparent;
+  border: none;
+  padding: 2px 5px;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.bl-btn-delete:hover:not(:disabled) {
+  opacity: 1;
+  color: #e05252;
+}
+
+.bl-btn-delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
 }
 
 .bl-item__content {
