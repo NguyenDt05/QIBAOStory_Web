@@ -4,6 +4,7 @@
 
 import axiosConfig from './axiosConfig';
 import { STORY_STATUS } from '../constants/storyStatus';
+import { formatDate } from '../utils/helpers';
 
 const API_BASE = 'http://localhost:8080';
 
@@ -29,8 +30,8 @@ const normalize = (s) => {
       : (typeof s.categories === 'string' ? JSON.parse(s.categories) : []),
     statusLabel: st.label,
     statusStyle: { bg: st.bg, color: st.color },
-    updatedat:   s.updatedat || s.updatedAt || '—',
-    createdat:   s.createdat ? new Date(s.createdat).toLocaleDateString('vi-VN') : '—',
+    updatedat:   (s.updatedat && !s.updatedat.includes('0000-00-00') ? formatDate(s.updatedat) : null) || (s.updatedAt && !s.updatedAt.includes('0000-00-00') ? formatDate(s.updatedAt) : null) || (s.createdat ? formatDate(s.createdat) : '—'),
+    createdat:   s.createdat ? formatDate(s.createdat) : '—',
   };
 };
 

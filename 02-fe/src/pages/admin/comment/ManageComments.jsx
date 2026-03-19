@@ -3,6 +3,7 @@ import { getAllComments, toggleCommentVisibility, deleteComment } from '../../..
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import Avatar from '../../../components/common/Avatar';
 import { Pagination } from '../../../components/common/StoryCard';
+import { formatDateTime } from '../../../utils/helpers';
 
 const PAGE_SIZE = 15;
 
@@ -104,7 +105,7 @@ export default function ManageComments() {
                     </td>
                     {/* createdat là tên cột thật trong DB bảng comment */}
                     <td className="text-center text-secondary text-nowrap" style={{ fontSize: '0.8rem' }}>
-                      {c.createdat ? new Date(c.createdat).toLocaleString('vi-VN') : '—'}
+                      {c.createdat ? formatDateTime(c.createdat) : '—'}
                     </td>
                     <td className="text-center">
                       <div className="form-check form-switch d-flex justify-content-center mb-0">

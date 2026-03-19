@@ -6,6 +6,7 @@ import { useReader } from '../../context/ReaderContext';
 import { STORY_STATUS } from '../../constants/storyStatus';
 import StoryTag from '../../components/common/StoryTag';
 import StoryCover from '../../components/common/StoryCover';
+import { getImageUrl, formatDate } from '../../utils/helpers';
 import IntroTab from './story-detail/IntroTab';
 import ChapterListTab from './story-detail/ChapterListTab';
 import CommentTab from './story-detail/CommentTab';
@@ -97,7 +98,7 @@ export default function StoryDetail() {
       <div className="cdt-hero">
         {/* Background cover image — dùng ảnh bìa của từng truyện */}
         <img
-          src={story.cover || "/covers/z7449448617084_3902abda612e15c48b541c940ce01bda.jpg"}
+          src={getImageUrl(story.cover) || "/covers/z7449448617084_3902abda612e15c48b541c940ce01bda.jpg"}
           alt=""
           aria-hidden="true"
           style={{
@@ -146,6 +147,12 @@ export default function StoryDetail() {
                   <i className="bi bi-book me-1 cdt-hero__meta-icon"></i>
                   {story.storyCount ?? chapters.length} chương
                 </span>
+                {story.updatedat && (
+                  <span>
+                    <i className="bi bi-calendar3 me-1 cdt-hero__meta-icon"></i>
+                    Cập nhật: {story.updatedat}
+                  </span>
+                )}
                 <span
                   className="cdt-hero__status-badge"
                   style={{ backgroundColor: statusInfo.bgColor, color: statusInfo.textColor }}

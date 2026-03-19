@@ -1,12 +1,4 @@
-import { getAvatarColor } from '../../utils/helpers';
-
-const BASE_URL = 'http://localhost:8080';
-
-function resolveAvatar(avatar) {
-  if (!avatar) return null;
-  if (avatar.startsWith('http') || avatar.startsWith('blob:') || avatar.startsWith('data:')) return avatar;
-  return `${BASE_URL}/${avatar}`;
-}
+import { getAvatarColor, getImageUrl } from '../../utils/helpers';
 
 /**
  * Avatar dùng chung toàn app.
@@ -24,7 +16,7 @@ function resolveAvatar(avatar) {
 export default function Avatar({ tenhienthi = '', avatar, size = 40, className = '', style = {}, onClick }) {
   const color = getAvatarColor(tenhienthi);
   const letter = (tenhienthi || '?').charAt(0).toUpperCase();
-  const src = resolveAvatar(avatar);
+  const src = getImageUrl(avatar);
 
   return (
     <div

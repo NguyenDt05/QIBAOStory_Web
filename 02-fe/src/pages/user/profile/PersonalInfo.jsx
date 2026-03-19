@@ -4,13 +4,6 @@ import { getRoleLabel } from '../../../constants/roles';
 import { updateProfile } from '../../../api/userService';
 import { useAuth } from '../../../context/AuthContext';
 
-const BASE_URL = 'http://localhost:8080';
-
-function resolveAvatar(avatar) {
-  if (!avatar) return null;
-  if (avatar.startsWith('http') || avatar.startsWith('data:')) return avatar;
-  return `${BASE_URL}/${avatar}`;
-}
 
 export default function PersonalInfo({ currentUser, onSaveName, onSaveAvatar }) {
   const name = currentUser?.tenhienthi || '';

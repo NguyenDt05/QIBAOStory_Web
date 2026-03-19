@@ -29,7 +29,7 @@ const Story = {
   async getForUser(storyid) {
     const [rows] = await db.query(
       `SELECT s.storyid, s.title, s.author, s.image, s.description,
-              s.storyCount, s.status, s.trangthai_rachuong, s.createdat,
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat, s.updatedat,
               COALESCE(
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
                  FROM story_category sc

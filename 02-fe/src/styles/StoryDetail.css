@@ -360,11 +360,16 @@
   color: var(--primary-color);
 }
 
+.cdt-cl-item .cdt-chuong-moi__date {
+  margin-left: auto;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
 .cdt-cl-item__lock {
   font-size: 0.72rem;
   color: #4a5568;
   flex-shrink: 0;
-  margin-left: auto;
   padding-left: 6px;
 }
 

@@ -45,3 +45,52 @@ export function getCoverGradientIndex(storyid = '') {
   const sum = String(storyid).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   return sum % total;
 }
+
+export const BASE_URL = 'http://localhost:8080';
+
+export function getImageUrl(path) {
+  if (!path) return null;
+  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) return path;
+  if (path.startsWith('/')) return `${BASE_URL}${path}`;
+  return `${BASE_URL}/${path}`;
+}
+
+const parseDateSafe = (input) => {
+  if (!input) return null;
+  let ts;
+  if (typeof input === 'number') {
+    ts = new Date(input);
+  } else if (typeof input === 'string') {
+    ts = new Date(input);
+    if (isNaN(ts.getTime())) {
+      try {
+        const [datePart, timePart] = input.split(' ');
+        const [dPart, mPart, yPart] = datePart.split(/[-/]/);
+        const [hh, mm, ss] = (timePart ?? '00:00:00').split(':');
+        // Check if it's DD-MM-YYYY or YYYY-MM-DD
+        if (yPart && yPart.length === 4) {
+          ts = new Date(yPart, mPart - 1, dPart, hh, mm, ss || 0);
+        } else if (dPart && dPart.length === 4) {
+          ts = new Date(dPart, mPart - 1, yPart, hh, mm, ss || 0);
+        }
+      } catch {
+        return null;
+      }
+    }
+  } else if (input instanceof Date) {
+    ts = input;
+  }
+  return (ts && !isNaN(ts.getTime())) ? ts : null;
+};
+
+export function formatDate(input) {
+  const d = parseDateSafe(input);
+  if (!d) return '—';
+  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+export function formatDateTime(input) {
+  const d = parseDateSafe(input);
+  if (!d) return '—';
+  return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}

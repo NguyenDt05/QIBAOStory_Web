@@ -10,13 +10,7 @@ const GRADIENTS = [
   'linear-gradient(145deg,#0d3b2e,#1a6b4a)',
 ];
 
-const BASE_URL = 'http://localhost:8080';
-
-function coverUrl(image) {
-  if (!image) return null;
-  if (image.startsWith('http')) return image;
-  return `${BASE_URL}/${image}`;
-}
+import { getImageUrl } from '../../utils/helpers';
 
 function formatRelativeTime(raw) {
   if (!raw) return '';
@@ -46,7 +40,7 @@ function SectionHeader({ title, link }) {
 }
 
 function FeaturedCard({ story }) {
-  const img = coverUrl(story.image);
+  const img = getImageUrl(story.image);
   return (
     <div className="h-100 d-flex flex-column"
       style={{ backgroundColor: '#141820', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
@@ -129,8 +123,8 @@ function Home() {
                   style={{ borderRadius: '14px', overflow: 'hidden', aspectRatio: '2/3', position: 'relative', transition: 'transform 0.3s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                  {coverUrl(s.image)
-                    ? <img src={coverUrl(s.image)} alt={s.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {getImageUrl(s.image)
+                    ? <img src={getImageUrl(s.image)} alt={s.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     : <div style={{ position: 'absolute', inset: 0, background: '#1a1d28', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontSize: '3rem' }}><i className="bi bi-book" /></div>
                   }
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%)' }}>
@@ -196,8 +190,8 @@ function Home() {
                       {/* Ảnh bìa nhỏ */}
                       <td className="ps-3 py-2" style={{ width: '48px' }}>
                         <Link to={`/stories/${s.storyid}`}>
-                          {coverUrl(s.image)
-                            ? <img src={coverUrl(s.image)} alt={s.title} style={{ width: 40, height: 52, objectFit: 'cover', borderRadius: 6 }} />
+                          {getImageUrl(s.image)
+                            ? <img src={getImageUrl(s.image)} alt={s.title} style={{ width: 40, height: 52, objectFit: 'cover', borderRadius: 6 }} />
                             : <div style={{ width: 40, height: 52, borderRadius: 6, background: '#1a1d28', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontSize: '1.1rem' }}><i className="bi bi-book" /></div>
                           }
                         </Link>

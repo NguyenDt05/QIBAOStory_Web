@@ -1,5 +1,5 @@
 import { COVER_GRADIENTS } from '../../constants/mockData';
-import { getCoverGradientIndex } from '../../utils/helpers';
+import { getCoverGradientIndex, getImageUrl } from '../../utils/helpers';
 
 /**
  * StoryCover - component ảnh bìa truyện dùng chung toàn app.
@@ -38,7 +38,7 @@ export default function StoryCover({
     >
       {cover ? (
         <img
-          src={cover}
+          src={getImageUrl(cover)}
           alt={title}
           style={{
             position: 'absolute',

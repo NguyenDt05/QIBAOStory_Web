@@ -7,6 +7,7 @@ import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import { STORY_STATUS, getStatusStyle } from '../../../constants/storyStatus';
 // 1. Import Pagination từ StoryCard
 import { Pagination } from '../../../components/common/StoryCard';
+import { getImageUrl, formatDate } from '../../../utils/helpers';
 
 const PAGE_SIZE = 20;
 
@@ -115,7 +116,7 @@ export default function StoryDetailAdmin() {
         <div className="row g-3 align-items-start">
           <div className="col-md-2 col-4">
             <div style={{ width: '100%', aspectRatio: '2/3', borderRadius: '12px', overflow: 'hidden', backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-               <img src={story.coverUrl} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               <img src={getImageUrl(story.coverUrl || story.cover || story.image)} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
           <div className="col-md-10 col-8">
@@ -139,7 +140,7 @@ export default function StoryDetailAdmin() {
             </div>
             <div className="row g-2 text-secondary" style={{ fontSize: '0.82rem' }}>
               <div className="col-auto"><i className="bi bi-layers me-1"></i>{story.storyCount ?? 0} chương</div>
-              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat ? new Date(story.updatedat).toLocaleDateString('vi-VN') : '—'}</div>
+              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat ? formatDate(story.updatedat) : '—'}</div>
             </div>
             {story.description && (
               <p className="mt-3 text-secondary" style={{ fontSize: '0.88rem', lineHeight: '1.6' }}>{story.description}</p>
@@ -181,7 +182,7 @@ export default function StoryDetailAdmin() {
                           style={{ width: '2.2em', height: '1.2em', cursor: 'pointer' }} />
                       </div>
                     </td>
-                    <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{c.createdat ? new Date(c.createdat).toLocaleDateString('vi-VN') : '—'}</td>
+                    <td className="text-secondary" style={{ fontSize: '0.82rem' }}>{c.createdat ? formatDate(c.createdat) : '—'}</td>
                     <td className="text-center">
                       {/* Đã cập nhật nút Sửa theo code mẫu 2 */}
                       <button className="btn btn-sm fw-bold me-2"

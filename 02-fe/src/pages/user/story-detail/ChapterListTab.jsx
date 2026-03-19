@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { formatDate } from '../../../utils/helpers';
 
 const ITEMS_PER_PAGE = 20;
 const COL_SIZE = 10;
@@ -64,6 +65,7 @@ export default function ChapterListTab({ chapters = [], isHiatus = false }) {
             >
               <span className="cdt-cl-item__so">{number}</span>
               <span className="cdt-cl-item__ten text-truncate">{name || number}</span>
+              {c.createdat && <span className="cdt-chuong-moi__date">{formatDate(c.createdat)}</span>}
               {!c.status && <i className="bi bi-lock cdt-cl-item__lock" />}
             </Link>
           );

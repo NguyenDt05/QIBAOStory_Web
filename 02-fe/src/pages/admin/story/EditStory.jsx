@@ -4,6 +4,7 @@ import GenreSelect from '../../../components/common/GenreSelect';
 import { STORY_STATUS } from '../../../constants/storyStatus';
 // Import thêm các hàm API
 import { getStoryById, updateStory } from '../../../api/storyService';
+import { getImageUrl } from '../../../utils/helpers';
 
 export default function EditStory() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function EditStory() {
           trangthai_rachuong: story.trangthai_rachuong || 'dangra',
           status: story.status ?? 1
         });
-        setPreview(story.coverUrl || null);
+        setPreview(getImageUrl(story.coverUrl || story.cover || story.image) || null);
         const ids = story.categories?.map(c => c.categoryID || c.categoryid) || [];
         setSelectedGenres(ids);
       }

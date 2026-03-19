@@ -4,6 +4,7 @@ import { USER_ROLES, getRoleLabel } from '../../../constants/roles';
 import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import Avatar from '../../../components/common/Avatar';
 import { Pagination } from '../../../components/common/StoryCard';
+import { formatDate } from '../../../utils/helpers';
 
 const PAGE_SIZE = 15;
 
@@ -116,7 +117,7 @@ export default function ManageUsers() {
                       </td>
                       <td className="text-secondary" style={{ fontSize: '0.82rem' }}>
                         {/* createdat — tên cột trong bảng users */}
-                        {u.createdat ? new Date(u.createdat).toLocaleDateString('vi-VN') : '—'}
+                        {u.createdat ? formatDate(u.createdat) : '—'}
                       </td>
                       <td className="text-center">
                         {isAdmin ? (

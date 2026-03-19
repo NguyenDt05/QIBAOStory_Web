@@ -5,6 +5,7 @@ import ConfirmDeleteModal from '../../../components/common/ConfirmDeleteModal';
 import { getAdminStories, toggleStoryVisibility, deleteStory } from '../../../api/storyService';
 import { STORY_STATUS } from '../../../constants/storyStatus';
 import { Pagination } from '../../../components/common/StoryCard';
+import { getImageUrl } from '../../../utils/helpers';
 
 const PAGE_SIZE = 15;
 
@@ -151,7 +152,7 @@ export default function ManageStories() {
                       <div className="d-flex align-items-center">
                         <div className="me-3" style={{ width: '45px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)', backgroundColor: '#2a3142' }}>
                           {t.coverUrl ? (
-                            <img src={t.coverUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={getImageUrl(t.coverUrl || t.cover || t.image)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             <div className="d-flex h-100 align-items-center justify-content-center text-muted" style={{ fontSize: '10px' }}>NO IMG</div>
                           )}

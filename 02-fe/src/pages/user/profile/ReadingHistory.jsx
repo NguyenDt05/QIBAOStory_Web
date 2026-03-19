@@ -38,7 +38,7 @@ export default function ReadingHistory() {
               <div className="lich-su-item" key={`${item.storyid}-${item.chapterid}`}>
                 <Link to={href} className="lich-su-item__bia">
                   <StoryCover
-                    // cover={item.storyCover || item.cover}
+                    cover={item.storyCover || item.cover}
                     title={item.storyTitle}
                     storyid={item.storyid}
                     style={{ position: 'absolute', inset: 0 }}

@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-// Format ngày an toàn: nếu nhận ISO string hoặc Date object từ MySQL — hiển thị đẹp
-function formatDate(raw) {
-  if (!raw) return '';
-  try {
-    const d = new Date(raw);
-    if (isNaN(d.getTime())) return String(raw);
-    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  } catch { return String(raw); }
-}
+import { formatDate } from '../../../utils/helpers';
 
 export default function IntroTab({ story, recentChapters = [], isHiatus = false }) {
   const { storyid } = useParams();
