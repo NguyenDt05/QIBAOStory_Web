@@ -102,6 +102,17 @@ const Chapter = {
     );
     return this.getByStory(storyid);
   },
+
+  /**
+   * Tăng lượt xem cho 1 chương — atomic SQL tránh race condition
+   * Chỉ tăng khi chương đang hiện (status = 1)
+   */
+  async incrementView(storyid, chapterid) {
+    await db.query(
+      `UPDATE chapter SET views = views + 1 WHERE storyid = ? AND chapterid = ? AND status = 1`,
+      [storyid, chapterid]
+    );
+  },
 };
 
 module.exports = Chapter;

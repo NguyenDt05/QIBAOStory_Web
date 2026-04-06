@@ -164,3 +164,16 @@ export async function deleteStory(storyid) {
     throw error;
   }
 }
+
+/**
+ * Tăng lượt xem truyện (POST /stories/:storyid/increment-view)
+ * Chỉ gọi khi FE xác nhận đủ điều kiện (chống spam qua localStorage đã xử lý ở component)
+ */
+export async function incrementStoryView(storyid) {
+  try {
+    await axiosConfig.post(`/stories/${storyid}/increment-view`);
+  } catch (error) {
+    // Silent fail — lỗi view không nên block trải nghiệm đọc truyện của user
+    console.warn('Không thể cộng lượt xem:', error?.message ?? error);
+  }
+}

@@ -20,7 +20,8 @@ const Story = {
        FROM stories s
        ${where}
        GROUP BY s.storyid
-       ORDER BY COALESCE(s.updatedat, s.createdat) DESC, s.storyid DESC`
+       ORDER BY s.title ASC`
+      //  COALESCE(s.updatedat, s.createdat) DESC, s.storyid DESC`
     );
     return rows;
   },
@@ -143,6 +144,17 @@ const Story = {
     await db.query(`UPDATE stories SET status = 1 - status WHERE storyid = ?`, [storyid]);
   },
 
+  /**
+   * Tăng lượt xem cho truyện — Dùng atomic SQL (views = views + 1) để tránh race condition
+   * Chỉ tăng khi truyện đang hiện (status = 1)
+   */
+  async incrementView(storyid) {
+    await db.query(
+      `UPDATE stories SET views = views + 1 WHERE storyid = ? AND status = 1`,
+      [storyid]
+    );
+  },
+
   /** ==========================================
    *  CÁC QUERY TRANG CHỦ (PUBLIC API) - LIMIT 4
    *  ========================================== */
@@ -160,7 +172,7 @@ const Story = {
          AND c.createdat >= DATE_SUB(NOW(), INTERVAL 60 DAY)
        WHERE s.status = 1
        GROUP BY s.storyid
-       ORDER BY recent_chapter_count DESC, latest_chapter_date DESC, s.updatedat DESC
+       ORDER BY s.views DESC, recent_chapter_count DESC, latest_chapter_date DESC, s.updatedat DESC
        LIMIT ?`,
       [parseInt(limit)]
     );

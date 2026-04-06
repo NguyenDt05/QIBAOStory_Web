@@ -99,6 +99,22 @@ const StoryController = {
     }
   },
 
+  /**
+   * POST /api/stories/:storyid/increment-view — Tăng lượt xem (Public, không cần auth)
+   * FE đã tự chống spam bằng localStorage + cooldown 5 phút
+   * BE dùng atomic SQL (views = views + 1) để an toàn với concurrent requests
+   */
+  async incrementView(req, res) {
+    try {
+      const { storyid } = req.params;
+      const Story = require('../models/Story');
+      await Story.incrementView(storyid);
+      return res.status(200).json({ success: true, message: 'Đã cộng lượt xem' });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
   /** GET /api/stories/:storyid — Lấy thông tin cơ bản của truyện (dành cho User) */
   async getBasicForUser(req, res) {
     try {

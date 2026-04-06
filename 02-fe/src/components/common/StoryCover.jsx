@@ -1,4 +1,4 @@
-// import { COVER_GRADIENTS } from '../../constants/mockData';
+import { COVER_GRADIENTS } from '../../constants/mockData';
 import { getCoverGradientIndex, getImageUrl } from '../../utils/helpers';
 
 /**

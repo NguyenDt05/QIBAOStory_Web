@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { getChapterDetail, getChaptersByStory } from '../../api/chapterService';
+import { getChapterDetail, getChaptersByStory, incrementChapterView } from '../../api/chapterService';
+import { incrementStoryView } from '../../api/storyService';
 import { useAuth } from '../../context/AuthContext';
 import { useReader } from '../../context/ReaderContext';
 import '../../styles/ReadChapter.css';
@@ -45,6 +46,43 @@ export default function ReadChapter() {
 
     return () => { cancelled = true; };
   }, [storyid, chapterid]);
+
+  // ── View tracking với chống spam localStorage ──────────────────────────────
+  // Chạy sau khi data đã có (đảm bảo có chapterid thực, không phải 'first'/'last')
+  useEffect(() => {
+    if (!storyid || !data?.chapter?.chapterid) return;
+
+    const VIEW_COOLDOWN_MS = 5 * 60 * 1000; // 5 phút
+    const realChapterId = data.chapter.chapterid;
+
+    // — Story view: key theo storyid, chỉ tăng 1 lần cho cả truyện trong 5 phút —
+    const storyKey = `qibao_view_story_${storyid}`;
+    const lastStoryView = parseInt(localStorage.getItem(storyKey) || '0', 10);
+    const now = Date.now();
+    if (!lastStoryView || (now - lastStoryView) > VIEW_COOLDOWN_MS) {
+      incrementStoryView(storyid);
+    }
+    localStorage.setItem(storyKey, String(now));
+
+    // — Chapter view: key theo chapterid, mỗi chương đọc lại được tăng riêng —
+    const chapterKey = `qibao_view_chapter_${realChapterId}`;
+    const lastChapterView = parseInt(localStorage.getItem(chapterKey) || '0', 10);
+    if (!lastChapterView || (now - lastChapterView) > VIEW_COOLDOWN_MS) {
+      incrementChapterView(storyid, realChapterId);
+    }
+    localStorage.setItem(chapterKey, String(now));
+
+    // setInterval 60 giây: refresh cả hai timestamp để giữ session khi user đọc lâu
+    const intervalId = setInterval(() => {
+      const t = String(Date.now());
+      localStorage.setItem(storyKey, t);
+      localStorage.setItem(chapterKey, t);
+    }, 60_000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [storyid, data?.chapter?.chapterid]);
 
   useEffect(() => {
     function handler(e) {

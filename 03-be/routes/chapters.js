@@ -18,6 +18,10 @@ router.put('/:storyid/chapters/:chapterid', authenticate, requireAdmin, chapterC
 
 router.delete('/:storyid/chapters/:chapterid', authenticate, requireAdmin, chapterCtrl.remove);
 
+// POST /:storyid/chapters/:chapterid/increment-view — Tăng lượt xem chương (Public)
+// Đặt TRƯỚC toggle để tránh Express nhầm 'increment-view' với chapterid
+router.post('/:storyid/chapters/:chapterid/increment-view', chapterCtrl.incrementChapterView);
+
 router.patch('/:storyid/chapters/:chapterid/toggle', authenticate, requireAdmin, chapterCtrl.toggleVisibility);
 
 module.exports = router;

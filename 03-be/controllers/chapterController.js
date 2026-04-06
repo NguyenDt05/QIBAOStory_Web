@@ -120,4 +120,17 @@ async function toggleVisibility(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getByStory, getById, create, update, remove, toggleVisibility };
+/**
+ * POST /api/stories/:storyid/chapters/:chapterid/increment-view
+ * Tăng lượt xem cho một chương cụ thể (Public, không cần auth)
+ * FE đã tự chống spam bằng localStorage + cooldown 5 phút per chapterid
+ */
+async function incrementChapterView(req, res, next) {
+  try {
+    const { storyid, chapterid } = req.params;
+    await Chapter.incrementView(storyid, chapterid);
+    res.status(200).json({ success: true, message: 'Đã cộng lượt xem chương' });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getByStory, getById, create, update, remove, toggleVisibility, incrementChapterView };

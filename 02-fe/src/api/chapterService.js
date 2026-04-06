@@ -99,3 +99,16 @@ export async function createChapter(storyid, data) {
   const res = await axiosConfig.post(`/stories/${storyid}/chapters`, data);
   return res?.data || res;
 }
+
+/**
+ * Tăng lượt xem cho 1 chương cụ thể (POST /stories/:storyid/chapters/:chapterid/increment-view)
+ * Chỉ gọi khi FE xác nhận đủ điều kiện (chống spam qua localStorage đã xử lý ở component)
+ */
+export async function incrementChapterView(storyid, chapterid) {
+  try {
+    await axiosConfig.post(`/stories/${storyid}/chapters/${chapterid}/increment-view`);
+  } catch (error) {
+    // Silent fail — lỗi view không nên block trải nghiệm đọc truyện của user
+    console.warn('Không thể cộng lượt xem chương:', error?.message ?? error);
+  }
+}

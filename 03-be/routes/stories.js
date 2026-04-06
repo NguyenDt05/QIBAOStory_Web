@@ -42,6 +42,10 @@ router.get('/admin/:storyid', authenticate, requireAdmin, ctrl.getDetailForAdmin
 // GET /api/stories/category/:categoryid — Public: Lấy danh sách truyện theo thể loại
 router.get('/category/:categoryid', ctrl.getByCategory);
 
+// POST /api/stories/:storyid/increment-view — Tăng lượt xem (Public, chống spam ở FE)
+// Đặt TRƯỚC /:storyid để Express không nhầm 'increment-view' là storyid
+router.post('/:storyid/increment-view', ctrl.incrementView);
+
 // GET /api/stories/:storyid — Public: lấy thông tin cơ bản 1 truyện (FE dùng để lấy storyTitle/cover)
 // Admin dùng /admin/:storyid (đã có auth riêng ở trên)
 router.get('/:storyid', ctrl.getBasicForUser);
