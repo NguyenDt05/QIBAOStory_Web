@@ -4,19 +4,19 @@ const User = {
   /**
    * Lấy danh sách toàn bộ người dùng (Dùng cho trang Quản lý User của Admin)
    */
-  async getAll() { 
-     const [rows] = await db.query(
+  async getAll() {
+    const [rows] = await db.query(
       `SELECT userid, username, tenhienthi, avatar, role, status, createdat 
        FROM users 
        ORDER BY createdat DESC`
-     );
-     return rows;
+    );
+    return rows;
   },
 
   /**
    * Tìm người dùng theo tên đăng nhập (Dùng cho Login và Check trùng)
    */
-  async findByUsername(username) { 
+  async findByUsername(username) {
     const [rows] = await db.query(
       `SELECT * FROM users WHERE username = ?`, [username]
     );
@@ -27,13 +27,13 @@ const User = {
    * Tạo người dùng mới
    * Hỗ trợ nhận role từ body hoặc mặc định là 'user'
    */
-  async create(data) { 
+  async create(data) {
     const [result] = await db.query(
       `INSERT INTO users (username, password, tenhienthi, role, status) VALUES (?, ?, ?, ?, ?)`,
       [
-        data.username, 
-        data.password, 
-        data.tenhienthi, 
+        data.username,
+        data.password,
+        data.tenhienthi,
         data.role || 'user', // Nếu không truyền role, mặc định là user
         1 // status mặc định là 1 (hoạt động)
       ]

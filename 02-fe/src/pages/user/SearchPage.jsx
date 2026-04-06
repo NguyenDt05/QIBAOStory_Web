@@ -1,37 +1,43 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getAllStories } from '../../api/storyService';
+import { searchStories } from '../../api/storyService';
 import { StoryCardHorizontal, Pagination, SkeletonCard } from '../../components/common/StoryCard';
 import '../../styles/StoryList.css';
 
 const PAGE_SIZE = 10;
+const DEBOUNCE_MS = 400;
 
 function SearchPage() {
   const [searchParams] = useSearchParams();
   const query = (searchParams.get('q') ?? '').trim();
 
-  const [allStories,  setAllStories]  = useState([]);
-  const [isLoading,   setIsLoading]   = useState(true);
+  const [results,     setResults]     = useState([]);
+  const [isLoading,   setIsLoading]   = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Reset trang khi query thay đổi
   useEffect(() => { setCurrentPage(1); }, [query]);
 
+  // Gọi BE search với debounce 400ms
+  const timerRef = useRef(null);
   useEffect(() => {
-    setIsLoading(true);
-    getAllStories({ visibleOnly: true })
-      .then(setAllStories)
-      .finally(() => setIsLoading(false));
-  }, []);
+    if (!query) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
 
-  const results = useMemo(() => {
-    if (!query) return [...allStories];
-    const q = query.toLowerCase();
-    return allStories.filter(s =>
-      (s.title       ?? '').toLowerCase().includes(q) ||
-      (s.author      ?? '').toLowerCase().includes(q) ||
-      (s.description ?? '').toLowerCase().includes(q)
-    );
-  }, [allStories, query]);
+    setIsLoading(true);
+
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      const data = await searchStories(query);
+      setResults(data);
+      setIsLoading(false);
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timerRef.current);
+  }, [query]);
 
   const totalPages   = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const currentItems = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -53,13 +59,16 @@ function SearchPage() {
               <div key={i} className="col-12 col-md-6"><SkeletonCard /></div>
             ))}
           </div>
+        ) : !query ? (
+          <div className="empty-state text-center py-5">
+            <i className="bi bi-search fs-1 d-block mb-3" />
+            <p className="mb-0">Nhập từ khóa vào ô tìm kiếm phía trên.</p>
+          </div>
         ) : results.length === 0 ? (
           <div className="empty-state text-center py-5">
             <i className="bi bi-search fs-1 d-block mb-3" />
             <p className="mb-0">
-              {query
-                ? <>Không tìm thấy kết quả cho <strong style={{ color: '#e2e8f0' }}>"{query}"</strong>.</>
-                : 'Nhập từ khóa vào ô tìm kiếm phía trên.'}
+              Không tìm thấy kết quả cho <strong style={{ color: '#e2e8f0' }}>"{query}"</strong>.
             </p>
           </div>
         ) : (
@@ -76,7 +85,7 @@ function SearchPage() {
           </div>
         )}
 
-        {!isLoading && totalPages > 1 && (
+        {!isLoading && results.length > 0 && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

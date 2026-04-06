@@ -57,8 +57,8 @@ export default function ManageStories() {
 
   // Logic lọc dữ liệu
   const filtered = stories.filter(t => {
-    const matchSearch = (t.title?.toLowerCase() || "").includes(search.toLowerCase()) || 
-                        (t.author?.toLowerCase() || "").includes(search.toLowerCase());
+    const matchSearch = (t.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (t.author?.toLowerCase() || "").includes(search.toLowerCase());
     const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID || c.categoryid));
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
@@ -86,13 +86,13 @@ export default function ManageStories() {
         <div className="row g-3 align-items-center">
           <div className="col-md-5">
             <div className="input-group" style={{ borderRadius: '50px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <span className="input-group-text border-0 ps-3" style={{ backgroundColor: '#1c2232' }}>
+              <span className="input-group-text border-0 ps-3" style={{ backgroundColor: 'var(--surface-2)' }}>
                 <i className="bi bi-search text-danger"></i>
               </span>
               <input type="text" className="form-control border-0 ps-1" placeholder="Tìm tên truyện, tác giả..."
                 value={search} onChange={e => setSearch(e.target.value)} style={{ boxShadow: 'none' }} />
               {search && (
-                <button className="btn border-0 pe-3" style={{ backgroundColor: '#1c2232' }} onClick={() => setSearch('')}>
+                <button className="btn border-0 pe-3" style={{ backgroundColor: 'var(--surface-2)' }} onClick={() => setSearch('')}>
                   <i className="bi bi-x text-secondary"></i>
                 </button>
               )}
@@ -177,12 +177,12 @@ export default function ManageStories() {
                           <GenreBadge key={c.categoryID || c.categoryid} value={c.categoryID || c.categoryid} label={c.categoryname} />
                         ))}
                         {t.categories?.length > 2 && (
-                          <span 
-                            className="fw-bold" 
-                            style={{ 
-                              fontSize: '0.75rem', 
-                              color: 'var(--primary-color)', 
-                              backgroundColor: 'rgba(224,82,82,0.1)', 
+                          <span
+                            className="fw-bold"
+                            style={{
+                              fontSize: '0.75rem',
+                              color: 'var(--primary-color)',
+                              backgroundColor: 'rgba(224,82,82,0.1)',
                               padding: '2px 8px',
                               borderRadius: '50px',
                               cursor: 'help'

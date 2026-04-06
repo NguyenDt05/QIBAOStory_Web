@@ -1,15 +1,15 @@
 const router = require('express').Router();
-const ctrl   = require('../controllers/userController');
+const ctrl = require('../controllers/userController');
 const histCtrl = require('../controllers/historyController');
 const { authenticate, requireAdmin, requireOwnerOrAdmin } = require('../middleware/auth');
 const { uploadAvatar } = require('../middleware/upload');
 
-router.get('/',                                            authenticate, requireAdmin, ctrl.getAll);
-router.patch('/:userid/toggle',                            authenticate, requireAdmin, ctrl.toggleStatus);
-router.delete('/:userid',                                  authenticate, requireAdmin, ctrl.delete);
-router.put('/:id/profile',   authenticate, requireOwnerOrAdmin, uploadAvatar.single('image'), ctrl.updateProfile);
+router.get('/', authenticate, requireAdmin, ctrl.getAll);
+router.patch('/:userid/toggle', authenticate, requireAdmin, ctrl.toggleStatus);
+router.delete('/:userid', authenticate, requireAdmin, ctrl.delete);
+router.put('/:id/profile', authenticate, requireOwnerOrAdmin, uploadAvatar.single('image'), ctrl.updateProfile);
 
-router.patch('/:id/password',  authenticate, requireOwnerOrAdmin,  ctrl.changePassword);
+router.patch('/:id/password', authenticate, requireOwnerOrAdmin, ctrl.changePassword);
 
 // --- User Profile & Library ---
 router.get('/:id', authenticate, requireOwnerOrAdmin, ctrl.getProfile);

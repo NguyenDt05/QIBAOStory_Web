@@ -28,9 +28,9 @@ async function create(req, res, next) {
       return res.status(400).json({ success: false, message: 'Nội dung bình luận không được bỏ trống' });
     }
     await Comment.create({
-      storyid:    parseInt(storyid),
-      userid:     req.user.userid,
-      content:    String(content).trim(),
+      storyid: parseInt(storyid),
+      userid: req.user.userid,
+      content: String(content).trim(),
       tenhienthi: req.user.tenhienthi || req.user.username || '',
     });
     res.status(201).json({ success: true, message: 'Đã thêm bình luận' });
@@ -60,7 +60,7 @@ async function remove(req, res, next) {
 async function deleteMyComment(req, res, next) {
   try {
     const { cmtid } = req.params;
-    const userid    = req.user.userid;
+    const userid = req.user.userid;
     const db = require('../config/db');
     const [rows] = await db.query('SELECT userid FROM comment WHERE cmtid = ?', [cmtid]);
     if (rows.length === 0) return res.status(404).json({ success: false, message: 'Không tìm thấy bình luận' });

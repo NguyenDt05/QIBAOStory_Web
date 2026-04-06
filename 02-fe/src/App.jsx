@@ -1,4 +1,4 @@
-﻿import { Component } from 'react';
+import { Component } from 'react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './styles/App.css';
@@ -27,7 +27,7 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a0d14', color: '#e2e8f0', padding: '2rem', textAlign: 'center' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#e2e8f0', padding: '2rem', textAlign: 'center' }}>
           <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '3rem', color: '#e05252', marginBottom: '1rem' }} />
           <h4 style={{ color: '#e05252' }}>Đã xảy ra lỗi</h4>
           <p style={{ color: '#8892a4', maxWidth: '480px', fontSize: '0.9rem' }}>
@@ -49,8 +49,14 @@ class ErrorBoundary extends Component {
 export default function App() {
   return (
     <ErrorBoundary>
-      <ScrollToTop />
-      <AppRoutes />
+      <div className="bg-glow-container">
+        <div className="bg-glow-1"></div>
+        <div className="bg-glow-2"></div>
+      </div>
+      <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+        <ScrollToTop />
+        <AppRoutes />
+      </div>
     </ErrorBoundary>
   );
 }

@@ -1,0 +1,48 @@
+/* ======================================================
+   CategoryPage – horizontal scrollable tab bar with arrows
+   ====================================================== */
+
+.catpage-tabbar {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+/* Nút mũi tên scroll */
+.catpage-scroll-btn {
+  flex-shrink: 0;
+  background: var(--surface-2, #1a1f2e);
+  border: none;
+  color: var(--text-2, #8892a4);
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: color 0.15s, background 0.15s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 1;
+}
+
+.catpage-scroll-btn:hover {
+  color: var(--accent, #e53935);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.catpage-scroll-btn--left {
+  border-radius: 4px 0 0 0;
+  box-shadow: 4px 0 8px var(--bg, #0f1117);
+}
+
+.catpage-scroll-btn--right {
+  border-radius: 0 4px 0 0;
+  box-shadow: -4px 0 8px var(--bg, #0f1117);
+}
+
+/* Tab wrapper bên trong – scroll ẩn scrollbar */
+.catpage-tabbar .tab-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.catpage-tabbar .tab-wrapper::-webkit-scrollbar {
+  display: none;
+}

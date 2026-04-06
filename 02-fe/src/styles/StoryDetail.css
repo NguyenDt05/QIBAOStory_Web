@@ -1,7 +1,6 @@
 /* pages/user/StoryDetail.css — prefix: cdt- */
 
 .cdt-page {
-  background-color: #0a0d14;
   min-height: 100vh;
   color: #e2e8f0;
 }
@@ -144,7 +143,7 @@
 }
 
 .cdt-tab-card {
-  background-color: #141820;
+  background-color: var(--surface-1);
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
@@ -255,7 +254,7 @@
   left: 0;
   right: 0;
   height: 56px;
-  background: linear-gradient(transparent, #141820);
+  background: linear-gradient(transparent, var(--surface-1));
   pointer-events: none;
 }
 
@@ -278,7 +277,7 @@
 
 /* Chapter list tab */
 .cdt-chuong-card {
-  background-color: #141820;
+  background-color: var(--surface-1);
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);

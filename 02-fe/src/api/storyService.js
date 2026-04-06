@@ -21,7 +21,7 @@ const normalize = (s) => {
 
   return {
     ...s,
-    storyid:    s.storyid || s.storyID,
+    storyid: s.storyid || s.storyID,
     storyCount: s.storyCount ?? s.story_count ?? 0,
     coverUrl,
     cover: coverUrl,
@@ -30,8 +30,8 @@ const normalize = (s) => {
       : (typeof s.categories === 'string' ? JSON.parse(s.categories) : []),
     statusLabel: st.label,
     statusStyle: { bg: st.bg, color: st.color },
-    updatedat:   (s.updatedat && !s.updatedat.includes('0000-00-00') ? formatDate(s.updatedat) : null) || (s.updatedAt && !s.updatedAt.includes('0000-00-00') ? formatDate(s.updatedAt) : null) || (s.createdat ? formatDate(s.createdat) : '—'),
-    createdat:   s.createdat ? formatDate(s.createdat) : '—',
+    updatedat: (s.updatedat && !s.updatedat.includes('0000-00-00') ? formatDate(s.updatedat) : null) || (s.updatedAt && !s.updatedAt.includes('0000-00-00') ? formatDate(s.updatedAt) : null) || (s.createdat ? formatDate(s.createdat) : '—'),
+    createdat: s.createdat ? formatDate(s.createdat) : '—',
   };
 };
 
@@ -40,12 +40,27 @@ const normalize = (s) => {
  */
 export async function getAllStories() {
   try {
-    const res     = await axiosConfig.get('/stories');
+    const res = await axiosConfig.get('/stories');
     const rawList = res?.data || res || [];
-    const list    = rawList.map(normalize);
+    const list = rawList.map(normalize);
     return list;
   } catch (error) {
     console.error('Lỗi getAllStories:', error);
+    return [];
+  }
+}
+
+/**
+ * Tìm kiếm truyện tương đối theo từ khóa (GET /stories/search?q=...)
+ * BE dùng LIKE '%q%' — case-insensitive, tìm trong title/author/description
+ */
+export async function searchStories(query) {
+  try {
+    const res = await axiosConfig.get('/stories/search', { params: { q: query } });
+    const rawList = res?.data || res || [];
+    return rawList.map(normalize);
+  } catch (error) {
+    console.error('Lỗi searchStories:', error);
     return [];
   }
 }
@@ -56,7 +71,7 @@ export async function getAllStories() {
  */
 export async function getAdminStories() {
   try {
-    const res     = await axiosConfig.get('/stories/admin/all');
+    const res = await axiosConfig.get('/stories/admin/all');
     const rawList = res?.data || res || [];
     return rawList.map(normalize);
   } catch (error) {
@@ -72,10 +87,10 @@ export async function getAdminStories() {
  */
 export async function getStoryDetail(storyid) {
   try {
-    const res    = await axiosConfig.get(`/stories/${storyid}/detail`);
+    const res = await axiosConfig.get(`/stories/${storyid}/detail`);
     const result = res?.data || res;
     return {
-      story:    normalize(result?.story || result),
+      story: normalize(result?.story || result),
       chapters: result?.chapters || [],
     };
   } catch (error) {
@@ -90,7 +105,7 @@ export async function getStoryDetail(storyid) {
  */
 export async function getStoryById(storyid) {
   try {
-    const res  = await axiosConfig.get(`/stories/${storyid}`);
+    const res = await axiosConfig.get(`/stories/${storyid}`);
     const data = res?.data || res;
     return normalize(data);
   } catch (error) {
@@ -127,7 +142,7 @@ export async function updateStory(storyid, formData) {
  */
 export async function toggleStoryVisibility(storyid) {
   try {
-    const res     = await axiosConfig.patch(`/stories/${storyid}/toggle`);
+    const res = await axiosConfig.patch(`/stories/${storyid}/toggle`);
     const rawList = Array.isArray(res) ? res : (res?.data || []);
     return rawList.map(normalize);
   } catch (error) {

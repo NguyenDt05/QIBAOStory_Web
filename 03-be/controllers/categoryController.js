@@ -7,12 +7,12 @@ const categoryController = {
   async getAll(req, res, next) {
     try {
       const isAdmin = req.user && req.user.role === 'admin';
-      const requestAll = req.query.all === 'true'; 
+      const requestAll = req.query.all === 'true';
       // Chỉ lấy TẤT CẢ nếu: là Admin VÀ trên URL có ?all=true
       const visibleOnly = !(isAdmin && requestAll);
 
       const categories = await Category.getAll({ visibleOnly });
-      
+
       res.json({ success: true, data: categories });
     } catch (err) {
       next(err);

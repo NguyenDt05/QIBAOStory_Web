@@ -2,7 +2,7 @@
 // Xử lý logic nghiệp vụ cho Stories: CRUD truyện (Admin) và xem truyện (User)
 
 const StoryService = require('../services/StoryService');
-const Chapter      = require('../models/Chapter');
+const Chapter = require('../models/Chapter');
 
 /**
  * Trim tất cả key và value string trong req.body.
@@ -67,6 +67,20 @@ const StoryController = {
     try {
       const Story = require('../models/Story');
       const stories = await Story.getRecentlyUpdated(8);
+      return res.status(200).json({ success: true, data: stories });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
+  /** GET /api/stories/search?q=... — Tìm kiếm tương đối theo từ khóa */
+  async search(req, res) {
+    try {
+      const q = (req.query.q ?? '').trim();
+      if (!q) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+      const stories = await StoryService.searchStories(q);
       return res.status(200).json({ success: true, data: stories });
     } catch (error) {
       return res.status(500).json({ success: false, message: error.message });
@@ -159,10 +173,10 @@ const StoryController = {
       const body = sanitizeBody(req.body);
 
       const storyData = {
-        title:              body.title              || null,
-        author:             body.author             || null,
-        description:        body.description        || null,
-        storyCount:         body.storyCount         || '0',
+        title: body.title || null,
+        author: body.author || null,
+        description: body.description || null,
+        storyCount: body.storyCount || '0',
         trangthai_rachuong: body.trangthai_rachuong || null,
         status: (body.status === 'true' || body.status === '1' || body.status === 1) ? 1 : 0,
       };
@@ -202,17 +216,17 @@ const StoryController = {
       const body = sanitizeBody(req.body);
 
       const storyData = {
-        title:              body.title              || null,
-        author:             body.author             || null,
-        description:        body.description        || null,
-        storyCount:         body.storyCount !== undefined && body.storyCount !== ''
-                              ? String(body.storyCount)
-                              : '0',
+        title: body.title || null,
+        author: body.author || null,
+        description: body.description || null,
+        storyCount: body.storyCount !== undefined && body.storyCount !== ''
+          ? String(body.storyCount)
+          : '0',
         trangthai_rachuong: body.trangthai_rachuong || null,
         status: (
           body.status === 'true' ||
-          body.status === '1'    ||
-          body.status === 1      ||
+          body.status === '1' ||
+          body.status === 1 ||
           body.status === true
         ) ? 1 : 0,
       };

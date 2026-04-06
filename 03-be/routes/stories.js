@@ -2,10 +2,10 @@
 // Định nghĩa toàn bộ route cho /api/stories và /api/stories/:storyid/chapters
 
 const express = require('express');
-const router  = express.Router();
-const ctrl    = require('../controllers/storyController');
+const router = express.Router();
+const ctrl = require('../controllers/storyController');
 const { authenticate, requireAdmin } = require('../middleware/auth');
-const upload  = require('../middleware/upload');
+const upload = require('../middleware/upload');
 
 // Nhúng chapter router (xử lý /:storyid/chapters/*)
 const chapterRouter = require('./chapters');
@@ -21,6 +21,9 @@ router.get('/home/updated', ctrl.getUpdatedHome);
 
 // GET /api/stories — Danh sách truyện (chỉ hiện status = 1)
 router.get('/', ctrl.getPublicStories);
+
+// GET /api/stories/search?q=... — Tìm kiếm tương đối (PHẢI ĐẶT TRƯỚC /:storyid)
+router.get('/search', ctrl.search);
 
 // GET /api/stories/:storyid/detail — Chi tiết truyện + danh sách chương (cho trang đọc)
 router.get('/:storyid/detail', ctrl.getDetailForUser);

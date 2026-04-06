@@ -26,7 +26,7 @@ const Category = {
 
   async create(data) {
     const [result] = await db.query(
-      `INSERT INTO category (categoryname, status) VALUES (?, ?)`, 
+      `INSERT INTO category (categoryname, status) VALUES (?, ?)`,
       [data.categoryname, data.status || 1]
     );
     return result.insertId;
@@ -34,7 +34,7 @@ const Category = {
 
   async update(categoryID, data) {
     await db.query(
-      'UPDATE category SET categoryname = ?, status = ? WHERE categoryid = ?', 
+      'UPDATE category SET categoryname = ?, status = ? WHERE categoryid = ?',
       [data.categoryname, data.status, categoryID]
     );
   },

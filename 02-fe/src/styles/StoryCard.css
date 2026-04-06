@@ -6,7 +6,7 @@
 .story-card {
   display: flex;
   text-decoration: none;
-  background-color: var(--surface-1, #141820);
+  background-color: var(--surface-1);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -138,7 +138,7 @@
   height: 36px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background-color: var(--surface-1, #141820);
+  background-color: var(--surface-1);
   color: var(--text-2, #8892a4);
   font-size: 0.85rem;
   font-weight: 400;
@@ -173,7 +173,7 @@
 /* ── Skeleton loading ── */
 .skeleton-card {
   display: flex;
-  background-color: var(--surface-1, #141820);
+  background-color: var(--surface-1);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;

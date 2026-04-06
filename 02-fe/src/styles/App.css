@@ -2,6 +2,54 @@
    Màu sắc & theme: xem / chỉnh tại  src/styles/theme.css
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── Dynamic Glow Background ── */
+.bg-glow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; /* Behind everything else in #root */
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg-glow-1, .bg-glow-2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.25; /* Visible but subtle red tint */
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+}
+
+.bg-glow-1 {
+    width: 70vw;
+    height: 70vw;
+    top: -20%;
+    left: -10%;
+    animation: driftGlow1 25s infinite alternate ease-in-out;
+}
+
+.bg-glow-2 {
+    width: 60vw;
+    height: 60vw;
+    bottom: -20%;
+    right: -10%;
+    animation: driftGlow2 30s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes driftGlow1 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(15%, 25%) scale(1.1); }
+    100% { transform: translate(5%, 10%) scale(0.95); }
+}
+
+@keyframes driftGlow2 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20%, -15%) scale(1.05); }
+    100% { transform: translate(-5%, -30%) scale(1.2); }
+}
+
 /* Ép toàn bộ khung trình duyệt không có kẽ hở */
 html, body, #root {
     height: 100%;
@@ -30,7 +78,7 @@ html, body, #root {
 /* Main Content: Đây là nơi bạn muốn "bung lụa" */
 .main-content {
     flex: 1;
-    background-color: var(--bg-color);
+    background-color: transparent;
     overflow-y: auto;
     width: 100%;
     min-width: 0;

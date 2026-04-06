@@ -115,7 +115,7 @@ function GenreSelect({
           transition: 'border 0.2s',
         }}
       >
-        <span className="input-group-text border-0 ps-3" style={{ backgroundColor: '#1c2232' }}>
+        <span className="input-group-text border-0 ps-3" style={{ backgroundColor: 'var(--surface-2)' }}>
           <i className="bi bi-search" style={{ fontSize: '0.85rem', color: 'var(--accent)' }} />
         </span>
         <input
@@ -129,7 +129,7 @@ function GenreSelect({
           style={{
             boxShadow: 'none',
             fontSize: '0.9rem',
-            backgroundColor: '#1c2232',
+            backgroundColor: 'var(--surface-2)',
             color: '#e2e8f0',
           }}
         />
@@ -137,7 +137,7 @@ function GenreSelect({
           <button
             className="btn border-0 pe-3"
             type="button"
-            style={{ backgroundColor: '#1c2232' }}
+            style={{ backgroundColor: 'var(--surface-2)' }}
             onClick={() => { setSearchText(''); setDropdownOpen(true); }}
           >
             <i className="bi bi-x" style={{ color: '#8892a4' }} />

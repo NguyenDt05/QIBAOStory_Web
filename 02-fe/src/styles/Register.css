@@ -1,6 +1,3 @@
-.reg-wrapper {
-  background-color: #0a0d14;
-}
 
 /* Cột phải - form */
 .reg-form-panel {
@@ -49,7 +46,7 @@
 
 /* Input group */
 .reg-input-prefix {
-  background-color: #141820;
+  background-color: var(--surface-1);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-right: none;
   border-radius: 50px 0 0 50px;
@@ -61,13 +58,13 @@
   border-left: none;
   border-radius: 0 50px 50px 0;
   box-shadow: none;
-  background-color: #141820;
+  background-color: var(--surface-1);
   color: #e2e8f0;
 }
 
 .reg-input:focus {
   box-shadow: none;
-  background-color: #141820;
+  background-color: var(--surface-1);
   color: #e2e8f0;
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -84,20 +81,20 @@
   border-right: none;
   border-radius: 0;
   box-shadow: none;
-  background-color: #141820;
+  background-color: var(--surface-1);
   color: #e2e8f0;
 }
 
 .reg-input-pwd:focus {
   box-shadow: none;
-  background-color: #141820;
+  background-color: var(--surface-1);
   color: #e2e8f0;
   border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Nút toggle ẩn/hiện mật khẩu */
 .reg-pwd-toggle {
-  background-color: #141820;
+  background-color: var(--surface-1);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-left: none;
   border-radius: 0 50px 50px 0;

@@ -43,10 +43,10 @@ function FeaturedCard({ story }) {
   const img = getImageUrl(story.image);
   return (
     <div className="h-100 d-flex flex-column"
-      style={{ backgroundColor: '#141820', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
+      style={{ backgroundColor: 'var(--surface-1)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 6px 24px rgba(0,0,0,0.4)', overflow: 'hidden', transition: 'transform 0.2s, box-shadow 0.2s' }}
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 14px 40px rgba(0,0,0,0.6)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.4)'; }}>
-      <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', overflow: 'hidden', background: '#0f111a' }}>
+      <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3', overflow: 'hidden', background: 'var(--bg)' }}>
         {img
           ? <img src={img} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1a1d28', color: '#555', fontSize: '2rem' }}><i className="bi bi-book" /></div>
@@ -111,9 +111,9 @@ function Home() {
   }
 
   return (
-    <div style={{ backgroundColor: '#0a0d14', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
       {/* Banner Hero - Truyện hot */}
-      <div style={{ backgroundColor: '#1a1d24', padding: '40px 0 60px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ backgroundColor: 'var(--surface-2)', padding: '40px 0 60px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="container-lg px-4 px-lg-5">
           <SectionHeader title="Truyện hot đề cử" />
           <div className="row g-3 justify-content-center">
@@ -164,7 +164,7 @@ function Home() {
 
         {/* Mới hoàn thành */}
         <section className="mb-5">
-          <SectionHeader title="Mới hoàn thành" link="/stories?trangthai=hoanthanh" />
+          <SectionHeader title="Mới hoàn thành" link="/stories?status=hoanthanh" />
           <div className="row g-4">
             {completedStories.length > 0
               ? completedStories.map(s => (
@@ -181,7 +181,7 @@ function Home() {
         <section className="mb-5">
           {/* Link "Xem tất cả" đến trang stories với filter sort=moi-cap-nhat */}
           <SectionHeader title="Mới cập nhật" link="/stories?sort=moi-cap-nhat" />
-          <div style={{ backgroundColor: '#141820', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+          <div style={{ backgroundColor: 'var(--surface-1)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <div className="table-responsive">
               <table className="table table-dark table-hover align-middle mb-0">
                 <tbody>
@@ -210,9 +210,9 @@ function Home() {
                         )}
                       </td>
                       {/* Số chương */}
-                      <td className="py-2 d-none d-md-table-cell text-accent" style={{ fontSize: '0.8rem' }}>
+                      {/* <td className="py-2 d-none d-md-table-cell text-accent" style={{ fontSize: '0.8rem' }}>
                         {s.storyCount}
-                      </td>
+                      </td> */}
                       {/* Tác giả */}
                       <td className="py-2 d-none d-lg-table-cell text-secondary" style={{ fontSize: '0.8rem' }}>
                         <i className="bi bi-person me-1" />{s.author}

@@ -3,8 +3,8 @@
 // bao gồm xóa file ảnh cũ khi update/delete
 
 const Story = require('../models/Story');
-const fs    = require('fs');
-const path  = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const StoryService = {
   async getAllStories(options) {
@@ -41,6 +41,10 @@ const StoryService = {
       if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
     }
     return await Story.remove(storyid);
+  },
+
+  async searchStories(query) {
+    return await Story.search(query);
   },
 
   async toggleStoryVisibility(storyid) {

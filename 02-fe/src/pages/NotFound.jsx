@@ -9,7 +9,6 @@ export default function NotFound() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#0a0d14',
         color: '#e2e8f0',
         textAlign: 'center',
         padding: '2rem',
