@@ -86,11 +86,19 @@ const parseDateSafe = (input) => {
 export function formatDate(input) {
   const d = parseDateSafe(input);
   if (!d) return '—';
-  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
 }
 
 export function formatDateTime(input) {
   const d = parseDateSafe(input);
   if (!d) return '—';
-  return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 }

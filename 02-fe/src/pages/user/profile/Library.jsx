@@ -10,7 +10,7 @@ function LibraryCard({ story, onRemove }) {
   return (
     <div className="tt-card">
       <Link to={`/stories/${story.storyid}`} className="tt-card__bia">
-        {/* Backend trả về field 'image', LocalStorage mock có thể dùng 'cover' */}
+        {/* Hiển thị ảnh bìa */}
         <StoryCover cover={story.image || story.cover} title={story.title} storyid={story.storyid} style={{ position: 'absolute', inset: 0 }} />
       </Link>
 

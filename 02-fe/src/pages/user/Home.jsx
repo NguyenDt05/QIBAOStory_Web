@@ -52,6 +52,7 @@ function FeaturedCard({ story }) {
           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1a1d28', color: '#555', fontSize: '2rem' }}><i className="bi bi-book" /></div>
         }
       </div>
+      
       <div className="p-3 d-flex flex-column flex-grow-1">
         <Link to={`/stories/${story.storyid}`} className="text-decoration-none">
           <h6 className="fw-bold mb-2 text-truncate-2" style={{ lineHeight: 1.4, fontSize: '0.9rem', color: '#e2e8f0', height: '2.8rem' }}>{story.title}</h6>

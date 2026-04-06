@@ -140,7 +140,7 @@ export default function StoryDetailAdmin() {
             </div>
             <div className="row g-2 text-secondary" style={{ fontSize: '0.82rem' }}>
               <div className="col-auto"><i className="bi bi-layers me-1"></i>{story.storyCount ?? 0} chương</div>
-              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat ? formatDate(story.updatedat) : '—'}</div>
+              <div className="col-auto"><i className="bi bi-calendar3 me-1"></i>Cập nhật: {story.updatedat || '—'}</div>
             </div>
             {story.description && (
               <p className="mt-3 text-secondary" style={{ fontSize: '0.88rem', lineHeight: '1.6' }}>{story.description}</p>

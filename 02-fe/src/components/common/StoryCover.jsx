@@ -1,20 +1,6 @@
 import { COVER_GRADIENTS } from '../../constants/mockData';
 import { getCoverGradientIndex, getImageUrl } from '../../utils/helpers';
 
-/**
- * StoryCover - component ảnh bìa truyện dùng chung toàn app.
- * - Nếu có `cover` (URL / path)  → hiển thị ảnh
- * - Ngược lại → gradient màu + ký tự đầu của tiêu đề (hoặc fallback icon)
- *
- * Props:
- *   cover       string   – đường dẫn ảnh bìa (tuỳ chọn)
- *   title       string   – tên truyện (dùng cho alt & fallback letter)
- *   storyid     string   – dùng để chọn gradient nhất quán theo id
- *   className   string   – class ngoài (tuỳ chọn)
- *   style       object   – style ngoài: thường dùng để set width/height/borderRadius
- *   iconFallback bool    – true → fallback là biểu tượng sách thay vì ký tự
- *   imgStyle    object   – style override cho thẻ <img> bên trong
- */
 export default function StoryCover({
   cover,
   title = '',
