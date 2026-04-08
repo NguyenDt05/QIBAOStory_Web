@@ -10,6 +10,7 @@ import { getImageUrl, formatDate } from '../../utils/helpers';
 import IntroTab from './story-detail/IntroTab';
 import ChapterListTab from './story-detail/ChapterListTab';
 import CommentTab from './story-detail/CommentTab';
+import RelatedStoriesSection from './story-detail/RelatedStoriesSection';
 import '../../styles/StoryDetail.css';
 
 const TABS = [
@@ -240,6 +241,9 @@ export default function StoryDetail() {
           <CommentTab storyid={storyid} />
         )}
       </div>
+
+      {/* ── Gợi ý truyện liên quan ── */}
+      <RelatedStoriesSection storyid={storyid} />
     </div>
   );
 }

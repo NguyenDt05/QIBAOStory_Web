@@ -177,3 +177,18 @@ export async function incrementStoryView(storyid) {
     console.warn('Không thể cộng lượt xem:', error?.message ?? error);
   }
 }
+
+/**
+ * Lấy truyện gợi ý liên quan (GET /stories/:storyid/related)
+ * Ưu tiên cùng thể loại (sort theo số thể loại trùng DESC), fallback cùng tác giả
+ */
+export async function getRelatedStories(storyid) {
+  try {
+    const res = await axiosConfig.get(`/stories/${storyid}/related`);
+    const rawList = res?.data || res || [];
+    return Array.isArray(rawList) ? rawList.map(normalize) : [];
+  } catch (error) {
+    console.error('Lỗi getRelatedStories:', error);
+    return [];
+  }
+}

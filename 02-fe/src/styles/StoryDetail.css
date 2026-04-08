@@ -434,3 +434,217 @@ button.cdt-page-btn:disabled {
   font-size: 0.9rem;
   gap: 10px;
 }
+
+/* ══════════════════════════════════════════════════
+   RELATED STORIES SECTION  (prefix: rls-)
+   ══════════════════════════════════════════════════ */
+
+.rls-section {
+  margin-top: 8px;
+}
+
+/* ── Header ── */
+.rls-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rls-header__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #e2e8f0;
+  margin: 0;
+  border-left: 4px solid var(--accent);
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.rls-header__icon {
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+/* ── Grid ── */
+.rls-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1200px) {
+  .rls-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .rls-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rls-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .rls-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* ── Card ── */
+.rls-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-1);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.rls-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  border-color: rgba(224, 82, 82, 0.28);
+  text-decoration: none;
+}
+
+/* Cover */
+.rls-card__cover-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: #1a1d28;
+  flex-shrink: 0;
+}
+
+.rls-card__cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.rls-card:hover .rls-card__cover-img {
+  transform: scale(1.06);
+}
+
+.rls-card__cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5568;
+  font-size: 1.8rem;
+}
+
+/* Overlay gradient + badge */
+.rls-card__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px 8px 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Badge nhỏ hơn mặc định */
+.rls-card__overlay .status-badge {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+}
+
+/* Body */
+.rls-card__body {
+  padding: 10px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-grow: 1;
+}
+
+.rls-card__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+  line-height: 1.35;
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.1em;
+}
+
+.rls-card:hover .rls-card__title {
+  color: var(--accent-hover);
+}
+
+.rls-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rls-card__author,
+.rls-card__chapters {
+  font-size: 0.72rem;
+  color: #8892a4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rls-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+/* Skeleton */
+.rls-card--skeleton {
+  pointer-events: none;
+  animation: rls-shimmer 1.6s infinite linear;
+  background: linear-gradient(
+    90deg,
+    var(--surface-1) 25%,
+    var(--surface-2) 50%,
+    var(--surface-1) 75%
+  );
+  background-size: 200% 100%;
+}
+
+.rls-skeleton-block {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+}
+
+.rls-skeleton-line {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+}
+
+@keyframes rls-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
