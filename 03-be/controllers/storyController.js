@@ -87,6 +87,17 @@ const StoryController = {
     }
   },
 
+  /** GET /api/stories/:storyid/related — Gợi ý truyện cùng thể loại (fallback cùng tác giả) */
+  async getRelated(req, res) {
+    try {
+      const { storyid } = req.params;
+      const stories = await StoryService.getRelatedStories(storyid);
+      return res.status(200).json({ success: true, data: stories });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
   /** GET /api/stories/category/:categoryid — Danh sách truyện theo thể loại */
   async getByCategory(req, res) {
     try {

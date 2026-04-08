@@ -295,6 +295,63 @@ const Story = {
     );
     return rows;
   },
+
+  // 7. Gợi ý truyện: cùng thể loại (sort theo số tag trùng DESC), fallback cùng tác giả
+  async getRelated(storyid) {
+    // Bước 1: Tìm truyện cùng ít nhất 1 thể loại, sort theo số thể loại trùng nhiều nhất
+    const [byCat] = await db.query(
+      `SELECT s.storyid, s.title, s.author, s.image, s.description,
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat, s.updatedat,
+              COUNT(DISTINCT sc2.categoryid) AS matchCount,
+              COALESCE(
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
+                 FROM story_category sc3
+                 JOIN category c ON sc3.categoryid = c.categoryid
+                 WHERE sc3.storyid = s.storyid),
+                '[]'
+              ) AS categories
+       FROM stories s
+       JOIN story_category sc2 ON sc2.storyid = s.storyid
+       WHERE s.storyid != ?
+         AND s.status = 1
+         AND sc2.categoryid IN (SELECT categoryid FROM story_category WHERE storyid = ?)
+       GROUP BY s.storyid
+       ORDER BY matchCount DESC
+       LIMIT 5`,
+      [storyid, storyid]
+    );
+
+    if (byCat.length > 0) return byCat;
+
+    // Bước 2: Fallback — cùng tác giả nếu không có thể loại trùng nào
+    const [[storyRow]] = await db.query(
+      `SELECT author FROM stories WHERE storyid = ?`,
+      [storyid]
+    );
+    const author = storyRow?.author;
+    if (!author) return [];
+
+    const [byAuthor] = await db.query(
+      `SELECT s.storyid, s.title, s.author, s.image, s.description,
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat, s.updatedat,
+              0 AS matchCount,
+              COALESCE(
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
+                 FROM story_category sc
+                 JOIN category c ON sc.categoryid = c.categoryid
+                 WHERE sc.storyid = s.storyid),
+                '[]'
+              ) AS categories
+       FROM stories s
+       WHERE s.author = ?
+         AND s.storyid != ?
+         AND s.status = 1
+       ORDER BY COALESCE(s.updatedat, s.createdat) DESC
+       LIMIT 5`,
+      [author, storyid]
+    );
+    return byAuthor;
+  },
 };
 
 module.exports = Story;
