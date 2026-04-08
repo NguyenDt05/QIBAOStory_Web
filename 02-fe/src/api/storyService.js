@@ -51,12 +51,34 @@ export async function getAllStories() {
 }
 
 /**
+ * Chuẩn hóa query trước khi gửi lên server:
+ * Xóa dấu tiếng Việt, đưa về chữ thường, trim khoảng trắng thừa.
+ * Ví dụ: "  Huyền  Thoại " → "huyen thoai"
+ *
+ * BE sẽ dùng giá trị này để LIKE với collation unicode_ci
+ * → 'huyen' LIKE '%huyen%' = TRUE trong utf8mb4_unicode_ci (vì 'Huyền' stripped = 'huyen')
+ */
+function normalizeQuery(str) {
+  if (!str) return '';
+  return str
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/gi, 'd')
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+/**
  * Tìm kiếm truyện tương đối theo từ khóa (GET /stories/search?q=...)
  * BE dùng LIKE '%q%' — case-insensitive, tìm trong title/author/description
+ * FE normalize query để gửi chuỗi đã bỏ dấu → server match tốt hơn
  */
 export async function searchStories(query) {
   try {
-    const res = await axiosConfig.get('/stories/search', { params: { q: query } });
+    const q = normalizeQuery(query);
+    if (!q) return [];
+    const res = await axiosConfig.get('/stories/search', { params: { q } });
     const rawList = res?.data || res || [];
     return rawList.map(normalize);
   } catch (error) {

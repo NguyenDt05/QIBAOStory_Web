@@ -9,6 +9,20 @@ import { getImageUrl } from '../../../utils/helpers';
 
 const PAGE_SIZE = 15;
 
+/**
+ * Xóa dấu tiếng Việt và chuyển sang chữ thường.
+ * Ví dụ: "Huyền Thoại" → "huyen thoai", "Cố Chấp" → "co chap"
+ */
+function removeAccents(str) {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .toLowerCase();
+}
+
 export default function ManageStories() {
   const navigate = useNavigate();
   const [stories, setStories] = useState([]);
@@ -55,11 +69,19 @@ export default function ManageStories() {
     }
   };
 
-  // Logic lọc dữ liệu
+  // Logic lọc dữ liệu — hỗ trợ tiếng Việt không dấu
+  const searchNorm = removeAccents(search);          // vd: "huyen thoai", "co chap"
+  const tokens     = searchNorm.split(/\s+/).filter(Boolean); // AND-match từng token
+
   const filtered = stories.filter(t => {
-    const matchSearch = (t.title?.toLowerCase() || "").includes(search.toLowerCase()) ||
-      (t.author?.toLowerCase() || "").includes(search.toLowerCase());
-    const matchGenre = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID || c.categoryid));
+    const titleNorm  = removeAccents(t.title);
+    const authorNorm = removeAccents(t.author);
+    const haystack   = `${titleNorm} ${authorNorm}`;
+
+    // Tất cả token phải xuất hiện (AND): "co chap" → 'co' trong title VÀ 'chap' cũng vậy
+    const matchSearch = !search || tokens.every(tok => haystack.includes(tok));
+
+    const matchGenre  = filterGenre.length === 0 || (t.categories ?? []).some(c => filterGenre.includes(c.categoryID || c.categoryid));
     const matchStatus = !filterStatus || t.trangthai_rachuong === filterStatus;
     return matchSearch && matchGenre && matchStatus;
   });

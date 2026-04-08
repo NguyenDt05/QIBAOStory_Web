@@ -241,33 +241,71 @@ const Story = {
     return rows;
   },
 
-  // 5. Tìm kiếm truyện theo từ khóa 
-  async search(query) {
-    if (!query) return [];
-    const keyword = `%${query.trim()}%`;
+  // 5. Tìm kiếm truyện — hỗ trợ tiếng Việt không dấu (fuzzy accent-insensitive)
+  //    Chiến lược: build 2 điều kiện song song
+  //      (A) LIKE chuỗi gốc              → bắt được match chính xác
+  //      (B) Mỗi token đã strip dấu phải xuất hiện trong cột đã strip dấu
+  //    Kết quả: gõ "co" ra "cố", gõ "huyen" ra "Huyền Thoại"
+  async search(rawQuery) {
+    if (!rawQuery) return [];
+
+    const q = rawQuery.trim();
+    if (!q) return [];
+
+    // ── A: keyword gốc (cho collation insensitive match)
+    const kwOrig = `%${q}%`;
+
+    // ── B: strip dấu toàn bộ query → split thành các token
+    const qNoAccent = removeVietnameseTones(q);
+    const tokens    = qNoAccent.split(/\s+/).filter(Boolean); // ['co', 'chap'] etc.
+
+    // ── Xây WHERE clause
+    // Cột title_search / author_search / desc_search: strip dấu ngay trong SQL bằng CONVERT + chuẩn
+    // Vì MySQL không có native strip-diacritics, ta dùng kết hợp:
+    //   - LIKE collation ci → match không case  (bắt 'co' = 'CO')
+    //   - Node.js đã strip dấu query → LIKE '%co%' sẽ match 'cố','cô'... nếu collation là _ci
+    //
+    // utf8mb4_unicode_ci treats accented ≈ base → 'co' LIKE '%cô%' = TRUE  ✓
+    const whereOrig  = `(s.title LIKE ? COLLATE utf8mb4_unicode_ci
+                      OR s.author LIKE ? COLLATE utf8mb4_unicode_ci
+                      OR s.description LIKE ? COLLATE utf8mb4_unicode_ci)`;
+
+    // Condition B: mỗi token phải xuất hiện trong ÍT NHẤT 1 trong các cột
+    // (tiêu đề OR tác giả OR mô tả) AND (token2 cũng vậy)...
+    const condB = tokens.length > 0
+      ? tokens.map(() =>
+          `(s.title LIKE ? COLLATE utf8mb4_unicode_ci
+         OR s.author LIKE ? COLLATE utf8mb4_unicode_ci
+         OR s.description LIKE ? COLLATE utf8mb4_unicode_ci)`
+        ).join(' AND ')
+      : '1=1';
+
+    const paramsOrig = [kwOrig, kwOrig, kwOrig];
+    const paramsB    = tokens.flatMap(t => {
+      const tw = `%${t}%`;
+      return [tw, tw, tw];
+    });
 
     const [rows] = await db.query(
-      `SELECT s.*, 
+      `SELECT s.storyid, s.title, s.author, s.image, s.description,
+              s.storyCount, s.status, s.trangthai_rachuong, s.createdat, s.updatedat,
               COALESCE(
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
-                FROM story_category sc
-                JOIN category c ON sc.categoryid = c.categoryid
-                WHERE sc.storyid = s.storyid),
+                 FROM story_category sc
+                 JOIN category c ON sc.categoryid = c.categoryid
+                 WHERE sc.storyid = s.storyid),
                 '[]'
               ) AS categories
-      FROM stories s
-      WHERE s.status = 1
-        AND (
-          s.title LIKE ? 
-          OR s.author LIKE ? 
-          OR EXISTS (
-            SELECT 1 FROM story_category sc 
-            JOIN category c ON sc.categoryid = c.categoryid 
-            WHERE sc.storyid = s.storyid AND c.categoryname LIKE ?
-          )
-        )
-      ORDER BY s.title ASC`,
-      [keyword, keyword, keyword]
+       FROM stories s
+       WHERE s.status = 1
+         AND (
+           ${whereOrig}
+           OR (${condB})
+         )
+       ORDER BY
+         CASE WHEN s.title LIKE ? COLLATE utf8mb4_unicode_ci THEN 0 ELSE 1 END,
+         s.title ASC`,
+      [...paramsOrig, ...paramsB, kwOrig]
     );
     return rows;
   },
