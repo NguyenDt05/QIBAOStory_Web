@@ -106,7 +106,7 @@ export default function ManageStories() {
           <div className="col-md-2">
             <select className="form-select text-secondary" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
               style={{ borderRadius: '50px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: 'none' }}>
-              <option value="">Trạng thái</option>
+              <option value="">Tất cả trạng thái</option>
               {Object.entries(STORY_STATUS).map(([key, val]) => (
                 <option key={key} value={val.value}>{val.label}</option>
               ))}

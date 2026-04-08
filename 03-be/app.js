@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path'); // THÊM DÒNG NÀY
+const path = require('path'); 
 
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');

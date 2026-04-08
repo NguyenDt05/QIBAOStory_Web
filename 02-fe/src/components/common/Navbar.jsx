@@ -113,7 +113,7 @@ function Navbar() {
         </div>
 
         <div className="tn-right">
-          {!isAdmin && <SearchBox />}
+          {<SearchBox />}
           {currentUser ? userDropdown : authButtons}
         </div>
       </div>
@@ -150,7 +150,7 @@ function Navbar() {
           </ul>
 
           <div className="tn-mobile-auth">
-            {!isAdmin && <SearchBox />}
+            {<SearchBox />}
             {currentUser ? (
               <div className="d-flex align-items-center gap-2">
                 <Avatar tenhienthi={currentUser.tenhienthi} avatar={currentUser.avatar} size={32} className="tn-mobile-avatar" />

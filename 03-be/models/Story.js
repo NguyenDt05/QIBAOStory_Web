@@ -1,6 +1,14 @@
 // Story.js
 // Model tương tác với bảng stories và story_category trong MySQL
 
+function removeVietnameseTones(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+    .toLowerCase();
+}
+
 const db = require('../config/db');
 
 const Story = {
@@ -233,24 +241,32 @@ const Story = {
     return rows;
   },
 
-  // 5. Tìm kiếm truyện theo từ khóa (LIKE — tìm tương đối, case-insensitive)
+  // 5. Tìm kiếm truyện theo từ khóa 
   async search(query) {
-    const keyword = `%${query}%`;
+    if (!query) return [];
+    const keyword = `%${query.trim()}%`;
+
     const [rows] = await db.query(
-      `SELECT s.storyid, s.title, s.author, s.image, s.description,
-              s.storyCount, s.status, s.trangthai_rachuong, s.createdat, s.updatedat,
+      `SELECT s.*, 
               COALESCE(
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('categoryID', c.categoryid, 'categoryname', c.categoryname))
-                 FROM story_category sc
-                 JOIN category c ON sc.categoryid = c.categoryid
-                 WHERE sc.storyid = s.storyid),
+                FROM story_category sc
+                JOIN category c ON sc.categoryid = c.categoryid
+                WHERE sc.storyid = s.storyid),
                 '[]'
               ) AS categories
-       FROM stories s
-       WHERE s.status = 1
-         AND (s.title LIKE ? OR s.author LIKE ? OR s.description LIKE ?)
-       GROUP BY s.storyid
-       ORDER BY COALESCE(s.updatedat, s.createdat) DESC, s.storyid DESC`,
+      FROM stories s
+      WHERE s.status = 1
+        AND (
+          s.title LIKE ? 
+          OR s.author LIKE ? 
+          OR EXISTS (
+            SELECT 1 FROM story_category sc 
+            JOIN category c ON sc.categoryid = c.categoryid 
+            WHERE sc.storyid = s.storyid AND c.categoryname LIKE ?
+          )
+        )
+      ORDER BY s.title ASC`,
       [keyword, keyword, keyword]
     );
     return rows;
