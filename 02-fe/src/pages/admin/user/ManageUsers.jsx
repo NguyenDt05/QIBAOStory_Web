@@ -9,26 +9,30 @@ import { formatDate } from '../../../utils/helpers';
 const PAGE_SIZE = 15;
 
 export default function ManageUsers() {
-  const [users, setUsers]         = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [search, setSearch]       = useState('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [currentPage,   setCurrentPage]  = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortFav, setSortFav] = useState('desc'); // 'asc' | 'desc'
 
   useEffect(() => {
-    getAllUsers().then(setUsers).finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    getAllUsers(sortFav).then(setUsers).finally(() => setLoading(false));
+  }, [sortFav]);
+
+  const handleToggleSortFav = () => setSortFav(prev => prev === 'desc' ? 'asc' : 'desc');
 
   const filtered = users.filter(u => {
     const matchName = u.username.toLowerCase().includes(search.toLowerCase()) ||
-                      u.tenhienthi.toLowerCase().includes(search.toLowerCase());
+      u.tenhienthi.toLowerCase().includes(search.toLowerCase());
     const matchRole = filterRole ? u.role === filterRole : true;
     return matchName && matchRole;
   });
 
   useEffect(() => { setCurrentPage(1); }, [search, filterRole]);
-  const totalPages   = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handleToggle = async (u) => {
@@ -47,9 +51,9 @@ export default function ManageUsers() {
 
   const getRoleBadgeStyle = (role) => {
     switch (role) {
-      case 'admin':  return { backgroundColor: '#e3f2fd', color: '#1565c0' };
-      case 'mod':    return { backgroundColor: '#f3e5f5', color: '#6a1b9a' };
-      default:       return { backgroundColor: 'var(--surface-2)', color: 'var(--text-muted)' };
+      case 'admin': return { backgroundColor: '#e3f2fd', color: '#1565c0' };
+      case 'mod': return { backgroundColor: '#f3e5f5', color: '#6a1b9a' };
+      default: return { backgroundColor: 'var(--surface-2)', color: 'var(--text-muted)' };
     }
   };
 
@@ -94,6 +98,16 @@ export default function ManageUsers() {
                   <th className="text-secondary fw-semibold">Tên đăng nhập</th>
                   <th className="text-secondary fw-semibold text-center">Vai trò</th>
                   <th className="text-secondary fw-semibold">Ngày tham gia</th>
+                  <th
+                    className="text-secondary fw-semibold text-center"
+                    onClick={handleToggleSortFav}
+                    style={{ cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
+                  >
+                    Truyện yêu thích
+                    <span className="ms-1" style={{ fontSize: '0.7rem' }}>
+                      {sortFav === 'desc' ? '▼' : '▲'}
+                    </span>
+                  </th>
                   <th className="text-secondary fw-semibold text-center">Hoạt động</th>
                   <th className="text-secondary fw-semibold text-center">Hành động</th>
                 </tr>
@@ -118,6 +132,19 @@ export default function ManageUsers() {
                       <td className="text-secondary" style={{ fontSize: '0.82rem' }}>
                         {/* createdat — tên cột trong bảng users */}
                         {u.createdat ? formatDate(u.createdat) : '—'}
+                      </td>
+                      <td className="text-center">
+                        <span
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                            backgroundColor: (u.favoriteCount > 0) ? 'rgba(var(--primary-rgb, 99,102,241), 0.12)' : 'var(--surface-2)',
+                            color: (u.favoriteCount > 0) ? 'var(--primary-color)' : 'var(--text-muted)',
+                            borderRadius: '50px', padding: '3px 12px', fontSize: '0.78rem', fontWeight: 600
+                          }}
+                        >
+                          <i className="bi bi-book-fill" style={{ fontSize: '0.7rem' }}></i>
+                          {u.favoriteCount ?? 0}
+                        </span>
                       </td>
                       <td className="text-center">
                         {isAdmin ? (

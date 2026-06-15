@@ -10,25 +10,25 @@ import { getImageUrl, formatDate } from '../../utils/helpers';
 import IntroTab from './story-detail/IntroTab';
 import ChapterListTab from './story-detail/ChapterListTab';
 import CommentTab from './story-detail/CommentTab';
-import RelatedStoriesSection from './story-detail/RelatedStoriesSection';
+// import RelatedStoriesSection from './story-detail/RelatedStoriesSection';
 import '../../styles/StoryDetail.css';
 
 const TABS = [
-  { key: 'intro',       label: 'Giới thiệu' },
+  { key: 'intro', label: 'Giới thiệu' },
   { key: 'chapterlist', label: 'Danh sách chương' },
-  { key: 'comments',    label: 'Bình luận' },
+  { key: 'comments', label: 'Bình luận' },
 ];
 
 export default function StoryDetail() {
-  const { storyid }     = useParams();
-  const navigate        = useNavigate();
+  const { storyid } = useParams();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const isAdmin         = currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin';
   const { isInLibrary, addToLibrary, removeFromLibrary } = useReader();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [story, setStory]         = useState(null);
-  const [chapters, setChapters]   = useState([]);
+  const [story, setStory] = useState(null);
+  const [chapters, setChapters] = useState([]);
   const [activeTab, setActiveTab] = useState('intro');
 
   useEffect(() => {
@@ -72,22 +72,22 @@ export default function StoryDetail() {
   }
 
   const normalizedStatus = String(story.trangthai_rachuong || '').trim().toLowerCase();
-  const isHiatus     = !isAdmin && ['tamngung', 'tam_ngung', 'tạm ngưng'].includes(normalizedStatus);
-  const statusInfo   = STORY_STATUS[story.trangthai_rachuong] ?? STORY_STATUS.dangra;
+  const isHiatus = !isAdmin && ['tamngung', 'tam_ngung', 'tạm ngưng'].includes(normalizedStatus);
+  const statusInfo = STORY_STATUS[story.trangthai_rachuong] ?? STORY_STATUS.dangra;
   const recentChapters = chapters.slice(-3).reverse();
-  const saved        = isInLibrary(story.storyid);
+  const saved = isInLibrary(story.storyid);
 
   const handleLibraryToggle = () => {
     if (saved) {
       removeFromLibrary(story.storyid);
     } else {
       addToLibrary({
-        storyid:             story.storyid,
-        title:               story.title,
-        author:              story.author,
-        cover:               story.cover ?? null,
-        trangthai_rachuong:  story.trangthai_rachuong,
-        savedat:             new Date().toISOString(),
+        storyid: story.storyid,
+        title: story.title,
+        author: story.author,
+        cover: story.cover ?? null,
+        trangthai_rachuong: story.trangthai_rachuong,
+        savedat: new Date().toISOString(),
       });
     }
   };
@@ -242,8 +242,8 @@ export default function StoryDetail() {
         )}
       </div>
 
-      {/* ── Gợi ý truyện liên quan ── */}
-      <RelatedStoriesSection storyid={storyid} />
+      {/* ── Gợi ý truyện liên quan ──
+      <RelatedStoriesSection storyid={storyid} /> */}
     </div>
   );
 }

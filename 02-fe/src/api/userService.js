@@ -7,9 +7,11 @@ import axiosConfig from './axiosConfig';
 
 // ── ADMIN ──────────────────────────────────────────────────────────
 
-/** Lấy danh sách tất cả người dùng (Admin) */
-export async function getAllUsers() {
-  const res = await axiosConfig.get('/users');
+/** Lấy danh sách tất cả người dùng kèm favoriteCount (Admin)
+ * @param {'asc'|'desc'} sort - Thứ tự sắp xếp theo số truyện yêu thích (mặc định 'desc')
+ */
+export async function getAllUsers(sort = 'desc') {
+  const res = await axiosConfig.get('/users', { params: { sort } });
   return res?.data || res || [];
 }
 
