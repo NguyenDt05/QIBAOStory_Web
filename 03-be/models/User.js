@@ -14,6 +14,32 @@ const User = {
   },
 
   /**
+   * @param {'asc'|'desc'} sortOrder - Thứ tự sắp xếp theo favoriteCount
+   */
+  async getAllWithFavoriteCount(sortOrder = 'desc') {
+    const order = sortOrder === 'asc' ? 'ASC' : 'DESC';
+    const [rows] = await db.query(
+      `SELECT
+         u.userid,
+         u.username,
+         u.tenhienthi,
+         u.avatar,
+         u.role,
+         u.status,
+         u.createdat,
+         COALESCE(lib.favoriteCount, 0) AS favoriteCount
+       FROM users u
+       LEFT JOIN (
+         SELECT userid, COUNT(storyid) AS favoriteCount
+         FROM library
+         GROUP BY userid
+       ) lib ON u.userid = lib.userid
+       ORDER BY favoriteCount ${order}, u.createdat DESC`
+    );
+    return rows;
+  },
+
+  /**
    * Tìm người dùng theo tên đăng nhập (Dùng cho Login và Check trùng)
    */
   async findByUsername(username) {
@@ -48,7 +74,7 @@ const User = {
     await db.query(
       `UPDATE users SET status = 1 - status WHERE userid = ?`, [userid]
     );
-    return this.getAll(); // Trả về danh sách mới sau khi cập nhật
+    return this.getAllWithFavoriteCount(); // Trả về danh sách mới (có favoriteCount)
   },
 
   /**
@@ -56,7 +82,7 @@ const User = {
    */
   async remove(userid) {
     await db.query(`DELETE FROM users WHERE userid = ?`, [userid]);
-    return this.getAll();
+    return this.getAllWithFavoriteCount(); // Trả về danh sách mới (có favoriteCount)
   },
 
   /**

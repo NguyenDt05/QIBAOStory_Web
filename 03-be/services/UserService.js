@@ -3,11 +3,12 @@ const Library = require('../models/Library');
 
 const UserService = {
   /**
-   * Lấy danh sách tất cả người dùng (Dành cho UserManager / Admin)
+   * Lấy danh sách tất cả người dùng kèm favoriteCount (Dành cho UserManager / Admin)
+   * @param {'asc'|'desc'} sortOrder - Sắp xếp theo số truyện yêu thích
    */
-  async getAllUsers() {
+  async getAllUsers(sortOrder = 'desc') {
     try {
-      const users = await User.getAll();
+      const users = await User.getAllWithFavoriteCount(sortOrder);
       return users;
     } catch (error) {
       throw new Error('Lỗi khi lấy danh sách người dùng: ' + error.message);
@@ -136,8 +137,7 @@ const UserService = {
   async getUserById(userid) {
     try {
       if (!userid) throw new Error('Vui lòng cung cấp userid');
-      // Tái sử dụng query hiện tại hoặc viết query mới trong User. Mình sẽ tạm dùng db query trực tiếp nếu User model chưa có,
-      // Nhưng tốt nhất là viết trong User model. Chúng ta sẽ thêm getById vào User model sau, hoặc dùng require ở đây.
+    
       const db = require('../config/db');
       const [rows] = await db.query('SELECT userid, username, tenhienthi, avatar, role, status, createdat FROM users WHERE userid = ?', [userid]);
       return rows[0] || null;

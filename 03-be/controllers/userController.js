@@ -3,12 +3,14 @@ const bcrypt = require('bcrypt');
 
 const UserController = {
   /**
-   * [GET] Lấy danh sách tất cả người dùng (Dành cho Admin)
-   * Route: GET /api/users
+   * [GET] Lấy danh sách tất cả người dùng kèm favoriteCount (Dành cho Admin)
+   * Route: GET /api/users?sort=desc
+   * Query params: sort - 'asc' | 'desc' (mặc định 'desc')
    */
   async getAll(req, res) {
     try {
-      const users = await UserService.getAllUsers();
+      const sortOrder = req.query.sort === 'asc' ? 'asc' : 'desc';
+      const users = await UserService.getAllUsers(sortOrder);
       return res.status(200).json({
         success: true,
         data: users

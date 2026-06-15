@@ -241,23 +241,14 @@ const Story = {
     return rows;
   },
 
-  // 5. Tìm kiếm truyện — hỗ trợ tiếng Việt không dấu (fuzzy accent-insensitive)
-  //    Chiến lược: build 2 điều kiện song song
-  //      (A) LIKE chuỗi gốc              → bắt được match chính xác
-  //      (B) Mỗi token đã strip dấu phải xuất hiện trong cột đã strip dấu
-  //    Kết quả: gõ "co" ra "cố", gõ "huyen" ra "Huyền Thoại"
   async search(rawQuery) {
     if (!rawQuery) return [];
 
     const q = rawQuery.trim();
     if (!q) return [];
-
-    // ── A: keyword gốc (cho collation insensitive match)
     const kwOrig = `%${q}%`;
-
-    // ── B: strip dấu toàn bộ query → split thành các token
     const qNoAccent = removeVietnameseTones(q);
-    const tokens    = qNoAccent.split(/\s+/).filter(Boolean); // ['co', 'chap'] etc.
+    const tokens    = qNoAccent.split(/\s+/).filter(Boolean); 
 
     // ── Xây WHERE clause
     // Cột title_search / author_search / desc_search: strip dấu ngay trong SQL bằng CONVERT + chuẩn
@@ -269,9 +260,6 @@ const Story = {
     const whereOrig  = `(s.title LIKE ? COLLATE utf8mb4_unicode_ci
                       OR s.author LIKE ? COLLATE utf8mb4_unicode_ci
                       OR s.description LIKE ? COLLATE utf8mb4_unicode_ci)`;
-
-    // Condition B: mỗi token phải xuất hiện trong ÍT NHẤT 1 trong các cột
-    // (tiêu đề OR tác giả OR mô tả) AND (token2 cũng vậy)...
     const condB = tokens.length > 0
       ? tokens.map(() =>
           `(s.title LIKE ? COLLATE utf8mb4_unicode_ci

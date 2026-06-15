@@ -11,8 +11,8 @@ function SearchPage() {
   const [searchParams] = useSearchParams();
   const query = (searchParams.get('q') ?? '').trim();
 
-  const [results,     setResults]     = useState([]);
-  const [isLoading,   setIsLoading]   = useState(false);
+  const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Reset trang khi query thay đổi
@@ -39,7 +39,7 @@ function SearchPage() {
     return () => clearTimeout(timerRef.current);
   }, [query]);
 
-  const totalPages   = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const currentItems = results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
