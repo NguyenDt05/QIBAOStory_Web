@@ -1,9 +1,5 @@
 # QIBAO — Web Đọc Truyện Trực Tuyến
 
-> Bài tập lớn môn Lập Trình Web — PTIT  
-> Nhóm **BTL-LTW-QIBAO** · Full-stack Web Application
-
----
 
 ## Mục lục
 
