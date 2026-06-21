@@ -28,6 +28,9 @@ router.get('/search', ctrl.search);
 // GET /api/stories/:storyid/detail — Chi tiết truyện + danh sách chương (cho trang đọc)
 router.get('/:storyid/detail', ctrl.getDetailForUser);
 
+// GET /api/stories/:storyid/related — Gợi ý truyện cùng thể loại (MUST be before /:storyid)
+router.get('/:storyid/related', ctrl.getRelated);
+
 // ── ADMIN ────────────────────────────────────────────────────────────
 
 // LƯU Ý: /admin/all và /admin/:storyid phải đặt TRƯỚC /:storyid

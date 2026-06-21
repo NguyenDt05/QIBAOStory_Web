@@ -47,6 +47,10 @@ const StoryService = {
     return await Story.search(query);
   },
 
+  async getRelatedStories(storyid) {
+    return await Story.getRelated(storyid);
+  },
+
   async toggleStoryVisibility(storyid) {
     await Story.toggleVisibility(storyid);
     return await Story.getAllStories({ visibleOnly: false });
